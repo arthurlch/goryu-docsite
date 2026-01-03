@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Goryu Brand Palette */
+  --vp-c-brand-1: #00add8; /* Go Light Blue */
+  --vp-c-brand-2: #007d9c; /* Go Dark Blue */
+  --vp-c-brand-3: #005f73;
+  
+  /* Light Mode Defaults (VitePress determines them automatically usually, but we forced them wrong before) */
+  /* We do NOT set --vp-c-text-1 here for global, as defaults are usually correct (dark text on light bg) */
+  
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #00add8 30%, #ce3262);
+
+  /* Font */
+  --vp-font-family-base: 'Inter', sans-serif;
+}
+
+.dark {
+    /* Dark Mode Overrides */
+    --vp-c-bg: #0f1115;
+    --vp-c-bg-alt: #16181d;
+    --vp-c-text-1: #ffffff;
+    --vp-c-text-2: #e2e2e3;
+    --vp-c-text-3: #a0a0a0;
+    
+    /* Enhance dark mode elements */
+    --vp-c-bg-soft: #1a1d24;
+}
+
+/* Glassmorphism sidebar - Scoped to ensure readability */
+/* Glassmorphism sidebar - Scoped to ensure readability */
+.VPSidebar {
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.8); /* Fallback for light mode */
+  z-index: 10;
+}
+
+.dark .VPSidebar {
+  background-color: rgba(22, 24, 29, 0.8); /* Dark mode semi-transparent */
+}
+
+/* Ensure Nav is above Sidebar */
+.VPNav {
+    z-index: 1000 !important;
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.dark .VPNav {
+    background-color: rgba(22, 24, 29, 0.8);
+}
+
+/* Ensure Switch is visible */
+.VPSwitch {
+    z-index: 1001 !important;
+    position: relative;
+    display: flex !important; /* Force display just in case */
+}
+
+/* Premium micro-interactions */
+a {
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Feature card enhancement */
+.VPFeature {
+    border: 1px solid var(--vp-c-divider);
+    background-color: var(--vp-c-bg-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    border-radius: 12px;
+}
+
+.VPFeature:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    border-color: var(--vp-c-brand-1);
+}
+
+.VPButton.brand {
+    background-image: linear-gradient(120deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Markdown Readability Enhancements */
+.vp-doc h1, .vp-doc h2, .vp-doc h3 {
+    letter-spacing: -0.02em;
+}
+
+.vp-doc p, .vp-doc li {
+    line-height: 1.7; /* Improve readability */
+}
+
+/* Make code blocks pop */
+.vp-doc [class*='language-'] {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}

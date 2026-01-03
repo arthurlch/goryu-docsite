@@ -1,0 +1,35 @@
+# Middleware
+
+Goryu comes with a rich set of built-in middlewares.
+
+## Available Middleware
+
+- [auth](/middleware/auth)
+- [base](/middleware/base)
+- [basicauth](/middleware/basicauth)
+- [builder](/middleware/builder)
+- [cache](/middleware/cache)
+- [circuitbreaker](/middleware/circuitbreaker)
+- [compress](/middleware/compress)
+- [cors](/middleware/cors)
+- [csrf](/middleware/csrf)
+- [envvar](/middleware/envvar)
+- [errors](/middleware/errors)
+- [expvar](/middleware/expvar)
+- [favicon](/middleware/favicon)
+- [fileserver](/middleware/fileserver)
+- [graceful](/middleware/graceful)
+- [healthcheck](/middleware/healthcheck)
+- [limiter](/middleware/limiter)
+- [logger](/middleware/logger)
+- [metrics](/middleware/metrics)
+- [recovery](/middleware/recovery)
+- [requestid](/middleware/requestid)
+- [secure](/middleware/secure)
+- [secure_cookie](/middleware/secure_cookie)
+- [session](/middleware/session)
+- [structlog](/middleware/structlog)
+- [timeout](/middleware/timeout)
+- [tls_redirect](/middleware/tls_redirect)
+- [tracing](/middleware/tracing)
+- [trustproxy](/middleware/trustproxy)

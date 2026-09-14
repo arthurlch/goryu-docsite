@@ -1,100 +1,203 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* ------------------------------------------------------------------ *
+ * Brand palette
+ * ------------------------------------------------------------------ */
 :root {
-  /* Goryu Brand Palette */
-  --vp-c-brand-1: #00add8; /* Go Light Blue */
-  --vp-c-brand-2: #007d9c; /* Go Dark Blue */
+  --vp-c-brand-1: #00add8;   /* Go light blue */
+  --vp-c-brand-2: #007d9c;   /* Go dark blue  */
   --vp-c-brand-3: #005f73;
-  
-  /* Light Mode Defaults (VitePress determines them automatically usually, but we forced them wrong before) */
-  /* We do NOT set --vp-c-text-1 here for global, as defaults are usually correct (dark text on light bg) */
-  
-  --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #00add8 30%, #ce3262);
+  --vp-c-brand-soft: rgba(0, 173, 216, 0.14);
 
-  /* Font */
-  --vp-font-family-base: 'Inter', sans-serif;
+  --goryu-accent: #ce3262;   /* Ruby accent (the "Rails" side) */
+
+  --vp-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Hero */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #00add8 20%, #ce3262 90%);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #00add8aa 40%, #ce326266 100%);
+  --vp-home-hero-image-filter: blur(56px);
+
+  /* Buttons */
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-border: transparent;
 }
 
 .dark {
-    /* Dark Mode Overrides */
-    --vp-c-bg: #0f1115;
-    --vp-c-bg-alt: #16181d;
-    --vp-c-text-1: #ffffff;
-    --vp-c-text-2: #e2e2e3;
-    --vp-c-text-3: #a0a0a0;
-    
-    /* Enhance dark mode elements */
-    --vp-c-bg-soft: #1a1d24;
+  --vp-c-bg: #0d0f13;
+  --vp-c-bg-alt: #14161b;
+  --vp-c-bg-soft: #171a20;
+  --vp-c-bg-mute: #1c1f26;
+  --vp-c-text-1: #f2f3f5;
+  --vp-c-text-2: #c7c9cf;
+  --vp-c-text-3: #8b8f99;
+  --vp-c-divider: rgba(255, 255, 255, 0.09);
 }
 
-/* Glassmorphism sidebar - Scoped to ensure readability */
-/* Glassmorphism sidebar - Scoped to ensure readability */
+/* ------------------------------------------------------------------ *
+ * Hero
+ * ------------------------------------------------------------------ */
+.VPHero .name {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.VPHero .text {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.VPHero .tagline {
+  color: var(--vp-c-text-2);
+  max-width: 640px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Nav + sidebar: subtle glass
+ * ------------------------------------------------------------------ */
+.VPNav {
+  z-index: 1000 !important;
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.72);
+}
+.dark .VPNav {
+  background-color: rgba(13, 15, 19, 0.72);
+}
 .VPSidebar {
   backdrop-filter: blur(12px);
-  background-color: rgba(255, 255, 255, 0.8); /* Fallback for light mode */
-  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.72);
 }
-
 .dark .VPSidebar {
-  background-color: rgba(22, 24, 29, 0.8); /* Dark mode semi-transparent */
+  background-color: rgba(13, 15, 19, 0.72);
 }
-
-/* Ensure Nav is above Sidebar */
-.VPNav {
-    z-index: 1000 !important;
-    backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.8);
-}
-
-.dark .VPNav {
-    background-color: rgba(22, 24, 29, 0.8);
-}
-
-/* Ensure Switch is visible */
 .VPSwitch {
-    z-index: 1001 !important;
-    position: relative;
-    display: flex !important; /* Force display just in case */
+  z-index: 1001 !important;
+  position: relative;
+  display: flex !important;
 }
 
-/* Premium micro-interactions */
-a {
-    transition: color 0.2s ease, opacity 0.2s ease;
-}
-
-/* Feature card enhancement */
+/* ------------------------------------------------------------------ *
+ * Feature cards
+ * ------------------------------------------------------------------ */
 .VPFeature {
-    border: 1px solid var(--vp-c-divider);
-    background-color: var(--vp-c-bg-soft);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    border-radius: 12px;
+  border: 1px solid var(--vp-c-divider);
+  background-color: var(--vp-c-bg-soft);
+  border-radius: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
-
 .VPFeature:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-    border-color: var(--vp-c-brand-1);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.12);
+  border-color: var(--vp-c-brand-1);
+}
+.VPFeature .icon {
+  background-color: var(--vp-c-brand-soft) !important;
+  border-radius: 12px !important;
+  font-size: 22px !important;
 }
 
+/* ------------------------------------------------------------------ *
+ * Custom home sections (used in index.md)
+ * ------------------------------------------------------------------ */
+.home-section {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+.home-section h2 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  border-top: none;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.home-section > p {
+  color: var(--vp-c-text-2);
+  max-width: 760px;
+  line-height: 1.7;
+}
+
+.battery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+.battery-card {
+  border: 1px solid var(--vp-c-divider);
+  background-color: var(--vp-c-bg-soft);
+  border-radius: 14px;
+  padding: 4px 22px 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.battery-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.1);
+  border-color: var(--vp-c-brand-1);
+}
+.battery-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 18px 0 8px;
+  border-top: none;
+  padding-top: 0;
+}
+.battery-card p {
+  color: var(--vp-c-text-2);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+.battery-card a {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.home-cta {
+  margin-top: 22px;
+}
+.home-cta a {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #fff !important;
+  background-image: linear-gradient(120deg, var(--vp-c-brand-1), var(--goryu-accent));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.home-cta a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 173, 216, 0.35);
+}
+
+/* ------------------------------------------------------------------ *
+ * Buttons + code
+ * ------------------------------------------------------------------ */
 .VPButton.brand {
-    background-image: linear-gradient(120deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
+  border-radius: 10px;
+  font-weight: 700;
+  background-image: linear-gradient(120deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  border: none;
+}
+.VPButton.alt {
+  border-radius: 10px;
+  font-weight: 600;
 }
 
-/* Markdown Readability Enhancements */
 .vp-doc h1, .vp-doc h2, .vp-doc h3 {
-    letter-spacing: -0.02em;
+  letter-spacing: -0.02em;
 }
-
 .vp-doc p, .vp-doc li {
-    line-height: 1.7; /* Improve readability */
+  line-height: 1.72;
+}
+.vp-doc [class*='language-'] {
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
-/* Make code blocks pop */
-.vp-doc [class*='language-'] {
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+/* Custom block tweaks */
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
 }

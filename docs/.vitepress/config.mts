@@ -8,11 +8,11 @@ const enNav: DefaultTheme.NavItem[] = [
   { text: 'Core', link: '/core/context', activeMatch: '/core/' },
   { text: 'Streaming', link: '/streaming/', activeMatch: '/streaming/' },
   { text: 'AI / LLM', link: '/ai/', activeMatch: '/ai/' },
-  { text: 'Auth & Security', link: '/security/', activeMatch: '/security/' },
-  { text: 'Middleware', link: '/middleware/', activeMatch: '/middleware/' },
+  { text: 'Security', link: '/security/', activeMatch: '/security/' },
   {
     text: 'More',
     items: [
+      { text: 'Middleware', link: '/middleware/' },
       { text: 'Router', link: '/router/' },
       { text: 'Monitoring', link: '/monitoring/' },
       { text: 'Plugins', link: '/plugins/' },

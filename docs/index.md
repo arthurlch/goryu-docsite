@@ -5,9 +5,6 @@ hero:
   name: "Goryu"
   text: "Go backends, batteries included."
   tagline: "From a plain REST API to a full AI/LLM service — streaming-first, observable, and secure by default. Productive for humans, easy for LLMs to generate."
-  image:
-    src: https://i.ibb.co/YBfgFnG0/goryu-v3.png
-    alt: Goryu Logo
   actions:
     - theme: brand
       text: Get Started
@@ -220,6 +217,38 @@ Radix router · route builder · config system · DB helpers · a real CLI with 
 [Meet the CLI →](/cli)
 
 </div>
+
+</div>
+
+</div>
+
+<div class="home-section">
+
+## A CLI that does the boring parts {#cli}
+
+Goryu ships a real CLI — scaffold a project, generate handlers/models/middleware,
+run a hot-reloading dev server, inspect your routes, and even expose your project
+to AI agents over **MCP**. It generates idiomatic Goryu code, so humans and coding
+agents produce the same clean output.
+
+```bash
+# Scaffold a project and start building
+goryu init myapp --template=api
+goryu generate handler users --type=crud
+goryu scaffold ai assistant --kind=rag     # a RAG endpoint, fully wired
+
+# Develop, inspect, ship
+goryu dev --port 8080                       # hot-reloading dev server
+goryu routes list                           # inspect the route table
+goryu build --static                        # production binary
+
+# Let AI agents drive your project
+goryu mcp                                    # MCP server (list routes, scaffold, run)
+```
+
+<div class="home-cta">
+
+[Explore the CLI →](/cli)
 
 </div>
 

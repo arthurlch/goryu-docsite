@@ -5,9 +5,6 @@ hero:
   name: "Goryu"
   text: "Go のバックエンド、全部入り。"
   tagline: "シンプルな REST API から本格的な AI/LLM サービスまで。ストリーミングファースト、観測しやすく、デフォルトで安全。人間にとって書きやすく、LLM にとって生成しやすい。"
-  image:
-    src: https://i.ibb.co/YBfgFnG0/goryu-v3.png
-    alt: Goryu Logo
   actions:
     - theme: brand
       text: はじめる
@@ -218,6 +215,35 @@ Radix ルーター · ルートビルダー · 設定システム · DB ヘル�
 [CLI を見る →](/ja/cli)
 
 </div>
+
+</div>
+
+</div>
+
+<div class="home-section">
+
+## 面倒な部分をこなす CLI {#cli}
+
+Goryu は本格的な CLI を同梱しています。プロジェクトのスキャフォールド、ハンドラー/モデル/ミドルウェアの生成、ホットリロード付き開発サーバー、ルート一覧の確認、さらには **MCP** を通じて AI エージェントにプロジェクトを公開することもできます。生成されるのは慣用的な Goryu コードなので、人間もコーディングエージェントも同じきれいな出力になります。
+
+```bash
+# プロジェクトを作成して開発を始める
+goryu init myapp --template=api
+goryu generate handler users --type=crud
+goryu scaffold ai assistant --kind=rag     # 配線済みの RAG エンドポイント
+
+# 開発・確認・出荷
+goryu dev --port 8080                       # ホットリロード開発サーバー
+goryu routes list                           # ルートテーブルを確認
+goryu build --static                        # 本番用バイナリ
+
+# AI エージェントにプロジェクトを操作させる
+goryu mcp                                    # MCP サーバー（ルート一覧・生成・実行）
+```
+
+<div class="home-cta">
+
+[CLI を見る →](/ja/cli)
 
 </div>
 

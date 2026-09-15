@@ -1,15 +1,15 @@
-# Server-Sent Events & Raw Streams
+# Server-Sent Events と生のストリーム
 
-Goryu's `Ctx` exposes two low-level streaming methods: `c.SSE` for Server-Sent Events and `c.Stream` for a raw flushing writer. Both take over the response, write headers immediately, and flush after every write so the client sees data as it is produced.
+Goryu の `Ctx` は 2 つの低レベルなストリーミングメソッドを公開しています。Server-Sent Events のための `c.SSE` と、生のフラッシュ対応ライターのための `c.Stream` です。どちらもレスポンスを引き継ぎ、ヘッダーをただちに書き込み、書き込みのたびにフラッシュするため、クライアントはデータが生成されるそばからそれを受け取ります。
 
-## Features
+## 機能
 
-- **`c.SSE`** — emits a `text/event-stream` response with correct headers (`Cache-Control: no-cache`, `Connection: keep-alive`, `X-Accel-Buffering: no`).
-- **Full event fields** — set `id`, `event`, `retry`, and multi-line `data` per event via the `SSEvent` struct.
-- **Auto-flush** — every event is flushed to the client the instant you send it.
-- **Disconnect-aware** — `send` returns an error as soon as the client's request context is cancelled, so your producer stops naturally.
-- **Injection-safe framing** — newlines in `id`/`event` are stripped and multi-line `data` is split into `data:` lines, so a value can't break the SSE protocol.
-- **`c.Stream`** — hands you a flushing `io.Writer` for arbitrary chunked output; you control the `Content-Type`.
+- **`c.SSE`** — 正しいヘッダー（`Cache-Control: no-cache`、`Connection: keep-alive`、`X-Accel-Buffering: no`）を備えた `text/event-stream` レスポンスを発行します。
+- **完全なイベントフィールド** — `SSEvent` 構造体を介して、イベントごとに `id`、`event`、`retry`、複数行の `data` を設定できます。
+- **自動フラッシュ** — すべてのイベントは、送信した瞬間にクライアントへフラッシュされます。
+- **切断検知** — クライアントのリクエストコンテキストがキャンセルされると、`send` はただちにエラーを返すため、プロデューサーは自然に停止します。
+- **インジェクション安全なフレーミング** — `id` / `event` 内の改行は取り除かれ、複数行の `data` は複数の `data:` 行に分割されるため、値が SSE プロトコルを壊すことはありません。
+- **`c.Stream`** — 任意のチャンク化された出力のためにフラッシュ対応の `io.Writer` を渡します。`Content-Type` はあなたが制御します。
 
 ## `c.SSE`
 
@@ -17,9 +17,9 @@ Goryu's `Ctx` exposes two low-level streaming methods: `c.SSE` for Server-Sent E
 func (c *Ctx) SSE(producer func(send func(SSEvent) error) error) error
 ```
 
-Your producer receives a `send` function. Call it once per event; return `nil` when the stream is complete, or an error to abort. Goryu writes the SSE headers, flushes, and then runs your producer.
+あなたのプロデューサーは `send` 関数を受け取ります。イベントごとに一度呼び出し、ストリームが完了したら `nil` を返し、中断するにはエラーを返します。Goryu は SSE ヘッダーを書き込み、フラッシュしてから、あなたのプロデューサーを実行します。
 
-### The SSEvent struct
+### SSEvent 構造体
 
 ```go
 type SSEvent struct {
@@ -30,11 +30,11 @@ type SSEvent struct {
 }
 ```
 
-Only non-empty fields are written. `Retry` is only emitted when greater than zero.
+空でないフィールドのみが書き込まれます。`Retry` はゼロより大きい場合にのみ発行されます。
 
-### Example: progress updates
+### 例: 進捗の更新
 
-Stream job progress as named `progress` events, then a final `done` event:
+ジョブの進捗を名前付きの `progress` イベントとしてストリーミングし、最後に `done` イベントを送ります。
 
 ```go
 import (
@@ -62,7 +62,7 @@ app.GET("/jobs/:id/progress", func(c *goryu.Ctx) {
 })
 ```
 
-On the browser side:
+ブラウザ側では次のようになります。
 
 ```js
 const es = new EventSource("/jobs/42/progress");
@@ -73,9 +73,9 @@ es.addEventListener("progress", (e) => {
 es.addEventListener("done", () => es.close());
 ```
 
-### Example: id and retry for resumable feeds
+### 例: 再開可能なフィードのための id と retry
 
-Setting `ID` lets the browser resume with a `Last-Event-ID` header after a drop, and `Retry` tunes how long it waits before reconnecting:
+`ID` を設定すると、切断後にブラウザが `Last-Event-ID` ヘッダーで再開できます。`Retry` は再接続までの待ち時間を調整します。
 
 ```go
 app.GET("/feed", func(c *goryu.Ctx) {
@@ -95,15 +95,15 @@ app.GET("/feed", func(c *goryu.Ctx) {
 })
 ```
 
-On reconnect, read the resume point from the request header:
+再接続時には、リクエストヘッダーから再開ポイントを読み取ります。
 
 ```go
 lastID := c.GetHeader("Last-Event-ID")
 ```
 
-### Client disconnect handling
+### クライアント切断の処理
 
-`send` checks `c.Request.Context().Err()` before writing. When the client closes the tab or the connection drops, the request context is cancelled and the next `send` returns that error. Propagate it out of your producer to unwind loops, release resources, and cancel background work:
+`send` は書き込みの前に `c.Request.Context().Err()` をチェックします。クライアントがタブを閉じたり接続が切れたりすると、リクエストコンテキストがキャンセルされ、次の `send` がそのエラーを返します。それをプロデューサーの外へ伝播させることで、ループを巻き戻し、リソースを解放し、バックグラウンドの作業をキャンセルします。
 
 ```go
 _ = c.SSE(func(send func(goryuctx.SSEvent) error) error {
@@ -116,8 +116,8 @@ _ = c.SSE(func(send func(goryuctx.SSEvent) error) error {
 })
 ```
 
-::: warning One response per request
-`c.SSE` (like `c.Stream`) takes over the response. If the response has already started it returns `"response already started"`. Don't mix it with `c.JSON`/`c.Send` on the same request.
+::: warning リクエストごとにレスポンスは 1 つ
+`c.SSE`（`c.Stream` と同様）はレスポンスを引き継ぎます。レスポンスがすでに始まっている場合は `"response already started"` を返します。同じリクエストで `c.JSON` / `c.Send` と混在させないでください。
 :::
 
 ## `c.Stream`
@@ -126,9 +126,9 @@ _ = c.SSE(func(send func(goryuctx.SSEvent) error) error {
 func (c *Ctx) Stream(fn func(w io.Writer) error) error
 ```
 
-`c.Stream` writes a `200 OK` and gives your callback a flushing `io.Writer`. Every `Write` is flushed to the client. Set the `Content-Type` yourself before streaming.
+`c.Stream` は `200 OK` を書き込み、コールバックにフラッシュ対応の `io.Writer` を渡します。すべての `Write` はクライアントへフラッシュされます。ストリーミングの前に `Content-Type` は自分で設定してください。
 
-### Example: streaming a CSV export
+### 例: CSV エクスポートのストリーミング
 
 ```go
 import (
@@ -156,21 +156,21 @@ app.GET("/export.csv", func(c *goryu.Ctx) {
 })
 ```
 
-Because each row is flushed immediately, a browser or `curl` receives data as it is generated rather than waiting for the whole file — which keeps memory flat even for very large exports.
+各行がただちにフラッシュされるため、ブラウザや `curl` はファイル全体を待つのではなく、生成されるそばからデータを受け取ります。これにより、非常に大きなエクスポートでもメモリ使用量を一定に保てます。
 
-::: tip Test it
-Use `curl -N` to disable buffering and watch events arrive live:
+::: tip 試してみる
+`curl -N` を使ってバッファリングを無効にし、イベントがライブで届く様子を確認してください。
 
 ```sh
 curl -N localhost:3000/jobs/42/progress
 ```
 :::
 
-## Summary
+## まとめ
 
-| Method | Content-Type | Writer | Use for |
+| メソッド | Content-Type | ライター | 用途 |
 |--------|--------------|--------|---------|
-| `c.SSE` | `text/event-stream` (set for you) | `send func(SSEvent) error` | Named browser events, progress, live feeds |
-| `c.Stream` | you set it | `io.Writer` (flushing) | Raw byte streams: CSV, logs, custom protocols |
+| `c.SSE` | `text/event-stream`（自動設定） | `send func(SSEvent) error` | 名前付きブラウザイベント、進捗、ライブフィード |
+| `c.Stream` | 自分で設定 | `io.Writer`（フラッシュ対応） | 生のバイトストリーム: CSV、ログ、カスタムプロトコル |
 
-For typed, JSON-encoded streaming built on top of these, see [Typed streaming](/ja/streaming/typed).
+これらの上に構築された型付き・JSON エンコード済みのストリーミングについては、[型付きストリーミング](/ja/streaming/typed)を参照してください。

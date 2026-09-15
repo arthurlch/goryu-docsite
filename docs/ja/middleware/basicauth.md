@@ -1,20 +1,20 @@
-# BasicAuth Middleware
+# BasicAuth ミドルウェア
 
-A robust HTTP Basic Authentication middleware for Goryu. It supports both static user configuration with secure bcrypt hashing and dynamic validation logic.
+Goryu 向けの堅牢な HTTP Basic 認証ミドルウェアです。安全な bcrypt ハッシュを用いた静的なユーザー設定と、動的な検証ロジックの両方をサポートします。
 
-## Features
+## 機能
 
-- **Secure by Default**: Enforces bcrypt hashing for static passwords.
-- **Flexible Validation**: Supports custom validator functions for dynamic checks (e.g., database lookups).
-- **Rate Limiting**: Built-in protection against brute-force attacks.
-- **Timing Attack Protection**: Uses constant-time comparisons for password verification.
-- **Configurable Realm**: Custom authentication realm support.
+- **デフォルトで安全**: 静的なパスワードには bcrypt ハッシュを強制します。
+- **柔軟な検証**: 動的なチェック（例: データベース照会）に対応するカスタム検証関数をサポートします。
+- **レート制限**: ブルートフォース攻撃に対する保護機能を内蔵しています。
+- **タイミング攻撃への保護**: パスワード検証に定数時間比較を使用します。
+- **設定可能なレルム**: カスタム認証レルムをサポートします。
 
-## Usage
+## 使い方
 
-### Static Users
+### 静的ユーザー
 
-For simple use cases, you can define a static map of users. **Note: Passwords must be bcrypt hashed.**
+単純なユースケースでは、ユーザーの静的なマップを定義できます。**注意: パスワードは bcrypt でハッシュ化されている必要があります。**
 
 ```go
 package main
@@ -43,9 +43,9 @@ func main() {
 }
 ```
 
-### Custom Validator
+### カスタム検証関数
 
-For more complex scenarios, use a custom validator function:
+より複雑なシナリオでは、カスタム検証関数を使用します。
 
 ```go
 app.Use(basicauth.WithValidator(func(username, password string) bool {
@@ -57,9 +57,9 @@ app.Use(basicauth.WithValidator(func(username, password string) bool {
 }))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
-Use the `Config` struct for full control:
+完全に制御するには `Config` 構造体を使用します。
 
 ```go
 app.Use(basicauth.New(basicauth.Config{
@@ -70,6 +70,6 @@ app.Use(basicauth.New(basicauth.Config{
 }))
 ```
 
-## Security Note
+## セキュリティに関する注意
 
-When using static configuration, `basicauth` **requires** passwords to be hashed using bcrypt (starting with `$2a$`, `$2b$`, or `$2y$`). Plain text passwords in configuration will cause the middleware to fail validation on startup, ensuring you don't accidentally expose credentials.
+静的な設定を使用する場合、`basicauth` はパスワードが bcrypt でハッシュ化されている（`$2a$`、`$2b$`、または `$2y$` で始まる）ことを**必須**とします。設定内に平文のパスワードがあると、起動時にミドルウェアの検証が失敗するため、認証情報を誤って公開してしまうことを防げます。

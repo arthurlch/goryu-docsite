@@ -1,17 +1,17 @@
 # RequestID Middleware
 
-A middleware that adds a unique identifier to every HTTP request. It can generate a new ID or propagate an existing one from the request headers.
+すべての HTTP リクエストに一意の識別子を追加するミドルウェアです。新しい ID を生成することも、リクエストヘッダーから既存の ID を引き継ぐこともできます。
 
-## Features
+## 機能
 
-- **Automatic Generation**: Generates a cryptographically secure random UUID (or hex string) if no ID is present.
-- **Propagation**: Respects existing IDs passed in headers (e.g., from a load balancer).
-- **Context Integration**: Stores the ID in the context for use by other middleware (like loggers).
-- **Response Header**: Adds the ID to the response headers for client-side tracking.
+- **自動生成**: ID が存在しない場合、暗号学的に安全なランダムな UUID（または 16 進文字列）を生成します。
+- **伝播**: ヘッダーで渡された既存の ID（例: ロードバランサーからのもの）を尊重します。
+- **コンテキスト統合**: ID をコンテキストに保存し、他のミドルウェア（ロガーなど）から利用できるようにします。
+- **レスポンスヘッダー**: クライアント側での追跡のために、ID をレスポンスヘッダーに追加します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
 ```go
 package main
@@ -40,9 +40,9 @@ func main() {
 }
 ```
 
-### Advanced Configuration
+### 高度な設定
 
-Customize the header name or ID generator:
+ヘッダー名や ID ジェネレーターをカスタマイズします:
 
 ```go
 app.Use(requestid.New(requestid.Config{
@@ -53,8 +53,8 @@ app.Use(requestid.New(requestid.Config{
 }))
 ```
 
-## Why is this useful?
+## なぜ便利なのか
 
-- **Debugging**: Correlate logs across different services or components using a single ID.
-- **Tracing**: Track a request's journey through your distributed system.
-- **Support**: Provide the Request ID to users in error responses so they can reference it when contacting support.
+- **デバッグ**: 単一の ID を使用して、異なるサービスやコンポーネント間でログを関連付けられます。
+- **トレーシング**: 分散システム内をリクエストがどのように通過したかを追跡できます。
+- **サポート**: エラーレスポンスにリクエスト ID を含めてユーザーに提供することで、サポート問い合わせ時にそれを参照できるようになります。

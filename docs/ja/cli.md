@@ -1,20 +1,20 @@
 # Goryu CLI
 
-The `goryu` command-line tool provides project scaffolding, code generation, development helpers, and AI/agent tooling for Goryu applications. Run it without arguments to launch an interactive TUI, or pass a command directly.
+`goryu` コマンドラインツールは、Goryu アプリケーション向けにプロジェクトのスキャフォールド、コード生成、開発ヘルパー、AI/エージェントツールを提供します。引数なしで実行すると対話型 TUI が起動し、コマンドを直接渡すこともできます。
 
-## Installation
+## インストール
 
 ```bash
 go install github.com/arthurlch/goryu/cmd/goryu@latest
 ```
 
-Or build from source:
+またはソースからビルドします:
 
 ```bash
 go build ./cmd/goryu
 ```
 
-## Quick Start
+## クイックスタート
 
 ```bash
 goryu init my-app
@@ -23,51 +23,51 @@ go mod tidy
 go run cmd/server/main.go
 ```
 
-Your app will be running at `http://localhost:8080`.
+アプリは `http://localhost:8080` で動作します。
 
-## Command Groups
+## コマンドグループ
 
-| Group | Commands |
+| グループ | コマンド |
 |-------|----------|
-| Project | [`init`](#init) |
-| Code generation | [`generate`](#generate-g) / [`g`](#generate-g) |
-| Scaffolding | [`scaffold`](#scaffold) |
-| Development | [`dev`](#dev), [`build`](#build) |
-| AI & tooling | [`scaffold ai`](#scaffold-ai), [`mcp`](#mcp) |
-| Management | [`routes`](#routes), [`middleware`](#middleware), [`config`](#config), [`validate`](#validate), [`version`](#version) |
+| プロジェクト | [`init`](#init) |
+| コード生成 | [`generate`](#generate-g) / [`g`](#generate-g) |
+| スキャフォールド | [`scaffold`](#scaffold) |
+| 開発 | [`dev`](#dev), [`build`](#build) |
+| AI とツール | [`scaffold ai`](#scaffold-ai), [`mcp`](#mcp) |
+| 管理 | [`routes`](#routes), [`middleware`](#middleware), [`config`](#config), [`validate`](#validate), [`version`](#version) |
 
-Every subcommand supports `--help`. Long flags use `--flag`; where a shorthand exists it is shown as `-x, --flag`.
+すべてのサブコマンドは `--help` に対応しています。ロングフラグは `--flag`、短縮形がある場合は `-x, --flag` の形式で示します。
 
-## Project
+## プロジェクト
 
 ### `init`
 
-Initialize a new Goryu project from a template.
+テンプレートから新しい Goryu プロジェクトを初期化します。
 
 ```bash
 goryu init <name> [flags]
 ```
 
-**Flags:**
+**フラグ:**
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-t, --template` | Project template: `basic`, `api`, `web`, `db` | `basic` |
-| `-p, --path` | Project path | `.` |
-| `-m, --module` | Go module name | derived from name |
-| `--git` | Initialize git repository | `true` |
-| `--docker` | Include Docker files | `false` |
-| `--ci` | Include CI/CD configs | `false` |
-| `--db-tool` | Database tool for the `db` template: `sqlc`, `ent`, `gorm` | `sqlc` |
+| `-t, --template` | プロジェクトテンプレート: `basic`, `api`, `web`, `db` | `basic` |
+| `-p, --path` | プロジェクトのパス | `.` |
+| `-m, --module` | Go モジュール名 | name から導出 |
+| `--git` | git リポジトリを初期化 | `true` |
+| `--docker` | Docker ファイルを含める | `false` |
+| `--ci` | CI/CD 設定を含める | `false` |
+| `--db-tool` | `db` テンプレート用のデータベースツール: `sqlc`, `ent`, `gorm` | `sqlc` |
 
-**Templates:**
+**テンプレート:**
 
-- `basic` — minimal web application.
-- `api` — REST API with an enhanced project structure.
-- `web` — web application with static assets and views.
-- `db` — application wired to a database layer (`--db-tool` selects the toolkit).
+- `basic` — 最小限の Web アプリケーション。
+- `api` — 拡張されたプロジェクト構成を持つ REST API。
+- `web` — 静的アセットとビューを備えた Web アプリケーション。
+- `db` — データベース層に接続されたアプリケーション（`--db-tool` でツールキットを選択）。
 
-**Examples:**
+**例:**
 
 ```bash
 # Minimal project
@@ -89,18 +89,18 @@ Creating project 'my-api' (template: api)...
 Done. Next: cd my-api && go mod tidy
 ```
 
-## Code generation
+## コード生成
 
 ### `generate` / `g`
 
-Generate boilerplate code from templates. `g` is an alias for `generate`.
+テンプレートからボイラープレートコードを生成します。`g` は `generate` のエイリアスです。
 
 ```bash
 goryu generate <type> <name> [flags]
 goryu g <type> <name> [flags]
 ```
 
-Types: `handler`, `middleware`, `model`, `route`, `config`.
+タイプ: `handler`, `middleware`, `model`, `route`, `config`。
 
 #### `generate handler`
 
@@ -108,16 +108,16 @@ Types: `handler`, `middleware`, `model`, `route`, `config`.
 goryu generate handler <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-t, --type` | Handler type: `basic`, `crud`, `api`, `ai` | `basic` |
-| `--kind` | AI handler kind (only for `--type=ai`): `chat`, `rag`, `agent` | `chat` |
-| `-p, --path` | Output path | `internal/handlers` |
-| `--model` | Associated model name | — |
-| `--middleware` | Middleware to apply (comma-separated) | — |
-| `--route` | Route pattern | `/{name}` |
+| `-t, --type` | ハンドラータイプ: `basic`, `crud`, `api`, `ai` | `basic` |
+| `--kind` | AI ハンドラーの種類（`--type=ai` の場合のみ）: `chat`, `rag`, `agent` | `chat` |
+| `-p, --path` | 出力パス | `internal/handlers` |
+| `--model` | 関連するモデル名 | — |
+| `--middleware` | 適用するミドルウェア（カンマ区切り） | — |
+| `--route` | ルートパターン | `/{name}` |
 
-The `ai` type scaffolds a streaming LLM handler wired to Goryu's AI batteries: typed `Bind[T]` + `Validate`, `Schema[T]` for JSON Schema, SSE token streaming via `SSEJSON`, and token/cost accounting via the [aimeter](/ja/middleware/aimeter) middleware. Pair it with [promptcache](/ja/middleware/promptcache) and [recorder](/ja/middleware/recorder), and see [AI & agents](/ja/ai/) for the full workflow.
+`ai` タイプは、Goryu の AI バッテリーに接続されたストリーミング LLM ハンドラーをスキャフォールドします。型付き `Bind[T]` + `Validate`、JSON スキーマ用の `Schema[T]`、`SSEJSON` による SSE トークンストリーミング、そして [aimeter](/ja/middleware/aimeter) ミドルウェアによるトークン/コストの計上が含まれます。[promptcache](/ja/middleware/promptcache) と [recorder](/ja/middleware/recorder) と組み合わせ、完全なワークフローは [AI とエージェント](/ja/ai/) を参照してください。
 
 ```bash
 # CRUD handler bound to a model
@@ -136,11 +136,11 @@ goryu g handler assistant --type=ai --kind=chat
 goryu generate middleware <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-t, --type` | Middleware type: `standard`, `builder`, `plugin` | `builder` |
-| `-p, --path` | Output path | `internal/middleware` |
-| `--global` | Register as global middleware | `false` |
+| `-t, --type` | ミドルウェアタイプ: `standard`, `builder`, `plugin` | `builder` |
+| `-p, --path` | 出力パス | `internal/middleware` |
+| `--global` | グローバルミドルウェアとして登録 | `false` |
 
 ```bash
 goryu g middleware requestlog --type=builder --global
@@ -152,12 +152,12 @@ goryu g middleware requestlog --type=builder --global
 goryu generate model <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-t, --type` | Model type: `basic`, `db` | `basic` |
-| `--db-tool` | Database tool: `gorm`, `sqlc`, `ent` | `gorm` |
-| `-f, --fields` | Model fields (comma-separated) | — |
-| `-p, --path` | Output path | `internal/models` |
+| `-t, --type` | モデルタイプ: `basic`, `db` | `basic` |
+| `--db-tool` | データベースツール: `gorm`, `sqlc`, `ent` | `gorm` |
+| `-f, --fields` | モデルフィールド（カンマ区切り） | — |
+| `-p, --path` | 出力パス | `internal/models` |
 
 ```bash
 goryu g model product --type=db --fields="name:string,price:float64,in_stock:bool"
@@ -169,12 +169,12 @@ goryu g model product --type=db --fields="name:string,price:float64,in_stock:boo
 goryu generate route <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-b, --builder` | Use the route builder pattern | `true` |
-| `-g, --group` | Route group prefix | — |
-| `-m, --middleware` | Route middleware (comma-separated) | — |
-| `--methods` | HTTP methods (comma-separated) | `GET,POST,PUT,DELETE` |
+| `-b, --builder` | ルートビルダーパターンを使用 | `true` |
+| `-g, --group` | ルートグループのプレフィックス | — |
+| `-m, --middleware` | ルートミドルウェア（カンマ区切り） | — |
+| `--methods` | HTTP メソッド（カンマ区切り） | `GET,POST,PUT,DELETE` |
 
 ```bash
 goryu g route user --group=/api/v1 --middleware=auth,limiter --methods=GET,POST
@@ -186,43 +186,43 @@ goryu g route user --group=/api/v1 --middleware=auth,limiter --methods=GET,POST
 goryu generate config <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-b, --builder` | Use the config builder pattern | `true` |
-| `-t, --type` | Config type: `server`, `database`, `cache` | `server` |
-| `-f, --format` | Config format: `json`, `yaml`, `toml`, `env` | `json` |
+| `-b, --builder` | 設定ビルダーパターンを使用 | `true` |
+| `-t, --type` | 設定タイプ: `server`, `database`, `cache` | `server` |
+| `-f, --format` | 設定フォーマット: `json`, `yaml`, `toml`, `env` | `json` |
 
 ```bash
 goryu g config database --type=database --format=yaml
 ```
 
-## Scaffolding
+## スキャフォールド
 
 ### `scaffold`
 
-Scaffold complete features or services in one command.
+機能やサービス一式を 1 コマンドでスキャフォールドします。
 
 ```bash
 goryu scaffold <feature> <name> [flags]
 ```
 
-Features: `api`, `service`, `ai`.
+機能: `api`, `service`, `ai`。
 
 #### `scaffold api`
 
-Scaffold a complete REST API resource with handlers, model, database layer, validation, and tests.
+ハンドラー、モデル、データベース層、バリデーション、テストを含む完全な REST API リソースをスキャフォールドします。
 
 ```bash
 goryu scaffold api <resource> --fields=<fields> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-f, --fields` | Resource fields (comma-separated) — **required** | — |
-| `--db` | Include database layer | `true` |
-| `--auth` | Add authentication | `false` |
-| `--validation` | Add validation | `true` |
-| `--tests` | Generate tests | `true` |
+| `-f, --fields` | リソースフィールド（カンマ区切り）— **必須** | — |
+| `--db` | データベース層を含める | `true` |
+| `--auth` | 認証を追加 | `false` |
+| `--validation` | バリデーションを追加 | `true` |
+| `--tests` | テストを生成 | `true` |
 
 ```bash
 goryu scaffold api product --fields="name:string,price:float64" --auth
@@ -239,18 +239,18 @@ Done. 4 files created.
 
 #### `scaffold service`
 
-Scaffold a microservice with transport and monitoring wiring.
+トランスポートとモニタリングの配線を備えたマイクロサービスをスキャフォールドします。
 
 ```bash
 goryu scaffold service <name> [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `--grpc` | Include gRPC support | `false` |
-| `--http` | Include HTTP support | `true` |
-| `--kafka` | Include Kafka support | `false` |
-| `--monitoring` | Include monitoring | `true` |
+| `--grpc` | gRPC サポートを含める | `false` |
+| `--http` | HTTP サポートを含める | `true` |
+| `--kafka` | Kafka サポートを含める | `false` |
+| `--monitoring` | モニタリングを含める | `true` |
 
 ```bash
 goryu scaffold service payments --grpc --kafka
@@ -258,16 +258,16 @@ goryu scaffold service payments --grpc --kafka
 
 #### `scaffold ai`
 
-Scaffold an AI/LLM endpoint wired to Goryu's AI batteries.
+Goryu の AI バッテリーに接続された AI/LLM エンドポイントをスキャフォールドします。
 
 ```bash
 goryu scaffold ai <name> [--kind=chat|rag|agent] [--path=...]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-k, --kind` | Endpoint kind: `chat` (streaming chat), `rag` (retrieval-augmented answer), `agent` (typed tool endpoint with a function-calling schema) | `chat` |
-| `-p, --path` | Output path | `internal/handlers` |
+| `-k, --kind` | エンドポイントの種類: `chat`（ストリーミングチャット）、`rag`（検索拡張応答）、`agent`（関数呼び出しスキーマ付きの型付きツールエンドポイント） | `chat` |
+| `-p, --path` | 出力パス | `internal/handlers` |
 
 ```bash
 goryu scaffold ai assistant --kind=chat
@@ -275,23 +275,23 @@ goryu scaffold ai docs-search --kind=rag
 goryu scaffold ai booking --kind=agent
 ```
 
-See [AI & agents](/ja/ai/) for how the generated endpoints combine with the metering, prompt-cache, and recording middleware.
+生成されたエンドポイントが計測・プロンプトキャッシュ・レコーディングの各ミドルウェアとどう組み合わさるかは [AI とエージェント](/ja/ai/) を参照してください。
 
-## Development
+## 開発
 
 ### `dev`
 
-Start a development server with hot reload.
+ホットリロード付きの開発サーバーを起動します。
 
 ```bash
 goryu dev [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-p, --port` | Server port | `3000` |
-| `--hot-reload` | Enable hot reload | `true` |
-| `-d, --debug` | Enable debug mode | `false` |
+| `-p, --port` | サーバーポート | `3000` |
+| `--hot-reload` | ホットリロードを有効化 | `true` |
+| `-d, --debug` | デバッグモードを有効化 | `false` |
 
 ```bash
 goryu dev --port=8080 --debug
@@ -299,52 +299,52 @@ goryu dev --port=8080 --debug
 
 ### `build`
 
-Build the application binary.
+アプリケーションのバイナリをビルドします。
 
 ```bash
 goryu build [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-o, --output` | Output binary name | `server` |
-| `-t, --target` | Build target: `development`, `production` | `production` |
-| `--compress` | Compress the binary | `false` |
-| `--static` | Build a static binary | `true` |
+| `-o, --output` | 出力バイナリ名 | `server` |
+| `-t, --target` | ビルドターゲット: `development`, `production` | `production` |
+| `--compress` | バイナリを圧縮 | `false` |
+| `--static` | 静的バイナリをビルド | `true` |
 
 ```bash
 goryu build --output=api --target=production --compress
 ```
 
-## AI & tooling
+## AI とツール
 
 ### `mcp`
 
-Run a stdio MCP (Model Context Protocol) server that exposes Goryu's project tools to AI agents over JSON-RPC. It advertises `list_routes`, `scaffold_handler`, and `run_dev_server`.
+Goryu のプロジェクトツールを JSON-RPC で AI エージェントに公開する、stdio ベースの MCP（Model Context Protocol）サーバーを実行します。`list_routes`、`scaffold_handler`、`run_dev_server` を提供します。
 
 ```bash
 goryu mcp
 ```
 
-Point an MCP client (Claude Code, an IDE agent, etc.) at `goryu mcp` running in your project directory. See [MCP server](/ja/ai/mcp) for client configuration and the full tool schema.
+MCP クライアント（Claude Code、IDE のエージェントなど）を、プロジェクトディレクトリで実行中の `goryu mcp` に接続します。クライアント設定と完全なツールスキーマは [MCP サーバー](/ja/ai/mcp) を参照してください。
 
-## Management
+## 管理
 
 ### `routes`
 
-Inspect and test the application's routes.
+アプリケーションのルートを確認・テストします。
 
 ```bash
 goryu routes list [--format=table|json] [--filter=<pattern>]
 goryu routes test <path> [method]
 ```
 
-**`routes list` flags:**
+**`routes list` のフラグ:**
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-f, --format` | Output format: `table`, `json` | `table` |
-| `--filter` | Filter routes by pattern | — |
+| `-f, --format` | 出力フォーマット: `table`, `json` | `table` |
+| `--filter` | パターンでルートを絞り込み | — |
 
 ```bash
 goryu routes list --format=table
@@ -360,7 +360,7 @@ GET     /api/v1/users/{id}   GetUser
 
 ### `middleware`
 
-List and inspect available middleware.
+利用可能なミドルウェアを一覧・確認します。
 
 ```bash
 goryu middleware list
@@ -377,11 +377,11 @@ limiter — fixed-window rate limiting
   Config: Max, Expiration, KeyGenerator, LimitReached
 ```
 
-See the [middleware catalog](/ja/middleware/) for the full list.
+完全な一覧は [ミドルウェアカタログ](/ja/middleware/) を参照してください。
 
 ### `config`
 
-Manage application configuration.
+アプリケーションの設定を管理します。
 
 ```bash
 goryu config init [--type=server] [--format=json]
@@ -389,25 +389,25 @@ goryu config validate [--file=config.json]
 goryu config migrate --from=<format> --to=<format>
 ```
 
-**`config init` flags:**
+**`config init` のフラグ:**
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-t, --type` | Config type | `server` |
-| `-f, --format` | Config format | `json` |
+| `-t, --type` | 設定タイプ | `server` |
+| `-f, --format` | 設定フォーマット | `json` |
 
-**`config validate` flags:**
+**`config validate` のフラグ:**
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `-f, --file` | Config file | `config.json` |
+| `-f, --file` | 設定ファイル | `config.json` |
 
-**`config migrate` flags:**
+**`config migrate` のフラグ:**
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `--from` | Source format — **required** | — |
-| `--to` | Target format — **required** | — |
+| `--from` | 変換元フォーマット — **必須** | — |
+| `--to` | 変換先フォーマット — **必須** | — |
 
 ```bash
 goryu config init --type=server --format=yaml
@@ -417,17 +417,17 @@ goryu config migrate --from=json --to=yaml
 
 ### `validate`
 
-Validate project structure and configuration.
+プロジェクト構成と設定を検証します。
 
 ```bash
 goryu validate [flags]
 ```
 
-| Flag | Description | Default |
+| フラグ | 説明 | デフォルト |
 |------|-------------|---------|
-| `--config` | Configuration file path | `config/config.json` |
-| `--project` | Validate project structure | `true` |
-| `--fix` | Auto-fix issues | `false` |
+| `--config` | 設定ファイルのパス | `config/config.json` |
+| `--project` | プロジェクト構成を検証 | `true` |
+| `--fix` | 問題を自動修正 | `false` |
 
 ```bash
 goryu validate --fix
@@ -435,13 +435,13 @@ goryu validate --fix
 
 ### `version`
 
-Show version information.
+バージョン情報を表示します。
 
 ```bash
 goryu version
 ```
 
-## Example: build an API project
+## 例: API プロジェクトを構築する
 
 ```bash
 # Initialize with the API template

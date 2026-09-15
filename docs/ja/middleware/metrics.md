@@ -1,24 +1,24 @@
 # Metrics Middleware
 
-A middleware for instrumenting Goryu applications with Prometheus-style metrics. It tracks request rates, latencies, and sizes, and provides an interface for custom metric recording.
+Goryu アプリケーションを Prometheus スタイルのメトリクスで計測するためのミドルウェアです。リクエストレート、レイテンシ、サイズを追跡し、カスタムメトリクスを記録するためのインターフェースを提供します。
 
-## Features
+## 機能
 
-- **Standard Metrics**: Automatically tracks:
+- **標準メトリクス**: 以下を自動的に追跡します:
     - `http_requests_total` (Counter)
     - `http_request_duration_seconds` (Histogram)
     - `http_requests_active` (Gauge)
-    - `http_request_size_bytes` (Histogram, optional)
-    - `http_response_size_bytes` (Histogram, optional)
-- **Tagging**: Adds standard tags like `method`, `path`, and `status` (or `status_class`).
-- **Custom Metrics**: Interface for recording application-specific metrics.
-- **Backend Agnostic**: Defines a `Metrics` interface, allowing integration with any backend (Prometheus, StatsD, Datadog) by implementing the adapter.
+    - `http_request_size_bytes` (Histogram、任意)
+    - `http_response_size_bytes` (Histogram、任意)
+- **タグ付け**: `method`、`path`、`status`（または `status_class`）などの標準タグを追加します。
+- **カスタムメトリクス**: アプリケーション固有のメトリクスを記録するためのインターフェースを提供します。
+- **バックエンド非依存**: `Metrics` インターフェースを定義しており、アダプターを実装することで任意のバックエンド（Prometheus、StatsD、Datadog）と統合できます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-You need to provide an implementation of the `Metrics` interface. Here is a conceptual example using a hypothetical Prometheus client:
+`Metrics` インターフェースの実装を提供する必要があります。以下は、仮想的な Prometheus クライアントを使用した概念的な例です:
 
 ```go
 package main
@@ -57,7 +57,7 @@ func main() {
 }
 ```
 
-### Configuration
+### 設定
 
 ```go
 app.Use(metrics.New(metrics.Config{
@@ -73,9 +73,9 @@ app.Use(metrics.New(metrics.Config{
 }))
 ```
 
-### Interface Definition
+### インターフェースの定義
 
-To integrate your preferred metrics backend, implement this interface:
+お好みのメトリクスバックエンドを統合するには、次のインターフェースを実装します:
 
 ```go
 type Metrics interface {

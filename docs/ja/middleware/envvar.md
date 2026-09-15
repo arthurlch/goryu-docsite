@@ -1,26 +1,26 @@
-# Envvar Middleware
+# Envvar ミドルウェア
 
-A middleware that exposes the application's environment variables via an HTTP endpoint. This is useful for debugging configuration issues and verifying deployment environments.
+アプリケーションの環境変数を HTTP エンドポイント経由で公開するミドルウェアです。設定の問題をデバッグしたり、デプロイ環境を検証したりする際に役立ちます。
 
-## Features
+## 機能
 
-- **JSON Output**: Returns environment variables as a JSON object.
-- **Filtering**: Whitelist (`Expose`) or blacklist (`Exclude`) specific variables.
-- **Security**: Configurable endpoint path.
+- **JSON 出力**: 環境変数を JSON オブジェクトとして返します。
+- **フィルタリング**: 特定の変数をホワイトリスト（`Expose`）またはブラックリスト（`Exclude`）で指定します。
+- **セキュリティ**: エンドポイントのパスを設定できます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Expose all environment variables at `/envvar` (Use with caution!):
+`/envvar` ですべての環境変数を公開します（取り扱いには注意してください）。
 
 ```go
 app.Use(envvar.Default())
 ```
 
-### Whitelisting (Recommended)
+### ホワイトリスト化（推奨）
 
-Only expose specific variables:
+特定の変数のみを公開します。
 
 ```go
 app.Use(envvar.WithExpose([]string{
@@ -30,9 +30,9 @@ app.Use(envvar.WithExpose([]string{
 }))
 ```
 
-### Blacklisting
+### ブラックリスト化
 
-Expose everything *except* sensitive keys:
+機密性の高いキーを*除いた*すべてを公開します。
 
 ```go
 app.Use(envvar.WithExclude([]string{
@@ -42,7 +42,7 @@ app.Use(envvar.WithExclude([]string{
 }))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(envvar.New(envvar.Config{
@@ -51,9 +51,9 @@ app.Use(envvar.New(envvar.Config{
 }))
 ```
 
-## Security Warning
+## セキュリティに関する警告
 
-**NEVER** expose sensitive information (passwords, API keys, secrets) via this middleware in a production environment.
-- Always use the `Expose` option to whitelist safe variables.
-- Alternatively, use `Exclude` to block known secrets, but whitelisting is safer.
-- Protect the endpoint with authentication middleware.
+本番環境では、このミドルウェアを通じて機密情報（パスワード、API キー、シークレット）を**決して**公開しないでください。
+- 安全な変数をホワイトリスト化するために、常に `Expose` オプションを使用してください。
+- あるいは、既知のシークレットをブロックするために `Exclude` を使用することもできますが、ホワイトリスト化のほうが安全です。
+- 認証ミドルウェアでエンドポイントを保護してください。

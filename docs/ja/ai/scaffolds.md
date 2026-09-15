@@ -1,13 +1,13 @@
-# AI Scaffolds
+# AI スキャフォールド
 
-Goryu's CLI generates ready-to-wire LLM endpoints so you can start from a typed,
-validated, streaming handler instead of a blank file. Every AI scaffold uses the
-same batteries: typed request binding with [`goryu.Bind[T]`](/ja/core/binding),
-input `Validate()`, JSON Schema via `goryu.Schema[T]`, and token accounting
-through the [`aimeter`](/ja/ai/metering) middleware.
+Goryu の CLI は、すぐに配線できる LLM エンドポイントを生成するため、空のファイルの
+代わりに、型付き・検証済み・ストリーミング対応のハンドラーから始められます。すべての
+AI スキャフォールドは同じ基盤を使います。[`goryu.Bind[T]`](/ja/core/binding) による
+型付きリクエストバインディング、入力の `Validate()`、`goryu.Schema[T]` による
+JSON Schema、そして [`aimeter`](/ja/ai/metering) ミドルウェアによるトークン計上です。
 
-There are two ways in — a focused scaffold command and the general handler
-generator:
+方法は 2 つあります。用途特化のスキャフォールドコマンドと、汎用のハンドラー
+ジェネレーターです。
 
 ```bash
 # Focused: scaffolds an AI endpoint and prints the middleware wiring to add
@@ -17,25 +17,27 @@ goryu scaffold ai <name> --kind=chat|rag|agent
 goryu generate handler <name> --type=ai --kind=chat|rag|agent
 ```
 
-Both produce the same file. `scaffold ai` is a thin wrapper that additionally
-prints the recommended middleware and `app.MountLLMs()` wiring afterwards.
+どちらも同じファイルを生成します。`scaffold ai` は薄いラッパーで、加えて推奨される
+ミドルウェアと `app.MountLLMs()` の配線を後から表示します。
 
-## Features
+## 機能
 
-- **Three kinds**: `chat` (streaming SSE chat), `rag` (retrieve-then-answer with
-  sources), and `agent` (typed tool endpoint with a function-calling schema).
-- **Typed and validated**: request types implement `Validate()` and are bound
-  with `goryu.Bind[T]`, which returns a `400` on malformed or invalid input.
-- **Self-describing**: each kind ships a schema route built from
-  `goryu.Schema[T]()`, so clients and agents can discover the request shape.
-- **Metered by default**: handlers call `aimeter.SetUsage` so the `aimeter`
-  middleware can account tokens and cost.
-- **Stubs, not magic**: the provider call is a clearly marked `TODO` — swap in a
-  real model call (see the [Provider Proxy](/ja/ai/provider-proxy)).
+- **3 つの種類**: `chat`（ストリーミング SSE チャット）、`rag`（ソース付きの
+  「取得してから回答」）、`agent`（function calling スキーマを備えた型付き
+  ツールエンドポイント）。
+- **型付きかつ検証済み**: リクエスト型は `Validate()` を実装し、`goryu.Bind[T]` で
+  バインドされます。不正または無効な入力に対しては `400` を返します。
+- **自己記述的**: 各種類には `goryu.Schema[T]()` から構築されたスキーマルートが
+  同梱されるため、クライアントやエージェントがリクエスト形状を発見できます。
+- **デフォルトで計測**: ハンドラーは `aimeter.SetUsage` を呼び出すため、`aimeter`
+  ミドルウェアがトークンとコストを計上できます。
+- **魔法ではなくスタブ**: プロバイダー呼び出しは明確にマークされた `TODO` です。
+  実際のモデル呼び出しに差し替えてください（[プロバイダープロキシ](/ja/ai/provider-proxy)
+  を参照）。
 
-## Usage
+## 使い方
 
-### Scaffold a chat endpoint
+### チャットエンドポイントをスキャフォールドする
 
 ```bash
 goryu scaffold ai chat --kind=chat
@@ -62,17 +64,18 @@ goryu scaffold ai chat --kind=chat
   app.MountLLMs()                               // serve /llms.txt
 ```
 
-::: tip The name is Go-identified
-`chat` becomes the `Chat` prefix and the `/chat` route prefix; `my-bot` becomes
-`MyBot` / `/my-bot`. Names may contain letters, digits, `-`, and `_`.
+::: tip 名前は Go 識別子として扱われる
+`chat` は `Chat` プレフィックスと `/chat` ルートプレフィックスになります。`my-bot`
+は `MyBot` / `/my-bot` になります。名前には英字、数字、`-`、`_` を含められます。
 :::
 
-### The three kinds
+### 3 つの種類
 
-#### `chat` — streaming SSE chat
+#### `chat` — ストリーミング SSE チャット
 
-Generates a request/message model with `jsonschema` tags, a `Validate()` that
-requires at least one message, an SSE streaming handler, and a schema route.
+`jsonschema` タグを持つリクエスト / メッセージモデル、メッセージが少なくとも 1 つ
+必要な `Validate()`、SSE ストリーミングハンドラー、およびスキーマルートを生成
+します。
 
 ```go
 type ChatMessage struct {
@@ -110,17 +113,17 @@ func ChatSchema(c *goryu.Context) {
 }
 ```
 
-Tokens are emitted as `event: token` SSE frames of shape
-`{"index":N,"content":"..."}`, terminated by `{"index":N,"done":true}`. Because
-SSE responses are flushed as they stream, `aimeter`'s `X-Tokens-*` headers cannot
-be set — usage is reported via `SetUsage` and surfaced through the metering
-middleware's `OnResult` hook instead. See [Streaming](/ja/streaming/sse) and
-[Token & Cost Metering](/ja/ai/metering).
+トークンは `{"index":N,"content":"..."}` という形の `event: token` SSE フレームと
+して発行され、`{"index":N,"done":true}` で終了します。SSE レスポンスは
+ストリーミングされるたびにフラッシュされるため、`aimeter` の `X-Tokens-*` ヘッダーは
+設定できません。使用量は `SetUsage` で報告され、代わりに計測ミドルウェアの
+`OnResult` フックを通じて公開されます。[ストリーミング](/ja/streaming/sse)と
+[トークン・コスト計測](/ja/ai/metering)を参照してください。
 
-#### `rag` — retrieve then answer, with sources
+#### `rag` — 取得してから回答、ソース付き
 
-Generates a query type (`question` + optional `top_k`), a stub retriever, and a
-handler that retrieves context, answers, and returns the sources it used.
+クエリ型（`question` + 任意の `top_k`）、スタブのリトリーバー、そしてコンテキストを
+取得し、回答し、使用したソースを返すハンドラーを生成します。
 
 ```go
 type AskQuery struct {
@@ -152,15 +155,15 @@ func AskAsk(c *goryu.Context) {
 }
 ```
 
-`retrieve<Name>` is a stub that returns placeholder passages — replace it with a
-query against your vector store. `TopK` defaults to `3` when omitted. Prompt
-usage is metered as the question tokens plus the retrieved context tokens.
+`retrieve<Name>` は、プレースホルダーのパッセージを返すスタブです。ベクターストアへの
+クエリに置き換えてください。`TopK` は省略時に `3` がデフォルトです。プロンプト
+使用量は、質問のトークン数に取得したコンテキストのトークン数を加えた値として
+計測されます。
 
-#### `agent` — typed tool endpoint + function-calling schema
+#### `agent` — 型付きツールエンドポイント + function calling スキーマ
 
-Generates a typed tool with an `Input`/`Result` pair, an execution handler, and a
-schema route that emits an OpenAI-style tool definition suitable for
-function-calling.
+`Input` / `Result` のペアを持つ型付きツール、実行ハンドラー、および function calling に
+適した OpenAI スタイルのツール定義を発行するスキーマルートを生成します。
 
 ```go
 type SearchInput struct {
@@ -192,9 +195,9 @@ func SearchToolSchema(c *goryu.Context) {
 }
 ```
 
-The schema route returns `{name, description, parameters}` — exactly the shape a
-model expects in a `tools` array. Feed the JSON from `GET /tools/<name>/schema`
-to your model, and route its tool call to `POST /tools/<name>`.
+スキーマルートは `{name, description, parameters}` を返します。これはモデルが
+`tools` 配列で期待する形そのものです。`GET /tools/<name>/schema` からの JSON を
+モデルに与え、そのツール呼び出しを `POST /tools/<name>` にルーティングしてください。
 
 ::: code-group
 
@@ -212,27 +215,27 @@ goryu scaffold ai search --kind=agent
 
 :::
 
-## Flags
+## フラグ
 
-Both commands accept the same options for the AI type.
+どちらのコマンドも AI タイプに対して同じオプションを受け付けます。
 
-| Flag | Applies to | Description | Default |
+| フラグ | 対象 | 説明 | デフォルト |
 |------|-----------|-------------|---------|
-| `--kind` (`-k`) | both | `chat`, `rag`, or `agent` | `chat` |
-| `--path` (`-p`) | both | Output directory | `internal/handlers` |
-| `--type` (`-t`) | `generate handler` | Handler type; use `ai` for AI kinds | `basic` |
+| `--kind` (`-k`) | 両方 | `chat`、`rag`、`agent` | `chat` |
+| `--path` (`-p`) | 両方 | 出力ディレクトリ | `internal/handlers` |
+| `--type` (`-t`) | `generate handler` | ハンドラータイプ。AI の種類には `ai` を使用 | `basic` |
 
-An unknown `--kind` is rejected:
+未知の `--kind` は拒否されます。
 
 ```
 $ goryu generate handler chat --type=ai --kind=vision
 Error: unknown ai kind: vision (available: chat, rag, agent)
 ```
 
-## After scaffolding
+## スキャフォールドの後
 
-The generated file is a handler only — register the routes and wire the AI
-middleware in your `main.go`.
+生成されるファイルはハンドラーのみです。ルートを登録し、AI ミドルウェアを
+`main.go` で配線してください。
 
 ```go
 import (
@@ -265,16 +268,17 @@ func main() {
 }
 ```
 
-- [Token & Cost Metering](/ja/ai/metering) — account tokens and cost per request.
-- [Prompt Cache](/ja/ai/prompt-cache) — cache identical (POST) prompts.
-- [Eval Recording](/ja/ai/recording) — capture requests/responses for evals.
-- [Provider Proxy](/ja/ai/provider-proxy) — replace the stubbed reply with a real
-  provider call.
-- [llms.txt & API Reference](/ja/ai/llms-txt) — `app.MountLLMs()` publishes a
-  machine-readable index of your routes.
+- [トークン・コスト計測](/ja/ai/metering) — リクエストごとにトークンとコストを計上します。
+- [プロンプトキャッシュ](/ja/ai/prompt-cache) — 同一の（POST）プロンプトをキャッシュします。
+- [評価用レコーディング](/ja/ai/recording) — 評価のためにリクエスト / レスポンスを
+  キャプチャします。
+- [プロバイダープロキシ](/ja/ai/provider-proxy) — スタブの返答を実際のプロバイダー
+  呼び出しに置き換えます。
+- [llms.txt & API リファレンス](/ja/ai/llms-txt) — `app.MountLLMs()` がルートの
+  機械可読なインデックスを公開します。
 
-::: tip Discoverable by agents
-Combine the `/schema` routes with [`app.MountLLMs()`](/ja/ai/llms-txt) and the
-[`goryu mcp`](/ja/ai/mcp) server so a coding agent can find your endpoints, read
-their request schemas, and call them without hand-written docs.
+::: tip エージェントが発見できるように
+`/schema` ルートを [`app.MountLLMs()`](/ja/ai/llms-txt) および [`goryu mcp`](/ja/ai/mcp)
+サーバーと組み合わせることで、コーディングエージェントは手書きのドキュメントなしに、
+あなたのエンドポイントを見つけ、そのリクエストスキーマを読み、それらを呼び出せます。
 :::

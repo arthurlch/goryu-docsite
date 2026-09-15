@@ -1,38 +1,38 @@
 ---
-title: Authentication Middleware
-description: Production-ready JWT authentication service
+title: 認証ミドルウェア
+description: 本番運用に耐える JWT 認証サービス
 ---
 
-# 🔐 Authentication Middleware
+# 🔐 認証ミドルウェア
 
-A comprehensive, production-ready authentication service for Goryu applications. This package provides a complete solution for user management, JWT-based authentication, and security best practices.
+Goryu アプリケーション向けの、包括的で本番運用に耐える認証サービスです。このパッケージは、ユーザー管理、JWT ベースの認証、セキュリティのベストプラクティスに対する完全なソリューションを提供します。
 
-## ✨ Features
+## ✨ 特徴
 
-- **JWT Authentication**: Secure access and refresh token management.
-- **User Management**: Registration, login, profile updates, and account deletion.
-- **Password Security**: Strong password enforcement (Bcrypt) and secure hashing.
-- **Email Verification**: Token-based email verification flow.
-- **Password Reset**: Secure password reset workflow.
-- **🛡️ Security First**:
-    - **Rate Limiting**: Built-in protection against brute-force attacks by IP and Email.
-    - **Audit Logging**: Detailed security event logging (login failures, password changes).
-    - **Secure Cookies**: HttpOnly, Secure, SameSite=Strict cookie management.
-    - **CSRF Protection**: Integration ready.
+- **JWT 認証**: 安全なアクセストークンとリフレッシュトークンの管理。
+- **ユーザー管理**: 登録、ログイン、プロフィール更新、アカウント削除。
+- **パスワードのセキュリティ**: 強力なパスワードの強制（Bcrypt）と安全なハッシュ化。
+- **メール確認**: トークンベースのメール確認フロー。
+- **パスワードリセット**: 安全なパスワードリセットのワークフロー。
+- **🛡️ セキュリティ第一**:
+    - **レート制限**: IP およびメールによる、ブルートフォース攻撃に対する組み込みの保護。
+    - **監査ロギング**: 詳細なセキュリティイベントのロギング（ログイン失敗、パスワード変更）。
+    - **セキュア Cookie**: HttpOnly、Secure、SameSite=Strict の Cookie 管理。
+    - **CSRF 保護**: 統合可能。
 
 ---
 
-## 🚀 Quick Start
+## 🚀 クイックスタート
 
-### 1. Install
+### 1. インストール
 
 ```bash
 go get github.com/arthurlch/goryu/middleware/auth
 ```
 
-### 2. Implementation
+### 2. 実装
 
-To use this middleware, you need to implement three interfaces: `UserStore`, `TokenStore`, and `EmailSender`.
+このミドルウェアを使うには、3 つのインターフェース `UserStore`、`TokenStore`、`EmailSender` を実装する必要があります。
 
 ```go
 package main
@@ -72,9 +72,9 @@ func main() {
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ 設定
 
-The `AuthServiceConfig` struct gives you granular control over security policies.
+`AuthServiceConfig` 構造体により、セキュリティポリシーを細かく制御できます。
 
 ```go
 type AuthServiceConfig struct {
@@ -100,37 +100,37 @@ type AuthServiceConfig struct {
 
 ---
 
-## 📡 API Reference
+## 📡 API リファレンス
 
-The `RegisterRoutes` method sets up a complete auth API.
+`RegisterRoutes` メソッドは、完全な認証 API をセットアップします。
 
-### Public Endpoints
+### 公開エンドポイント
 
-| Method | Path | Description | Request Body |
+| メソッド | パス | 説明 | リクエストボディ |
 |--------|------|-------------|--------------|
-| `POST` | `/auth/register` | Create account | `{ "email": "...", "password": "...", "first_name": "..." }` |
-| `POST` | `/auth/login` | Login | `{ "email": "...", "password": "...", "remember_me": true }` |
-| `POST` | `/auth/forgot-password` | Request Reset | `{ "email": "..." }` |
-| `GET` | `/auth/verify-email` | Verify Email | Query: `?token=...` |
+| `POST` | `/auth/register` | アカウント作成 | `{ "email": "...", "password": "...", "first_name": "..." }` |
+| `POST` | `/auth/login` | ログイン | `{ "email": "...", "password": "...", "remember_me": true }` |
+| `POST` | `/auth/forgot-password` | リセットの要求 | `{ "email": "..." }` |
+| `GET` | `/auth/verify-email` | メールの確認 | クエリ: `?token=...` |
 
-### Protected Endpoints (Requires Auth)
+### 保護されたエンドポイント（認証が必要）
 
-| Method | Path | Description | Note |
+| メソッド | パス | 説明 | 備考 |
 |--------|------|-------------|------|
-| `POST` | `/auth/logout` | Logout | Clears cookies / invalidates refresh token |
-| `POST` | `/auth/refresh` | Refresh Token | Uses `refresh_token` cookie or body |
-| `GET` | `/auth/profile` | Get User Info | Returns user ID, email, traits |
-| `POST` | `/auth/change-password` | Update PW | `{ "current_password": "...", "new_password": "..." }` |
+| `POST` | `/auth/logout` | ログアウト | Cookie をクリア／リフレッシュトークンを無効化 |
+| `POST` | `/auth/refresh` | トークンの更新 | `refresh_token` Cookie またはボディを使用 |
+| `GET` | `/auth/profile` | ユーザー情報の取得 | ユーザー ID、メール、traits を返す |
+| `POST` | `/auth/change-password` | パスワードの更新 | `{ "current_password": "...", "new_password": "..." }` |
 
 ---
 
-## 🛠️ Implementing Stores
+## 🛠️ ストアの実装
 
-You need to implement these interfaces to connect Goryu to your database (Postgres, MongoDB, Redis, etc.).
+Goryu をあなたのデータベース（Postgres、MongoDB、Redis など）に接続するには、これらのインターフェースを実装する必要があります。
 
 ### 1. UserStore
 
-Manages user persistence.
+ユーザーの永続化を管理します。
 
 ```go
 type UserStore interface {
@@ -146,7 +146,7 @@ type UserStore interface {
 
 ### 2. TokenStore
 
-Manages Token allowlist/blocklist (usually Redis).
+トークンの許可リスト／ブロックリストを管理します（通常は Redis）。
 
 ```go
 type TokenStore interface {
@@ -158,7 +158,7 @@ type TokenStore interface {
 
 ### 3. EmailSender
 
-Sends transactional emails.
+トランザクションメールを送信します。
 
 ```go
 type EmailSender interface {
@@ -170,23 +170,23 @@ type EmailSender interface {
 
 ---
 
-## 🔒 Rate Limiting Strategy
+## 🔒 レート制限の戦略
 
-The middleware implements a dual-layer rate limiter to prevent abuse:
+このミドルウェアは、不正利用を防ぐために二層のレートリミッターを実装しています。
 
-1.  **IP-based**: Limits total login attempts from a single IP address.
-2.  **Email-based**: Limits failed attempts for a specific email account (prevents targeted brute-force).
+1.  **IP ベース**: 単一の IP アドレスからのログイン試行の総数を制限します。
+2.  **メールベース**: 特定のメールアカウントに対する失敗試行を制限します（標的型のブルートフォースを防ぎます）。
 
 ::: tip
-If limits are exceeded, the user receives a 429 Too Many Requests response with a `Retry-After` header.
+制限を超えると、ユーザーは `Retry-After` ヘッダーを伴う 429 Too Many Requests レスポンスを受け取ります。
 :::
 
 ---
 
-## 💻 Full Runnable Example
+## 💻 実行可能な完全なサンプル
 
 <details>
-<summary>Click to view <code>example.go</code></summary>
+<summary>クリックして <code>example.go</code> を表示</summary>
 
 ```go
 package main
@@ -265,7 +265,7 @@ func generateSecureKey() string {
 </details>
 
 <details>
-<summary>Click to view <code>example_implementations.go</code> (Mock Helpers)</summary>
+<summary>クリックして <code>example_implementations.go</code>（モックのヘルパー）を表示</summary>
 
 ```go
 package auth

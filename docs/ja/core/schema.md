@@ -1,20 +1,20 @@
 # JSON Schema
 
-Goryu can generate a [JSON Schema](https://json-schema.org/) (draft 2020-12) directly from your Go types using reflection. This is useful for documenting your API, serving a `/schema` endpoint, and producing the structured-output / function-calling schemas that LLMs expect — all from the same structs you already bind requests into.
+Goryu は、リフレクションを使って Go の型から直接 [JSON Schema](https://json-schema.org/)（draft 2020-12）を生成できます。これは API のドキュメント化、`/schema` エンドポイントの提供、そして LLM が期待する構造化出力／関数呼び出しのスキーマの生成に役立ちます。しかもすべて、リクエストのバインドに既に使っているのと同じ構造体から生成されます。
 
-## Features
+## 特徴
 
-- **Generated from Go types**: `goryu.Schema[T]()` builds a schema from any struct with no hand-written JSON.
-- **Draft 2020-12**: `Schema[T]` includes the `$schema` dialect identifier.
-- **Rich constraints**: describe fields with a `jsonschema` struct tag (description, format, enum, ranges, lengths, patterns, and more).
-- **Smart `required`**: derived from `omitempty` and pointer-ness, with explicit overrides.
-- **Handles real types**: nested structs, embedded structs, slices, maps, pointers, `time.Time`, and `[]byte`, with recursion protection.
+- **Go の型から生成**: `goryu.Schema[T]()` は任意の構造体からスキーマを構築し、手書きの JSON は不要です。
+- **Draft 2020-12**: `Schema[T]` は `$schema` の方言識別子を含みます。
+- **豊富な制約**: `jsonschema` 構造体タグでフィールドを記述できます（説明、フォーマット、列挙、範囲、長さ、パターンなど）。
+- **スマートな `required`**: `omitempty` やポインタかどうかから導出され、明示的な上書きも可能です。
+- **実際の型に対応**: ネストした構造体、埋め込み構造体、スライス、マップ、ポインタ、`time.Time`、`[]byte` を扱い、再帰保護も備えています。
 
-## Usage
+## 使い方
 
-### Generating a Schema
+### スキーマの生成
 
-`goryu.Schema[T]()` returns a `map[string]any` you can serialize as JSON:
+`goryu.Schema[T]()` は、JSON としてシリアライズできる `map[string]any` を返します。
 
 ```go
 import "github.com/arthurlch/goryu"
@@ -28,7 +28,7 @@ type User struct {
 schema := goryu.Schema[User]()
 ```
 
-This produces:
+これは次を生成します。
 
 ```json
 {
@@ -43,7 +43,7 @@ This produces:
 }
 ```
 
-If you have a `reflect.Type` instead of a compile-time type parameter, use `goryu.SchemaOf(t)`. It returns the same map **without** the `$schema` key:
+コンパイル時の型パラメータの代わりに `reflect.Type` を持っている場合は、`goryu.SchemaOf(t)` を使用します。これは同じマップを返しますが、`$schema` キーを**含みません**。
 
 ```go
 import "reflect"
@@ -51,46 +51,46 @@ import "reflect"
 schema := goryu.SchemaOf(reflect.TypeOf(User{}))
 ```
 
-### Type Mapping
+### 型のマッピング
 
-Go types map to JSON Schema types as follows:
+Go の型は次のように JSON Schema の型にマッピングされます。
 
-| Go type | JSON Schema |
+| Go の型 | JSON Schema |
 |---------|-------------|
 | `bool` | `{"type": "boolean"}` |
-| integer types | `{"type": "integer"}` |
+| 整数型 | `{"type": "integer"}` |
 | `float32` / `float64` | `{"type": "number"}` |
 | `string` | `{"type": "string"}` |
-| slice / array | `{"type": "array", "items": ...}` |
+| スライス／配列 | `{"type": "array", "items": ...}` |
 | `[]byte` | `{"type": "string", "contentEncoding": "base64"}` |
 | `map` | `{"type": "object", "additionalProperties": ...}` |
 | `struct` | `{"type": "object", "properties": ...}` |
 | `time.Time` | `{"type": "string", "format": "date-time"}` |
-| pointer | schema of the pointed-to type (and marks the field optional) |
+| ポインタ | 指し示す先の型のスキーマ（そのフィールドを任意としてマーク） |
 
-### Constraint Tags
+### 制約タグ
 
-Add constraints with a `jsonschema` struct tag. Constraints are comma-separated `key=value` pairs. The following keys are supported:
+`jsonschema` 構造体タグで制約を追加します。制約はカンマ区切りの `key=value` ペアです。以下のキーがサポートされています。
 
-| Tag key | Applies to | Example tag | Resulting schema |
+| タグキー | 適用対象 | タグの例 | 生成されるスキーマ |
 |---------|-----------|-------------|------------------|
-| `description` | any | `jsonschema:"description=User email address"` | `"description": "User email address"` |
-| `title` | any | `jsonschema:"title=Email"` | `"title": "Email"` |
-| `format` | strings | `jsonschema:"format=email"` | `"format": "email"` |
-| `pattern` | strings | `jsonschema:"pattern=^[a-z]+$"` | `"pattern": "^[a-z]+$"` |
-| `default` | any | `jsonschema:"default=active"` | `"default": "active"` |
-| `enum` | any | `jsonschema:"enum=red\|green\|blue"` | `"enum": ["red", "green", "blue"]` |
-| `minimum` | numbers | `jsonschema:"minimum=0"` | `"minimum": 0` |
-| `maximum` | numbers | `jsonschema:"maximum=100"` | `"maximum": 100` |
-| `multipleOf` | numbers | `jsonschema:"multipleOf=5"` | `"multipleOf": 5` |
-| `minLength` | strings | `jsonschema:"minLength=3"` | `"minLength": 3` |
-| `maxLength` | strings | `jsonschema:"maxLength=64"` | `"maxLength": 64` |
-| `minItems` | arrays | `jsonschema:"minItems=1"` | `"minItems": 1` |
-| `maxItems` | arrays | `jsonschema:"maxItems=10"` | `"maxItems": 10` |
-| `required` | any | `jsonschema:"required"` | forces the field into `required` |
-| `optional` | any | `jsonschema:"optional"` | removes the field from `required` |
+| `description` | 任意 | `jsonschema:"description=User email address"` | `"description": "User email address"` |
+| `title` | 任意 | `jsonschema:"title=Email"` | `"title": "Email"` |
+| `format` | 文字列 | `jsonschema:"format=email"` | `"format": "email"` |
+| `pattern` | 文字列 | `jsonschema:"pattern=^[a-z]+$"` | `"pattern": "^[a-z]+$"` |
+| `default` | 任意 | `jsonschema:"default=active"` | `"default": "active"` |
+| `enum` | 任意 | `jsonschema:"enum=red\|green\|blue"` | `"enum": ["red", "green", "blue"]` |
+| `minimum` | 数値 | `jsonschema:"minimum=0"` | `"minimum": 0` |
+| `maximum` | 数値 | `jsonschema:"maximum=100"` | `"maximum": 100` |
+| `multipleOf` | 数値 | `jsonschema:"multipleOf=5"` | `"multipleOf": 5` |
+| `minLength` | 文字列 | `jsonschema:"minLength=3"` | `"minLength": 3` |
+| `maxLength` | 文字列 | `jsonschema:"maxLength=64"` | `"maxLength": 64` |
+| `minItems` | 配列 | `jsonschema:"minItems=1"` | `"minItems": 1` |
+| `maxItems` | 配列 | `jsonschema:"maxItems=10"` | `"maxItems": 10` |
+| `required` | 任意 | `jsonschema:"required"` | フィールドを強制的に `required` に含める |
+| `optional` | 任意 | `jsonschema:"optional"` | フィールドを `required` から除外する |
 
-Combine several constraints in one tag:
+複数の制約を 1 つのタグにまとめられます。
 
 ```go
 type Product struct {
@@ -102,17 +102,17 @@ type Product struct {
 ```
 
 ::: warning
-A description must not contain a comma. The comma is the separator between constraints in the tag, so a comma inside a value would be read as the start of a new constraint. For multiple allowed values in `enum`, use `|` as the separator instead of a comma.
+説明（description）にカンマを含めてはいけません。カンマはタグ内の制約の区切り文字であるため、値の中にカンマがあると新しい制約の始まりと解釈されてしまいます。`enum` で複数の許可値を指定する場合は、カンマの代わりに `|` を区切り文字として使用してください。
 :::
 
-### How `required` Is Determined
+### `required` が決まる仕組み
 
-For each exported field the schema decides whether it belongs in the `required` list, in this order:
+エクスポートされた各フィールドについて、スキーマは次の順序でそのフィールドが `required` リストに属するかどうかを決定します。
 
-1. A bare `required` in the `jsonschema` tag always marks it required.
-2. A bare `optional` in the `jsonschema` tag always marks it optional.
-3. Otherwise, if the `json` tag has `omitempty`, the field is optional.
-4. Otherwise, a pointer field is optional and a non-pointer field is required.
+1. `jsonschema` タグ内の単独の `required` は常にそのフィールドを必須とします。
+2. `jsonschema` タグ内の単独の `optional` は常にそのフィールドを任意とします。
+3. それ以外で、`json` タグに `omitempty` がある場合、そのフィールドは任意です。
+4. それ以外で、ポインタフィールドは任意、非ポインタフィールドは必須です。
 
 ```go
 type Account struct {
@@ -125,12 +125,12 @@ type Account struct {
 ```
 
 ::: tip
-Embedded structs are flattened: the embedded type's properties and `required` entries are merged into the parent object. Recursive types are guarded — a struct that references itself resolves to a bare `{"type": "object"}` to avoid infinite loops.
+埋め込み構造体はフラット化されます。埋め込まれた型のプロパティと `required` エントリは親オブジェクトにマージされます。再帰的な型は保護されており、自身を参照する構造体は無限ループを避けるために単なる `{"type": "object"}` に解決されます。
 :::
 
-### Serving a `/schema` Endpoint
+### `/schema` エンドポイントの提供
 
-Because `Schema[T]()` returns a plain map, you can hand it straight to `c.JSON`:
+`Schema[T]()` はプレーンなマップを返すため、そのまま `c.JSON` に渡せます。
 
 ```go
 import "github.com/arthurlch/goryu"
@@ -145,11 +145,11 @@ app.Get("/schema/user", func(c *goryu.Ctx) {
 })
 ```
 
-Clients, front-end forms, and validation tools can then fetch the schema to understand your request shape. Pair this with [Binding & Validation](/ja/core/binding) so the same struct both validates incoming requests and describes them.
+これにより、クライアント、フロントエンドのフォーム、バリデーションツールがスキーマを取得して、リクエストの形を理解できます。これを [バインディングとバリデーション](/ja/core/binding) と組み合わせることで、同じ構造体で受信リクエストの検証と記述の両方を行えます。
 
-### LLM Structured Output & Function Calling
+### LLM の構造化出力と関数呼び出し
 
-Most LLM APIs accept a JSON Schema to constrain model output or to declare a callable tool. `Schema[T]()` produces exactly that shape from your Go type, so your function-calling definitions stay in sync with your code:
+ほとんどの LLM API は、モデルの出力を制約したり、呼び出し可能なツールを宣言したりするために JSON Schema を受け付けます。`Schema[T]()` は Go の型からまさにその形を生成するため、関数呼び出しの定義がコードと同期し続けます。
 
 ```go
 type WeatherQuery struct {
@@ -165,9 +165,9 @@ tool := map[string]any{
 }
 ```
 
-The generated `description`, `enum`, and `format` constraints give the model the guidance it needs, and you can then `goryu.Bind[WeatherQuery]` the model's response back into the same struct.
+生成された `description`、`enum`、`format` の制約がモデルに必要な指針を与え、その後 `goryu.Bind[WeatherQuery]` でモデルの応答を同じ構造体へ戻せます。
 
-## See Also
+## 関連項目
 
-- [Binding & Validation](/ja/core/binding) — parse and validate requests into the same structs you generate schemas from.
-- [Context](/ja/core/context) — the request/response object used to serve schemas via `c.JSON`.
+- [バインディングとバリデーション](/ja/core/binding) — スキーマを生成するのと同じ構造体へリクエストをパースし、検証します。
+- [Context](/ja/core/context) — `c.JSON` を介してスキーマを提供するために使うリクエスト／レスポンスオブジェクトです。

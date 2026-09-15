@@ -1,19 +1,19 @@
-# Goryu Monitoring Dashboard UI
+# Goryu モニタリングダッシュボード UI
 
-A beautiful, responsive web interface for monitoring your Goryu applications in real-time.
+Goryu アプリケーションをリアルタイムで監視できる、美しくレスポンシブな Web インターフェースです。
 
-## 🎯 Features
+## 🎯 特徴
 
-- **Real-time Dashboard** - Auto-refreshing every 5 seconds
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Health Status Overview** - Visual status indicators with color coding
-- **Live Metrics** - Memory usage, request counts, error rates, uptime
-- **Live Metrics** - Memory usage, request counts, error rates, uptime
-- **Event Filtering** - Filter by text search ("error", "user_id") or Category Chips
-- **Health Check Details** - Individual component health status
-- **Modern SPA** - Single Page Application with seamless background polling
+- **リアルタイムダッシュボード** - 5 秒ごとに自動更新
+- **レスポンシブデザイン** - デスクトップ、タブレット、モバイルで動作
+- **ヘルスステータスの概要** - 色分けされた視覚的なステータスインジケーター
+- **ライブメトリクス** - メモリ使用量、リクエスト数、エラー率、稼働時間
+- **ライブメトリクス** - メモリ使用量、リクエスト数、エラー率、稼働時間
+- **イベントフィルタリング** - テキスト検索（"error"、"user_id"）またはカテゴリチップでフィルタ
+- **ヘルスチェックの詳細** - 個々のコンポーネントのヘルスステータス
+- **モダンな SPA** - シームレスなバックグラウンドポーリングを備えたシングルページアプリケーション
 
-## 🚀 Quick Start
+## 🚀 クイックスタート
 
 ```go
 package main
@@ -44,81 +44,81 @@ func main() {
 }
 ```
 
-Then visit: `http://localhost:8080/_monitor/ui`
+その後、次の URL にアクセスします: `http://localhost:8080/_monitor/ui`
 
-## 📋 Available Endpoints
+## 📋 利用可能なエンドポイント
 
-When you call `app.EnableMonitoring("/_monitor")`, you get:
+`app.EnableMonitoring("/_monitor")` を呼び出すと、次のものが利用可能になります:
 
-- `/_monitor` → Redirects to UI dashboard
-- `/_monitor/ui` → **Web Dashboard UI**
-- `/_monitor/health` → JSON health status
-- `/_monitor/metrics` → JSON metrics data
-- `/_monitor/events` → JSON events feed
-- `/_monitor/dashboard` → JSON overview
+- `/_monitor` → UI ダッシュボードへリダイレクト
+- `/_monitor/ui` → **Web ダッシュボード UI**
+- `/_monitor/health` → JSON 形式のヘルスステータス
+- `/_monitor/metrics` → JSON 形式のメトリクスデータ
+- `/_monitor/events` → JSON 形式のイベントフィード
+- `/_monitor/dashboard` → JSON 形式の概要
 
-## 🎨 Dashboard Sections
+## 🎨 ダッシュボードのセクション
 
-### 1. Status Overview Cards
-- **Overall Status** - Healthy/Degraded/Unhealthy with color coding
-- **Uptime** - How long the application has been running
-- **Total Requests** - Number of HTTP requests processed
-- **Error Count** - Number of error responses
+### 1. ステータス概要カード
+- **全体のステータス** - 色分けされた Healthy / Degraded / Unhealthy
+- **稼働時間** - アプリケーションが稼働している時間
+- **総リクエスト数** - 処理された HTTP リクエストの数
+- **エラー数** - エラーレスポンスの数
 
-### 2. Health Checks Panel
-- Individual health check status
-- Critical vs non-critical indicators
-- Response times for each check
-- Error messages when checks fail
+### 2. ヘルスチェックパネル
+- 個々のヘルスチェックのステータス
+- クリティカル／非クリティカルのインジケーター
+- 各チェックのレスポンス時間
+- チェック失敗時のエラーメッセージ
 
-### 3. Recent Events Panel
-- **Search Box**: Filter events by message, type, or data content
-- **Category Toggles**: Show/Hide Request, Error, or Custom events
-- **Stream**: Real-time event feed with new items appearing instantly
+### 3. 最近のイベントパネル
+- **検索ボックス**: メッセージ、タイプ、データ内容でイベントをフィルタ
+- **カテゴリトグル**: Request、Error、Custom イベントの表示／非表示
+- **ストリーム**: 新しい項目が即座に表示されるリアルタイムのイベントフィード
 
-### 4. System Metrics Panel
-- **Memory Usage** - Current memory consumption
-- **Goroutines** - Number of active goroutines
-- **Average Response Time** - Mean response time
-- **Error Rate** - Percentage of requests that failed
+### 4. システムメトリクスパネル
+- **メモリ使用量** - 現在のメモリ消費量
+- **Goroutine** - アクティブな goroutine の数
+- **平均レスポンス時間** - 平均のレスポンス時間
+- **エラー率** - 失敗したリクエストの割合
 
-## 🎯 Health Status Color Coding
+## 🎯 ヘルスステータスの色分け
 
-- 🟢 **Green (Healthy)** - All systems operational
-- 🟡 **Yellow (Degraded)** - Some issues but still functional
-- 🔴 **Red (Unhealthy)** - Critical systems down
+- 🟢 **緑（Healthy）** - すべてのシステムが正常に稼働
+- 🟡 **黄（Degraded）** - 一部に問題はあるが依然として機能
+- 🔴 **赤（Unhealthy）** - クリティカルなシステムが停止
 
-## ⚡ Auto-Refresh Features
+## ⚡ 自動更新機能
 
-- **Smart Refresh** - Pauses when tab is hidden, resumes when visible
-- **5-Second Intervals** - Real-time updates without overwhelming the server
-- **Manual Refresh** - Press 'R' key for instant refresh
-- **Loading Indicators** - Visual feedback during refresh
+- **スマート更新** - タブが非表示のときは一時停止し、表示されると再開
+- **5 秒間隔** - サーバーに過度な負荷をかけないリアルタイム更新
+- **手動更新** - 'R' キーを押すと即座に更新
+- **ローディングインジケーター** - 更新中の視覚的なフィードバック
 
-## 📱 Responsive Design
+## 📱 レスポンシブデザイン
 
-The dashboard adapts to different screen sizes:
+ダッシュボードはさまざまな画面サイズに適応します:
 
-- **Desktop** - Full two-column layout with all panels
-- **Tablet** - Single column layout, optimized spacing
-- **Mobile** - Compact design, touch-friendly interface
+- **デスクトップ** - すべてのパネルを備えた 2 カラムのフルレイアウト
+- **タブレット** - 単一カラムのレイアウト、最適化された余白
+- **モバイル** - コンパクトなデザイン、タッチ操作に適したインターフェース
 
-## 🛠 Customization
+## 🛠 カスタマイズ
 
-### Custom App Name
+### カスタムアプリ名
 ```go
 app := goryu.New(goryu.Config{
     AppName: "My Custom Application", // Shows in dashboard title
 })
 ```
 
-### Custom Monitoring Path
+### カスタムモニタリングパス
 ```go
 app.EnableMonitoring("/admin/monitoring") // Custom base path
 // UI available at: /admin/monitoring/ui
 ```
 
-### Custom Health Checks
+### カスタムヘルスチェック
 ```go
 app.AddHealthCheck("custom_service", &monitoring.HealthCheck{
     Check: func() (monitoring.HealthStatus, error) {
@@ -132,26 +132,26 @@ app.AddHealthCheck("custom_service", &monitoring.HealthCheck{
 })
 ```
 
-## 📊 Event Types in UI
+## 📊 UI 上のイベントタイプ
 
-The dashboard displays different event types with distinct visual indicators:
+ダッシュボードは、それぞれ異なる視覚的インジケーターとともに、さまざまなイベントタイプを表示します:
 
-- 🔵 **Request Events** - HTTP requests (blue dot)
-- 🔴 **Error Events** - HTTP errors (red dot) 
-- 🟣 **Custom Events** - Your application events (purple dot)
-- 🟢 **Health Events** - Health check passes (green dot)
-- 🟠 **Unhealthy Events** - Health check failures (orange dot)
+- 🔵 **Request イベント** - HTTP リクエスト（青いドット）
+- 🔴 **Error イベント** - HTTP エラー（赤いドット）
+- 🟣 **Custom イベント** - アプリケーション独自のイベント（紫のドット）
+- 🟢 **Health イベント** - ヘルスチェック成功（緑のドット）
+- 🟠 **Unhealthy イベント** - ヘルスチェック失敗（オレンジのドット）
 
-## 🔄 Real-time Updates
+## 🔄 リアルタイム更新
 
-The UI operates as a Single Page Application (SPA):
-- **Background Polling**: Fetches JSON data (`/_metrics`, `/_health`, `/_events`) every 2 seconds.
-- **Efficient**: Only updates changed DOM elements.
-- **Responsive**: No page flickers or reloads.
+UI はシングルページアプリケーション（SPA）として動作します:
+- **バックグラウンドポーリング**: JSON データ（`/_metrics`、`/_health`、`/_events`）を 2 秒ごとに取得します。
+- **効率的**: 変更された DOM 要素のみを更新します。
+- **レスポンシブ**: ページのちらつきや再読み込みがありません。
 
-## 🎪 Example Dashboard Views
+## 🎪 ダッシュボード表示の例
 
-### Healthy Application
+### 正常なアプリケーション
 ```
 Status Overview: All Green
 ┌─────────────┬─────────────┬─────────────┬─────────────┐
@@ -164,7 +164,7 @@ Recent Events: Mostly requests with few errors
 Metrics: Normal memory usage, good response times
 ```
 
-### Application with Issues
+### 問題を抱えたアプリケーション
 ```
 Status Overview: Degraded (Yellow)
 ┌─────────────┬─────────────┬─────────────┬─────────────┐
@@ -177,25 +177,25 @@ Recent Events: Multiple error events visible
 Metrics: High error rate, elevated response times
 ```
 
-## 🚀 Performance
+## 🚀 パフォーマンス
 
-The monitoring UI is designed to be:
+モニタリング UI は次のように設計されています:
 
-- **Fast Loading** - Single HTML template, embedded CSS/JS
-- **Lightweight** - No external dependencies
-- **Efficient** - Minimal data transfer
-- **Scalable** - Works well with high-traffic applications
+- **高速な読み込み** - 単一の HTML テンプレート、埋め込み型の CSS/JS
+- **軽量** - 外部依存なし
+- **効率的** - 最小限のデータ転送
+- **スケーラブル** - 高トラフィックのアプリケーションでも良好に動作
 
-## 🔧 Integration Examples
+## 🔧 統合の例
 
-### With Docker
+### Docker との統合
 ```dockerfile
 EXPOSE 8080
 CMD ["./app"]
 # Dashboard available at http://container:8080/_monitor/ui
 ```
 
-### With Load Balancer
+### ロードバランサーとの統合
 ```nginx
 location /_monitor/ {
     proxy_pass http://app:8080/_monitor/;
@@ -203,49 +203,49 @@ location /_monitor/ {
 }
 ```
 
-### With Authentication
+### 認証との統合
 ```go
 // Protect monitoring endpoints
 adminGroup := app.Group("/_monitor", authMiddleware())
 // Then enable monitoring will respect the group middleware
 ```
 
-## 💡 Best Practices
+## 💡 ベストプラクティス
 
-1. **Secure Access** - Protect monitoring endpoints in production
-2. **Health Checks** - Add health checks for all critical dependencies
-3. **Custom Events** - Emit events for important business operations
-4. **Resource Monitoring** - Monitor memory, connections, etc.
-5. **Alert Integration** - Use event handlers for alerting
+1. **アクセスを保護する** - 本番環境ではモニタリングエンドポイントを保護してください
+2. **ヘルスチェック** - すべての重要な依存関係に対してヘルスチェックを追加してください
+3. **カスタムイベント** - 重要なビジネス操作についてイベントを発行してください
+4. **リソース監視** - メモリ、コネクションなどを監視してください
+5. **アラート連携** - イベントハンドラーを使用してアラートを設定してください
 
-## 🎨 UI Customization
+## 🎨 UI のカスタマイズ
 
-The dashboard uses a modern design system:
+ダッシュボードはモダンなデザインシステムを採用しています:
 
-- **Colors** - Blue gradient header, green/yellow/red status indicators
-- **Typography** - System fonts for best performance
-- **Layout** - CSS Grid for responsive design
-- **Animations** - Subtle hover effects and transitions
-- **Icons** - Color-coded dots for event types
+- **カラー** - 青のグラデーションヘッダー、緑／黄／赤のステータスインジケーター
+- **タイポグラフィ** - 最高のパフォーマンスのためのシステムフォント
+- **レイアウト** - レスポンシブデザインのための CSS Grid
+- **アニメーション** - 控えめなホバー効果とトランジション
+- **アイコン** - イベントタイプ用の色分けされたドット
 
-## 📈 Metrics Displayed
+## 📈 表示されるメトリクス
 
-### Request Metrics
-- Total requests processed
-- Error count and percentage
-- Average response time
-- Requests per second (calculated)
+### リクエストメトリクス
+- 処理された総リクエスト数
+- エラー数と割合
+- 平均レスポンス時間
+- 秒間リクエスト数（計算値）
 
-### System Metrics
-- Memory usage (with human-readable formatting)
-- Number of goroutines
-- Application uptime
-- Start time
+### システムメトリクス
+- メモリ使用量（人間が読みやすい形式でフォーマット）
+- goroutine の数
+- アプリケーションの稼働時間
+- 起動時刻
 
-### Health Metrics
-- Overall health status
-- Individual check status
-- Check response times
-- Critical vs non-critical indicators
+### ヘルスメトリクス
+- 全体のヘルスステータス
+- 個々のチェックのステータス
+- チェックのレスポンス時間
+- クリティカル／非クリティカルのインジケーター
 
-This UI provides everything you need to monitor your Goryu applications effectively! 🎉
+この UI は、Goryu アプリケーションを効果的に監視するために必要なすべてを提供します！🎉

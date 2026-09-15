@@ -1,32 +1,32 @@
 # HealthCheck Middleware
 
-A middleware for adding health check endpoints to your Goryu application. It supports Liveness and Readiness probes, making it ideal for Kubernetes and other container orchestration platforms.
+Goryu アプリケーションにヘルスチェックエンドポイントを追加するためのミドルウェアです。Liveness プローブと Readiness プローブをサポートしており、Kubernetes やその他のコンテナオーケストレーションプラットフォームに最適です。
 
-## Features
+## 機能
 
-- **Standard Endpoints**: Configurable paths for Liveness (`/health/live`), Readiness (`/health/ready`), and general Health (`/health`).
-- **Custom Probes**: Register custom checks for databases, external services, or internal state.
-- **Timeout Support**: Enforces timeouts on health checks to ensure responsiveness.
-- **JSON Output**: Returns detailed status and error messages in JSON format.
+- **標準エンドポイント**: Liveness（`/health/live`）、Readiness（`/health/ready`）、および一般的な Health（`/health`）に対して設定可能なパスを提供します。
+- **カスタムプローブ**: データベース、外部サービス、または内部状態に対するカスタムチェックを登録できます。
+- **タイムアウトサポート**: 応答性を確保するため、ヘルスチェックにタイムアウトを強制します。
+- **JSON 出力**: 詳細なステータスとエラーメッセージを JSON 形式で返します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Enable default health check endpoints:
+デフォルトのヘルスチェックエンドポイントを有効にします:
 
 ```go
 app.Use(healthcheck.Default())
 ```
 
-This exposes:
-- `/health/live`: Returns 200 OK if the server is running.
-- `/health/ready`: Returns 200 OK if the server is running.
-- `/health`: Returns 200 OK if the server is running.
+これにより以下が公開されます:
+- `/health/live`: サーバーが稼働している場合に 200 OK を返します。
+- `/health/ready`: サーバーが稼働している場合に 200 OK を返します。
+- `/health`: サーバーが稼働している場合に 200 OK を返します。
 
-### Custom Probes
+### カスタムプローブ
 
-Add checks for your database and external dependencies:
+データベースや外部依存関係に対するチェックを追加します:
 
 ```go
 app.Use(healthcheck.New(healthcheck.Config{
@@ -42,18 +42,18 @@ app.Use(healthcheck.New(healthcheck.Config{
 }))
 ```
 
-### Helper Probes
+### ヘルパープローブ
 
-The package includes helper functions for common checks:
+このパッケージには、一般的なチェック用のヘルパー関数が含まれています:
 
-- `healthcheck.DatabaseProbe(pingFunc)`: Checks database connectivity.
-- `healthcheck.HTTPProbe(url, client)`: Checks an external HTTP service.
-- `healthcheck.AlwaysUpProbe()`: Always returns success.
-- `healthcheck.AlwaysDownProbe(msg)`: Always returns failure (useful for testing).
+- `healthcheck.DatabaseProbe(pingFunc)`: データベースへの接続性をチェックします。
+- `healthcheck.HTTPProbe(url, client)`: 外部 HTTP サービスをチェックします。
+- `healthcheck.AlwaysUpProbe()`: 常に成功を返します。
+- `healthcheck.AlwaysDownProbe(msg)`: 常に失敗を返します（テストに便利です）。
 
-## Response Format
+## レスポンス形式
 
-**Success (200 OK):**
+**成功（200 OK）:**
 
 ```json
 {
@@ -64,7 +64,7 @@ The package includes helper functions for common checks:
 }
 ```
 
-**Failure (503 Service Unavailable):**
+**失敗（503 Service Unavailable）:**
 
 ```json
 {

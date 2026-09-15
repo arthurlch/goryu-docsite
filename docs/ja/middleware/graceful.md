@@ -1,20 +1,20 @@
 # Graceful Middleware
 
-A middleware and utility package for handling graceful shutdowns in Goryu applications. It ensures that active connections are drained and cleanup tasks are executed before the server stops.
+Goryu アプリケーションでグレースフルシャットダウンを扱うためのミドルウェアおよびユーティリティパッケージです。サーバーが停止する前に、アクティブな接続をドレインし、クリーンアップタスクを実行することを保証します。
 
-## Features
+## 機能
 
-- **Graceful Shutdown**: Waits for active requests to complete before shutting down.
-- **Signal Handling**: Automatically listens for `SIGINT` and `SIGTERM`.
-- **Cleanup Hooks**: Register functions to run during shutdown (e.g., closing DB connections).
-- **Timeout**: Enforces a maximum shutdown duration to prevent hanging.
-- **Connection Tracking**: Middleware to track the number of active connections.
+- **グレースフルシャットダウン**: シャットダウン前にアクティブなリクエストの完了を待ちます。
+- **シグナルハンドリング**: `SIGINT` と `SIGTERM` を自動的に待ち受けます。
+- **クリーンアップフック**: シャットダウン時に実行する関数を登録できます（例: DB 接続のクローズ）。
+- **タイムアウト**: シャットダウンのハングを防ぐため、最大シャットダウン時間を強制します。
+- **接続トラッキング**: アクティブな接続数を追跡するミドルウェアです。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Use the `RunWithGracefulShutdown` helper to start your server:
+`RunWithGracefulShutdown` ヘルパーを使用してサーバーを起動します:
 
 ```go
 package main
@@ -40,9 +40,9 @@ func main() {
 }
 ```
 
-### With Cleanup Tasks
+### クリーンアップタスクを伴う場合
 
-Register functions to close resources (Database, Redis, etc.) during shutdown:
+シャットダウン時にリソース（Database、Redis など）をクローズする関数を登録します:
 
 ```go
 graceful.RunWithGracefulShutdown(app, ":8080", graceful.ShutdownConfig{
@@ -60,9 +60,9 @@ graceful.RunWithGracefulShutdown(app, ":8080", graceful.ShutdownConfig{
 })
 ```
 
-### Connection Tracking Middleware
+### 接続トラッキングミドルウェア
 
-If you want to track active connections in your application logic (e.g., for health checks or metrics):
+アプリケーションロジック内でアクティブな接続数を追跡したい場合（例: ヘルスチェックやメトリクスのため）:
 
 ```go
 app.Use(graceful.New(graceful.Config{
@@ -77,9 +77,9 @@ app.GET("/status", func(c *goryuctx.Context) {
 })
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Signal Listener**: A goroutine listens for OS signals (`SIGINT`, `SIGTERM`).
-2.  **Shutdown Trigger**: When a signal is received, it calls `server.Shutdown(ctx)`.
-3.  **Draining**: The HTTP server stops accepting new connections and waits for existing handlers to return.
-4.  **Cleanup**: After the server stops (or times out), the registered `CleanupFuncs` are executed in order.
+1.  **シグナルリスナー**: goroutine が OS シグナル（`SIGINT`、`SIGTERM`）を待ち受けます。
+2.  **シャットダウントリガー**: シグナルを受信すると、`server.Shutdown(ctx)` を呼び出します。
+3.  **ドレイン**: HTTP サーバーは新しい接続の受け入れを停止し、既存のハンドラーが戻るのを待ちます。
+4.  **クリーンアップ**: サーバーが停止した後（またはタイムアウト後）、登録された `CleanupFuncs` が順番に実行されます。

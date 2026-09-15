@@ -1,19 +1,19 @@
-# Tracing Middleware
+# Tracing ミドルウェア
 
-A middleware for distributed tracing in Goryu applications. It provides a vendor-agnostic interface for starting spans, propagating context, and recording events.
+Goryu アプリケーションにおける分散トレーシングのためのミドルウェアです。スパンの開始、コンテキストの伝播、イベントの記録を行うための、ベンダーに依存しないインターフェースを提供します。
 
-## Features
+## 特徴
 
-- **Vendor Agnostic**: Defines a `Tracer` interface that can be implemented for any tracing backend (OpenTelemetry, Jaeger, Zipkin).
-- **Context Propagation**: Automatically extracts and injects trace headers (`X-Trace-Id`, `X-Span-Id`).
-- **Automatic Instrumentation**: Creates spans for every request with standard HTTP tags.
-- **Event Recording**: Helper methods to add events and custom tags to spans.
+- **ベンダー非依存**: あらゆるトレーシングバックエンド（OpenTelemetry、Jaeger、Zipkin）向けに実装できる `Tracer` インターフェースを定義します。
+- **コンテキストの伝播**: トレースヘッダー（`X-Trace-Id`、`X-Span-Id`）を自動的に抽出・注入します。
+- **自動計装**: すべてのリクエストに対して、標準的な HTTP タグ付きのスパンを作成します。
+- **イベント記録**: スパンにイベントやカスタムタグを追加するためのヘルパーメソッドを提供します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-You need to provide an implementation of the `Tracer` interface. Here is a conceptual example:
+`Tracer` インターフェースの実装を提供する必要があります。以下は概念的な例です:
 
 ```go
 package main
@@ -52,9 +52,9 @@ func main() {
 }
 ```
 
-### Interface Definition
+### インターフェースの定義
 
-To integrate your preferred tracing backend, implement this interface:
+お好みのトレーシングバックエンドを統合するには、以下のインターフェースを実装します:
 
 ```go
 type Tracer interface {
@@ -72,9 +72,9 @@ type Span interface {
 }
 ```
 
-### Simple Tracer
+### シンプルなトレーサー
 
-The package includes a `SimpleTracer` for testing or simple debugging purposes. It stores spans in memory.
+このパッケージには、テストや簡易的なデバッグを目的とした `SimpleTracer` が含まれています。スパンをメモリ内に保存します。
 
 ```go
 tracer := tracing.NewSimpleTracer()

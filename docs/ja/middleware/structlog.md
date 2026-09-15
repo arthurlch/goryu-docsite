@@ -1,18 +1,18 @@
-# StructLog Middleware
+# StructLog ミドルウェア
 
-A high-performance, structured logging middleware for Goryu, built on top of Go's standard `log/slog` package. It provides zero-allocation JSON logging suitable for production environments.
+Goryu 向けの高性能な構造化ロギングミドルウェアで、Go 標準の `log/slog` パッケージ上に構築されています。本番環境に適したゼロアロケーションの JSON ロギングを提供します。
 
-## Features
+## 特徴
 
-- **Structured Logging**: Outputs logs in JSON format by default.
-- **Request Correlation**: Automatically adds `request_id` to all log entries.
-- **Context Integration**: Helper functions to log with context (`LogInfo`, `LogError`).
-- **Performance**: Built on `log/slog` for minimal allocation overhead.
-- **Detailed Attributes**: Logs status, method, path, duration, IP, user agent, and response size.
+- **構造化ロギング**: デフォルトでログを JSON 形式で出力します。
+- **リクエスト相関**: すべてのログエントリに `request_id` を自動的に付与します。
+- **コンテキスト統合**: コンテキストと連携してログを出力するためのヘルパー関数（`LogInfo`、`LogError`）を提供します。
+- **パフォーマンス**: `log/slog` を基盤とし、アロケーションのオーバーヘッドを最小限に抑えます。
+- **詳細な属性**: ステータス、メソッド、パス、処理時間、IP、ユーザーエージェント、レスポンスサイズを記録します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
 ```go
 package main
@@ -40,9 +40,9 @@ func main() {
 }
 ```
 
-### Advanced Configuration
+### 詳細な設定
 
-Customize the logger instance or output:
+ロガーのインスタンスや出力先をカスタマイズできます:
 
 ```go
 logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -59,22 +59,22 @@ app.Use(structlog.New(structlog.Config{
 }))
 ```
 
-### Context Logging
+### コンテキストロギング
 
-The middleware injects a correlated logger into the context. You can use helper functions to log messages that automatically include the `request_id`:
+このミドルウェアは、相関付けされたロガーをコンテキストに注入します。ヘルパー関数を使用すると、`request_id` を自動的に含めたメッセージを出力できます:
 
 - `structlog.LogInfo(c, msg, args...)`
 - `structlog.LogWarn(c, msg, args...)`
 - `structlog.LogError(c, msg, err, args...)`
 
-Or get the logger instance directly:
+または、ロガーのインスタンスを直接取得することもできます:
 
 ```go
 logger := structlog.CorrelatedLogger(c)
 logger.Info("custom message")
 ```
 
-## Output Example
+## 出力例
 
 ```json
 {

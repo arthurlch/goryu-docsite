@@ -1,17 +1,17 @@
-# Typed Streaming
+# 型付きストリーミング
 
-The root `goryu` package provides two generic helpers that layer typed JSON encoding on top of [`c.SSE` and `c.Stream`](/ja/streaming/sse). They let you stream Go values directly — no manual marshaling, no string building, no risk of malformed frames.
+ルートの `goryu` パッケージは、[`c.SSE` と `c.Stream`](/ja/streaming/sse) の上に型付きの JSON エンコードを重ねる 2 つのジェネリックヘルパーを提供します。これらを使うと、Go の値を直接ストリーミングできます。手動でのマーシャリングも、文字列の組み立ても、不正なフレームのリスクもありません。
 
-- `goryu.SSEJSON[T]` — typed Server-Sent Events, one JSON-encoded value per event.
-- `goryu.StreamJSON[T]` — newline-delimited JSON (`application/x-ndjson`).
+- `goryu.SSEJSON[T]` — 型付きの Server-Sent Events。イベントごとに 1 つの JSON エンコード済みの値。
+- `goryu.StreamJSON[T]` — 改行区切り JSON（`application/x-ndjson`）。
 
-## Features
+## 機能
 
-- **Generic** — stream any type `T`; each value is JSON-encoded for you.
-- **Injection-safe** — values go through the JSON encoder, so nothing you emit can break the SSE or NDJSON framing.
-- **Auto-flush** — like the primitives they build on, both flush after every value.
-- **Disconnect-aware** — `SSEJSON` inherits `c.SSE`'s client-disconnect handling: the emit function returns an error when the client goes away.
-- **Right headers** — `StreamJSON` sets `Content-Type: application/x-ndjson`; `SSEJSON` sets the SSE headers.
+- **ジェネリック** — 任意の型 `T` をストリーミングできます。各値は自動で JSON エンコードされます。
+- **インジェクション安全** — 値は JSON エンコーダーを通るため、発行する内容が SSE や NDJSON のフレーミングを壊すことはありません。
+- **自動フラッシュ** — 基盤とするプリミティブと同様、どちらも値ごとにフラッシュします。
+- **切断検知** — `SSEJSON` は `c.SSE` のクライアント切断処理を継承します。クライアントがいなくなると emit 関数がエラーを返します。
+- **正しいヘッダー** — `StreamJSON` は `Content-Type: application/x-ndjson` を設定し、`SSEJSON` は SSE ヘッダーを設定します。
 
 ## `goryu.SSEJSON[T]`
 
@@ -19,11 +19,11 @@ The root `goryu` package provides two generic helpers that layer typed JSON enco
 func SSEJSON[T any](c *Ctx, event string, producer func(send func(T) error) error) error
 ```
 
-Each `send(v)` marshals `v` to JSON and emits it as an SSE event named `event`. This is the typed equivalent of calling `c.SSE` and building `SSEvent{Event: event, Data: string(jsonBytes)}` yourself.
+各 `send(v)` は `v` を JSON にマーシャルし、`event` という名前の SSE イベントとして発行します。これは `c.SSE` を呼び出して `SSEvent{Event: event, Data: string(jsonBytes)}` を自分で組み立てることの型付き等価物です。
 
-### Example: streaming LLM tokens
+### 例: LLM トークンのストリーミング
 
-This mirrors the `examples/aichat` service. A `Token` struct is streamed word-by-word as `token` events, ending with a `Done` marker:
+これは `examples/aichat` サービスを模したものです。`Token` 構造体を単語ごとに `token` イベントとしてストリーミングし、`Done` マーカーで終了します。
 
 ```go
 import (
@@ -64,7 +64,7 @@ func chatStream(c *goryu.Ctx) {
 }
 ```
 
-Each event on the wire looks like:
+通信路上の各イベントは次のようになります。
 
 ```
 event: token
@@ -77,7 +77,7 @@ event: token
 data: {"index":2,"done":true}
 ```
 
-Consume it in the browser with `EventSource`:
+ブラウザでは `EventSource` で消費します。
 
 ```js
 const es = new EventSource("/chat/stream");
@@ -88,8 +88,8 @@ es.addEventListener("token", (e) => {
 });
 ```
 
-::: tip Typed body + typed stream
-`SSEJSON` pairs naturally with [`goryu.Bind[T]`](/ja/core/binding) for the request and [`goryu.Schema[T]`](/ja/core/schema) for a machine-readable contract — decode a typed request, stream a typed response.
+::: tip 型付きボディ + 型付きストリーム
+`SSEJSON` は、リクエストのための [`goryu.Bind[T]`](/ja/core/binding) と、機械可読な契約のための [`goryu.Schema[T]`](/ja/core/schema) と自然に組み合わさります。型付きのリクエストをデコードし、型付きのレスポンスをストリーミングできます。
 :::
 
 ## `goryu.StreamJSON[T]`
@@ -98,9 +98,9 @@ es.addEventListener("token", (e) => {
 func StreamJSON[T any](c *Ctx, producer func(emit func(T) error) error) error
 ```
 
-Streams `T` values as newline-delimited JSON — one compact JSON object per line — with `Content-Type: application/x-ndjson`, flushing after each value. NDJSON is easy for machines to parse incrementally: read a line, decode it, repeat.
+`T` の値を改行区切り JSON として（1 行につき 1 つのコンパクトな JSON オブジェクト）ストリーミングします。`Content-Type: application/x-ndjson` を設定し、値ごとにフラッシュします。NDJSON は機械がインクリメンタルにパースしやすい形式です。1 行を読み、デコードし、それを繰り返します。
 
-### Example: tailing records as NDJSON
+### 例: レコードを NDJSON で追跡する
 
 ```go
 import "github.com/arthurlch/goryu"
@@ -123,20 +123,20 @@ app.GET("/logs/stream", func(c *goryu.Ctx) {
 })
 ```
 
-Output is one object per line:
+出力は 1 行につき 1 オブジェクトです。
 
 ```
 {"time":"2026-09-15T10:00:00Z","level":"info","message":"started"}
 {"time":"2026-09-15T10:00:01Z","level":"warn","message":"slow query"}
 ```
 
-Consume it with `curl` and `jq`, streaming line by line:
+`curl` と `jq` で行ごとにストリーミングしながら消費します。
 
 ```sh
 curl -Ns localhost:3000/logs/stream | jq -c .
 ```
 
-Or in Go with a streaming decoder:
+または Go でストリーミングデコーダーを使います。
 
 ```go
 dec := json.NewDecoder(resp.Body)
@@ -151,16 +151,16 @@ for {
 }
 ```
 
-## SSEJSON vs StreamJSON
+## SSEJSON と StreamJSON の比較
 
 | | `SSEJSON[T]` | `StreamJSON[T]` |
 |---|--------------|-----------------|
 | Content-Type | `text/event-stream` | `application/x-ndjson` |
-| Framing | `event:` + `data:` per value | one JSON object per line |
-| Browser support | native `EventSource`, auto-reconnect | manual `fetch` + reader |
-| Best for | live UI updates, LLM tokens | machine-to-machine record streams |
-| Built on | [`c.SSE`](/ja/streaming/sse) | [`c.Stream`](/ja/streaming/sse) |
+| フレーミング | 値ごとに `event:` + `data:` | 1 行につき 1 つの JSON オブジェクト |
+| ブラウザ対応 | ネイティブの `EventSource`、自動再接続 | 手動の `fetch` + リーダー |
+| 最適な用途 | ライブ UI 更新、LLM トークン | マシン間のレコードストリーム |
+| 基盤 | [`c.SSE`](/ja/streaming/sse) | [`c.Stream`](/ja/streaming/sse) |
 
-::: warning Streamed responses can't set headers afterward
-Once streaming has started the headers are already sent. Do any header or status setup before calling `SSEJSON`/`StreamJSON`. If you need to record usage or metrics after the stream, do it out-of-band (see the `aimeter` metering pattern in `examples/aichat`).
+::: warning ストリーミングされたレスポンスは後からヘッダーを設定できない
+ストリーミングが始まると、ヘッダーはすでに送信済みです。ヘッダーやステータスの設定は、`SSEJSON` / `StreamJSON` を呼び出す前に行ってください。ストリームの後に使用量やメトリクスを記録する必要がある場合は、帯域外で行ってください（`examples/aichat` の `aimeter` 計測パターンを参照）。
 :::

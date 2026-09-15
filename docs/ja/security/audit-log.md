@@ -1,20 +1,20 @@
-# Audit Log
+# 監査ログ
 
-The `auditlog` middleware records an access-audit trail — who did what, when, and
-with what outcome. Each request becomes an `Event` written to a `Sink` (a JSON
-logger by default).
+`auditlog` ミドルウェアは、アクセス監査証跡（誰が、いつ、何を、どのような結果で
+実行したか）を記録します。各リクエストは `Event` となり、`Sink`（デフォルトでは
+JSON ロガー）に書き込まれます。
 
-## Features
+## 特徴
 
-- **Structured events** — time, method, path, status, latency, user ID, and IP per request.
-- **Pluggable sink** — write to the default JSON logger, a database, a file, or a SIEM.
-- **Identity aware** — reads the `user_id` context key set by auth / session middleware, or a custom extractor.
-- **Skippable** — exclude health checks or noisy paths with `Skip`.
-- **Zero-config default** — `auditlog.Default()` logs JSON events out of the box.
+- **構造化イベント** — リクエストごとに時刻、メソッド、パス、ステータス、レイテンシ、ユーザー ID、IP を記録します。
+- **差し替え可能な Sink** — デフォルトの JSON ロガー、データベース、ファイル、SIEM などに書き込めます。
+- **アイデンティティ対応** — 認証／セッションミドルウェアが設定した `user_id` コンテキストキー、またはカスタムの抽出関数を読み取ります。
+- **スキップ可能** — `Skip` を使ってヘルスチェックやノイズの多いパスを除外できます。
+- **設定不要のデフォルト** — `auditlog.Default()` はそのまま JSON イベントをログ出力します。
 
-## Usage
+## 使い方
 
-### Default JSON trail
+### デフォルトの JSON 証跡
 
 ```go
 import (
@@ -31,15 +31,14 @@ func main() {
 }
 ```
 
-Each event carries `time`, `method`, `path`, `status`, `latency_ms`, `user_id`, and
-`ip`. The `user_id` comes from the `user_id` context key set by the auth or session
-middleware, so audited requests are automatically attributed once a user is
-authenticated.
+各イベントには `time`、`method`、`path`、`status`、`latency_ms`、`user_id`、`ip` が
+含まれます。`user_id` は認証またはセッションミドルウェアが設定した `user_id`
+コンテキストキーから取得されるため、ユーザーが認証されると監査対象のリクエストには
+自動的に主体が紐付けられます。
 
-### Custom sink and identity extractor
+### カスタム Sink とアイデンティティ抽出関数
 
-Send events to your own destination and override how the caller's identity is
-resolved:
+イベントを独自の送信先に送り、呼び出し元のアイデンティティの解決方法を上書きします。
 
 ```go
 app.Use(auditlog.New(auditlog.Config{
@@ -48,9 +47,9 @@ app.Use(auditlog.New(auditlog.Config{
 }))
 ```
 
-### Implementing a Sink
+### Sink の実装
 
-A `Sink` receives each event. Implementations must be safe for concurrent use:
+`Sink` は各イベントを受け取ります。実装は並行利用に対して安全でなければなりません。
 
 ```go
 type Sink interface {
@@ -71,11 +70,12 @@ func (s dbSink) Write(e auditlog.Event) error {
 app.Use(auditlog.New(auditlog.Config{Sink: dbSink{db: db}}))
 ```
 
-If a sink write fails, the error is logged (the request is not affected).
+Sink への書き込みが失敗した場合、そのエラーはログに記録されます（リクエスト自体は
+影響を受けません）。
 
-### Skipping requests
+### リクエストのスキップ
 
-Exclude noisy or irrelevant paths from the trail:
+ノイズの多いパスや無関係なパスを証跡から除外します。
 
 ```go
 app.Use(auditlog.New(auditlog.Config{
@@ -85,7 +85,7 @@ app.Use(auditlog.New(auditlog.Config{
 }))
 ```
 
-## The Event
+## Event
 
 ```go
 type Event struct {
@@ -99,28 +99,28 @@ type Event struct {
 }
 ```
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| Sink | `Sink` | Where events go | JSON to the logger |
-| UserIDFunc | `func(c *goryu.Ctx) string` | Extract the caller identity | `user_id` context key |
-| Skip | `func(c *goryu.Ctx) bool` | Skip auditing a request | none |
+| Sink | `Sink` | イベントの送信先 | ロガーへの JSON |
+| UserIDFunc | `func(c *goryu.Ctx) string` | 呼び出し元のアイデンティティを抽出 | `user_id` コンテキストキー |
+| Skip | `func(c *goryu.Ctx) bool` | リクエストの監査をスキップ | なし |
 
-::: tip Place it early
-Register the audit middleware early in the chain so it captures the final status
-code and latency of the whole request, including work done by inner middleware.
-Because it reads the `user_id` context key, it composes cleanly with
-[JWT Auth](/ja/middleware/auth), [Sessions](/ja/middleware/session), and
-[OAuth2 / OIDC](/ja/security/oidc), which all set that key.
+::: tip チェーンの早い段階に配置する
+監査ミドルウェアはチェーンの早い段階に登録し、内側のミドルウェアが行った処理も含めた
+リクエスト全体の最終的なステータスコードとレイテンシを捕捉できるようにします。
+`user_id` コンテキストキーを読み取るため、そのキーを設定する
+[JWT 認証](/ja/middleware/auth)、[セッション](/ja/middleware/session)、
+[OAuth2 / OIDC](/ja/security/oidc) とクリーンに組み合わせられます。
 :::
 
-::: warning Concurrency
-`Sink` implementations must be safe for concurrent use — requests are audited
-concurrently.
+::: warning 並行性
+`Sink` の実装は並行利用に対して安全でなければなりません — リクエストは並行して
+監査されます。
 :::
 
-## Next steps
+## 次のステップ
 
-- Attribute events by wiring identity with [JWT Auth](/ja/middleware/auth) or [Sessions](/ja/middleware/session).
-- Record authorization decisions alongside access with [RBAC](/ja/security/rbac).
+- [JWT 認証](/ja/middleware/auth) または [セッション](/ja/middleware/session) でアイデンティティを紐付け、イベントに主体を付与しましょう。
+- [RBAC](/ja/security/rbac) を使って、アクセスとあわせて認可の判断も記録しましょう。

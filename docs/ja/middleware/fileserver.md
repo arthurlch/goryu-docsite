@@ -1,42 +1,42 @@
 # Fileserver Middleware
 
-A secure and flexible middleware for serving static files from a directory. It includes built-in protection against directory traversal attacks and supports directory browsing.
+ディレクトリから静的ファイルを配信するための、安全で柔軟なミドルウェアです。ディレクトリトラバーサル攻撃に対する組み込みの保護機能を備え、ディレクトリブラウジングをサポートします。
 
-## Features
+## 機能
 
-- **Secure Serving**: Validates paths to prevent directory traversal attacks (e.g., `../../etc/passwd`).
-- **Path Stripping**: Serves files from a specific URL prefix.
-- **Directory Browsing**: Optionally allows listing directory contents.
-- **Index Files**: Automatically serves `index.html` or `index.htm` for directories.
-- **Sanitization**: Cleans and validates file paths before access.
+- **安全な配信**: パスを検証し、ディレクトリトラバーサル攻撃（例: `../../etc/passwd`）を防止します。
+- **パスの除去**: 特定の URL プレフィックスからファイルを配信します。
+- **ディレクトリブラウジング**: 任意でディレクトリの内容を一覧表示できます。
+- **インデックスファイル**: ディレクトリに対して `index.html` または `index.htm` を自動的に配信します。
+- **サニタイズ**: アクセス前にファイルパスをクリーンアップし検証します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Serve files from the `./static` directory at the `/static` URL path:
+`./static` ディレクトリのファイルを `/static` の URL パスで配信します:
 
 ```go
 app.Use(fileserver.WithPrefix("/static", "./static"))
 ```
 
-### Serve Root Directory
+### ルートディレクトリの配信
 
-Serve files from the current directory at the root URL (use with caution):
+現在のディレクトリのファイルをルート URL で配信します（取り扱いに注意してください）:
 
 ```go
 app.Use(fileserver.WithRoot("."))
 ```
 
-### Enable Directory Browsing
+### ディレクトリブラウジングの有効化
 
-Allow users to view file listings:
+ユーザーがファイル一覧を閲覧できるようにします:
 
 ```go
 app.Use(fileserver.WithBrowse("./public", true))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(fileserver.New(fileserver.Config{
@@ -47,11 +47,11 @@ app.Use(fileserver.New(fileserver.Config{
 }))
 ```
 
-## Security Note
+## セキュリティに関する注意
 
-This middleware implements strict path validation to ensure that users cannot access files outside the specified `Root` directory. It checks for:
-- Path traversal sequences (`..`, `%2e%2e`, etc.)
-- Null bytes and other suspicious characters
-- Absolute path escaping
+このミドルウェアは厳格なパス検証を実装しており、ユーザーが指定した `Root` ディレクトリ外のファイルにアクセスできないようにします。以下をチェックします:
+- パストラバーサルのシーケンス（`..`、`%2e%2e` など）
+- ヌルバイトやその他の疑わしい文字
+- 絶対パスによる脱出
 
-However, always ensure that your `Root` directory does not contain sensitive files (like configuration files or source code) that you do not intend to expose.
+ただし、`Root` ディレクトリには、公開する意図のない機密ファイル（設定ファイルやソースコードなど）が含まれていないことを常に確認してください。

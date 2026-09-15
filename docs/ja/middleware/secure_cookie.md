@@ -1,18 +1,18 @@
 # SecureCookie Middleware
 
-A middleware for storing encrypted and authenticated data in cookies using AES-256-GCM. It ensures that cookie data cannot be read or tampered with by the client.
+AES-256-GCM を使用して、暗号化および認証されたデータを Cookie に保存するためのミドルウェアです。Cookie のデータがクライアントによって読み取られたり改ざんされたりしないことを保証します。
 
-## Features
+## 機能
 
-- **Encryption**: Uses AES-256-GCM for authenticated encryption.
-- **Tamper Proof**: Ensures data integrity using GCM's authentication tag.
-- **Context Integration**: Easy `Set`, `Get`, and `Clear` helper functions.
-- **Secure Defaults**: Enforces `HttpOnly`, `Secure`, and `SameSite` attributes.
-- **Automatic Decryption**: Decrypts cookie data and makes it available in the request context.
+- **暗号化**: 認証付き暗号化に AES-256-GCM を使用します。
+- **改ざん防止**: GCM の認証タグを使用してデータの整合性を保証します。
+- **コンテキスト統合**: 簡単に使える `Set`、`Get`、`Clear` ヘルパー関数を提供します。
+- **安全なデフォルト**: `HttpOnly`、`Secure`、`SameSite` 属性を強制します。
+- **自動復号**: Cookie のデータを復号し、リクエストコンテキストで利用できるようにします。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
 ```go
 package main
@@ -60,7 +60,7 @@ func main() {
 }
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(secure_cookie.New(secure_cookie.Config{
@@ -74,7 +74,7 @@ app.Use(secure_cookie.New(secure_cookie.Config{
 }))
 ```
 
-## Security Note
+## セキュリティに関する注意
 
-- **Key Management**: The `HexKey` must be a 64-character hex string representing a 32-byte key. Keep this key secret and rotate it if compromised.
-- **Cookie Size**: Cookies have a size limit (usually 4KB). Since encryption adds overhead (IV + Auth Tag + Base64), avoid storing large amounts of data.
+- **鍵の管理**: `HexKey` は、32 バイトの鍵を表す 64 文字の 16 進文字列でなければなりません。この鍵は秘密に保ち、漏洩した場合はローテーションしてください。
+- **Cookie のサイズ**: Cookie にはサイズ制限があります（通常 4KB）。暗号化はオーバーヘッド（IV + 認証タグ + Base64）を追加するため、大量のデータを保存することは避けてください。

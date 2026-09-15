@@ -1,28 +1,28 @@
-# 🗄️ Goryu DB Package
+# 🗄️ Goryu DB パッケージ
 
-> **Secure, robust, and driver-agnostic database connections.**
+> **安全で堅牢、かつドライバーに依存しないデータベース接続。**
 
-The `db` package provides a unified way to connect to various databases while enforcing strict security policies. It handles connection pooling, DSN construction, and security validation automatically.
-
----
-
-## ✨ Key Features
-
-- **🛡️ Secure by Default**:
-    - **Anti-Injection**: Validates all connection parameters against SQL injection patterns.
-    - **Path Protection**: Prevents directory traversal attacks for SQLite databases.
-    - **Sanitization**: Automatically URL-encodes credentials and parameters.
-- **🔌 Multi-Driver Support**: First-class support for PostgreSQL, MySQL, and SQLite3.
-- **🏊 Connection Pooling**: Built-in configuration for `MaxOpenConns`, `MaxIdleConns`, and connection lifetimes.
-- **✅ Auto-Validation**: Pings the database immediately upon connection to ensure reachability.
+`db` パッケージは、厳格なセキュリティポリシーを強制しつつ、さまざまなデータベースに接続する統一的な方法を提供します。コネクションプーリング、DSN の構築、セキュリティ検証を自動的に処理します。
 
 ---
 
-## 🚀 Usage
+## ✨ 主な特徴
 
-### Configuration
+- **🛡️ デフォルトで安全**:
+    - **インジェクション対策**: すべての接続パラメータを SQL インジェクションのパターンに対して検証します。
+    - **パス保護**: SQLite データベースに対するディレクトリトラバーサル攻撃を防止します。
+    - **サニタイズ**: 認証情報とパラメータを自動的に URL エンコードします。
+- **🔌 マルチドライバー対応**: PostgreSQL、MySQL、SQLite3 をファーストクラスでサポート。
+- **🏊 コネクションプーリング**: `MaxOpenConns`、`MaxIdleConns`、接続の寿命を組み込みで設定可能。
+- **✅ 自動検証**: 接続時にただちにデータベースへ ping を送り、到達可能性を確認します。
 
-Configure your database in your application's config.
+---
+
+## 🚀 使い方
+
+### 設定
+
+アプリケーションの設定でデータベースを構成します。
 
 ```go
 import "github.com/arthurlch/goryu/config"
@@ -45,9 +45,9 @@ cfg := &config.Config{
 }
 ```
 
-### Connecting
+### 接続
 
-Use `db.Connect` to establish a secure connection.
+`db.Connect` を使って安全な接続を確立します。
 
 ```go
 import (
@@ -73,28 +73,28 @@ func main() {
 
 ---
 
-## 🔒 Security Details
+## 🔒 セキュリティの詳細
 
-The `db` package implements several layers of security checks before even attempting a connection:
+`db` パッケージは、接続を試みる前の段階で複数のセキュリティチェックを実装しています。
 
-### SQL Injection Prevention
-All inputs (username, password, database name, etc.) are scanned for dangerous characters (e.g., `;`, `--`, `/*`) that could be used for injection attacks in the connection string.
+### SQL インジェクションの防止
+すべての入力（ユーザー名、パスワード、データベース名など）は、接続文字列でのインジェクション攻撃に利用され得る危険な文字（例: `;`、`--`、`/*`）がないかスキャンされます。
 
-### SQLite Path Traversal
-If you use SQLite, the path is rigorously checked to prevent:
-- Directory traversal (`../../etc/passwd`)
-- Access to system directories (`/etc/`, `/var/`)
-- Hidden file access (optional based on config)
+### SQLite のパストラバーサル
+SQLite を使用する場合、以下を防ぐためにパスが厳格にチェックされます。
+- ディレクトリトラバーサル（`../../etc/passwd`）
+- システムディレクトリへのアクセス（`/etc/`、`/var/`）
+- 隠しファイルへのアクセス（設定により任意）
 
-### Parameter Sanitization
-All parameters are URL-encoded when building the Data Source Name (DSN) to prevent parameter injection attacks.
+### パラメータのサニタイズ
+すべてのパラメータは、データソース名（DSN）を構築する際に URL エンコードされ、パラメータインジェクション攻撃を防ぎます。
 
 ---
 
-## 📦 Supported Drivers
+## 📦 サポートされるドライバー
 
-| Driver | Config Key | Notes |
+| ドライバー | 設定キー | 備考 |
 |--------|------------|-------|
-| **PostgreSQL** | `postgres` / `pgx` | Supports SSL modes (`disable`, `require`, `verify-full`). |
-| **MySQL** | `mysql` | Supports charsets (default `utf8mb4`). |
-| **SQLite3** | `sqlite3` | In-memory support via `:memory:`. |
+| **PostgreSQL** | `postgres` / `pgx` | SSL モード（`disable`、`require`、`verify-full`）をサポート。 |
+| **MySQL** | `mysql` | 文字セット（デフォルト `utf8mb4`）をサポート。 |
+| **SQLite3** | `sqlite3` | `:memory:` によるインメモリをサポート。 |

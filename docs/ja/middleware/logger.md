@@ -1,28 +1,28 @@
 # Logger Middleware
 
-A highly customizable HTTP request logger for Goryu. It provides detailed request/response logging with support for custom formats, colors, and output destinations.
+Goryu 向けの高度にカスタマイズ可能な HTTP リクエストロガーです。カスタムフォーマット、カラー表示、出力先のサポートを備え、詳細なリクエスト／レスポンスのロギングを提供します。
 
-## Features
+## 機能
 
-- **Customizable Format**: Define exactly what you want to log using template variables.
-- **Color Coded**: Visual status codes and methods for better readability in development.
-- **Request IDs**: Automatically generates or propagates `X-Request-ID`.
-- **Latency Tracking**: Measures and logs request duration.
-- **Flexible Output**: Write logs to stdout, files, or any `io.Writer`.
+- **カスタマイズ可能なフォーマット**: テンプレート変数を使用して、ログに記録する内容を正確に定義できます。
+- **カラーコード**: ステータスコードとメソッドを視覚的に色分けし、開発中の可読性を向上させます。
+- **リクエスト ID**: `X-Request-ID` を自動的に生成または伝播します。
+- **レイテンシの追跡**: リクエストの所要時間を計測してログに記録します。
+- **柔軟な出力**: ログを stdout、ファイル、または任意の `io.Writer` に書き込めます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Use the default format (colored output to stdout):
+デフォルトのフォーマット（stdout へのカラー出力）を使用します:
 
 ```go
 app.Use(logger.Default())
 ```
 
-### Custom Format
+### カスタムフォーマット
 
-Customize the log output using template variables:
+テンプレート変数を使用してログ出力をカスタマイズします:
 
 ```go
 app.Use(logger.New(logger.Config{
@@ -30,22 +30,22 @@ app.Use(logger.New(logger.Config{
 }))
 ```
 
-**Available Variables:**
-- `${time}`: Timestamp (RFC3339 by default)
-- `${status}`: HTTP status code (colored)
-- `${latency}`: Request duration
-- `${ip}`: Client IP address
-- `${method}`: HTTP method (colored)
-- `${path}`: Request path
-- `${proto}`: HTTP protocol version
-- `${request_id}`: Request ID
-- `${user_agent}`: User Agent string
-- `${size}`: Response size in bytes
-- `${error}`: Error message (if any)
+**利用可能な変数:**
+- `${time}`: タイムスタンプ（デフォルトは RFC3339）
+- `${status}`: HTTP ステータスコード（カラー表示）
+- `${latency}`: リクエストの所要時間
+- `${ip}`: クライアントの IP アドレス
+- `${method}`: HTTP メソッド（カラー表示）
+- `${path}`: リクエストパス
+- `${proto}`: HTTP プロトコルバージョン
+- `${request_id}`: リクエスト ID
+- `${user_agent}`: ユーザーエージェント文字列
+- `${size}`: レスポンスサイズ（バイト単位）
+- `${error}`: エラーメッセージ（ある場合）
 
-### JSON Logging (for Production)
+### JSON ロギング（本番環境向け）
 
-For structured logging, you can configure the format to output JSON:
+構造化ロギングのために、フォーマットを JSON 出力に設定できます:
 
 ```go
 app.Use(logger.New(logger.Config{
@@ -54,7 +54,7 @@ app.Use(logger.New(logger.Config{
 }))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 file, _ := os.OpenFile("requests.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -67,6 +67,6 @@ app.Use(logger.New(logger.Config{
 }))
 ```
 
-## Performance Note
+## パフォーマンスに関する注意
 
-The logger uses a buffered writer and efficient string replacement to minimize overhead. However, for extremely high-throughput systems, consider sampling logs or using the `structlog` middleware for zero-allocation structured logging.
+ロガーはバッファ付きのライターと効率的な文字列置換を使用してオーバーヘッドを最小限に抑えます。ただし、極めて高スループットなシステムの場合は、ログのサンプリングや、ゼロアロケーションの構造化ロギングのための `structlog` ミドルウェアの使用を検討してください。

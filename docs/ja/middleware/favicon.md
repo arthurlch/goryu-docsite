@@ -1,33 +1,33 @@
 # Favicon Middleware
 
-A middleware for efficiently serving the favicon of your Goryu application. It supports in-memory caching and automatic `Cache-Control` header management.
+Goryu アプリケーションの favicon を効率的に配信するためのミドルウェアです。インメモリキャッシュと `Cache-Control` ヘッダーの自動管理をサポートします。
 
-## Features
+## 機能
 
-- **Efficient Serving**: Serves the favicon file directly.
-- **Caching**: Caches the file content in memory to reduce disk I/O.
-- **Browser Caching**: Automatically sets `Cache-Control` headers for client-side caching.
-- **No Content**: Can serve a `204 No Content` response if no file is provided (to silence browser 404s).
+- **効率的な配信**: favicon ファイルを直接配信します。
+- **キャッシュ**: ファイル内容をメモリにキャッシュし、ディスク I/O を削減します。
+- **ブラウザキャッシュ**: クライアント側キャッシュのために `Cache-Control` ヘッダーを自動的に設定します。
+- **No Content**: ファイルが指定されていない場合に `204 No Content` レスポンスを返せます（ブラウザの 404 を抑制するのに便利です）。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Serve a `204 No Content` response for `/favicon.ico` requests (useful for APIs):
+`/favicon.ico` へのリクエストに対して `204 No Content` レスポンスを返します（API に便利です）:
 
 ```go
 app.Use(favicon.Default())
 ```
 
-### Serve a File
+### ファイルの配信
 
-Serve a specific file from disk:
+ディスク上の特定のファイルを配信します:
 
 ```go
 app.Use(favicon.WithFile("./assets/favicon.ico"))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(favicon.New(favicon.Config{
@@ -38,6 +38,6 @@ app.Use(favicon.New(favicon.Config{
 }))
 ```
 
-## Why use this?
+## なぜこれを使うのか
 
-Browsers automatically request `/favicon.ico` when visiting a website. If you don't handle this request, your logs will be cluttered with `404 Not Found` errors. This middleware handles it efficiently, either by serving the file or by returning a "No Content" response, keeping your logs clean and your users happy.
+ブラウザは Web サイトを訪問する際に自動的に `/favicon.ico` をリクエストします。このリクエストを処理しないと、ログが `404 Not Found` エラーで散らかってしまいます。このミドルウェアは、ファイルを配信するか「No Content」レスポンスを返すことで、これを効率的に処理し、ログをクリーンに保ち、ユーザーを満足させます。

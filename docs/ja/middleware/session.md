@@ -1,22 +1,22 @@
-# 🔐 Session Middleware
+# 🔐 セッションミドルウェア
 
-A flexible, secure, and production-ready session management middleware for Goryu. It provides encrypted session storage, advanced security features (fingerprinting, anomaly detection), and seamless integration with the Auth package.
+Goryu 向けの、柔軟で安全、かつ本番運用に耐えるセッション管理ミドルウェアです。暗号化されたセッションストレージ、高度なセキュリティ機能（フィンガープリンティング、異常検知）、Auth パッケージとのシームレスな統合を提供します。
 
-## ✨ Features
+## ✨ 特徴
 
-*   **🔒 Secure by Default**: AES-GCM encryption for all session data.
-*   **💾 Pluggable Storage**: Interfaces for Memory, Redis, or Database storage.
-*   **🛡️ Advanced Protection**:
-    *   **Fingerprinting**: Binds sessions to User-Agent and IPs to prevent hijacking.
-    *   **Anomaly Detection**: Tracks IP changes and multiple concurrent sessions.
-    *   **Rotation**: Automatic session ID rotation to prevent fixation.
-*   **🚦 strict Cookie Policy**: Enforces `HttpOnly`, `Secure`, and `SameSite`.
+*   **🔒 デフォルトで安全**: すべてのセッションデータを AES-GCM で暗号化。
+*   **💾 差し替え可能なストレージ**: メモリ、Redis、データベースストレージ向けのインターフェース。
+*   **🛡️ 高度な保護**:
+    *   **フィンガープリンティング**: セッションを User-Agent と IP に紐付け、ハイジャックを防止。
+    *   **異常検知**: IP の変化や複数の同時セッションを追跡。
+    *   **ローテーション**: 固定化を防ぐためのセッション ID の自動ローテーション。
+*   **🚦 厳格な Cookie ポリシー**: `HttpOnly`、`Secure`、`SameSite` を強制。
 
 ---
 
-## 🚀 Quick Start
+## 🚀 クイックスタート
 
-### 1. Basic Setup
+### 1. 基本的なセットアップ
 
 ```go
 package main

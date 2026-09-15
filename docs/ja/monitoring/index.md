@@ -1,18 +1,18 @@
-# Goryu Monitoring System
+# Goryu モニタリングシステム
 
-A comprehensive monitoring and health check system for Goryu applications with automatic integration.
+Goryu アプリケーション向けの包括的なモニタリングおよびヘルスチェックシステムで、自動的に統合されます。
 
-## Features
+## 特徴
 
-- **Automatic Integration**: Built into every Goryu app by default
-- **Event Monitoring**: Track requests, errors, and custom events with correlation IDs
-- **Health Checks**: Monitor application components with panic recovery
-- **Advanced Metrics**: Route-level, middleware performance, and system metrics
-- **Request Tracing**: Correlation ID generation and propagation
-- **Built-in Endpoints**: Ready-to-use HTTP endpoints for monitoring data
-- **Event Handlers**: Custom event processing and alerting
+- **自動統合**: デフォルトですべての Goryu アプリに組み込まれています
+- **イベントモニタリング**: 相関 ID を用いて、リクエスト、エラー、カスタムイベントを追跡します
+- **ヘルスチェック**: パニックリカバリー付きでアプリケーションのコンポーネントを監視します
+- **高度なメトリクス**: ルートレベル、ミドルウェアのパフォーマンス、システムメトリクス
+- **リクエストトレーシング**: 相関 ID の生成と伝播
+- **組み込みエンドポイント**: すぐに使えるモニタリングデータ用の HTTP エンドポイント
+- **イベントハンドラー**: カスタムのイベント処理とアラート
 
-## Quick Start
+## クイックスタート
 
 ```go
 package main
@@ -43,17 +43,17 @@ func main() {
 }
 ```
 
-## Built-in Endpoints
+## 組み込みエンドポイント
 
-Monitoring endpoints are automatically registered:
+モニタリング用のエンドポイントは自動的に登録されます:
 
-- `GET /_health` - Health check status
-- `GET /_metrics` - Application metrics
-- `GET /_events` - Recent events (with ?limit=N parameter)
+- `GET /_health` - ヘルスチェックの状態
+- `GET /_metrics` - アプリケーションのメトリクス
+- `GET /_events` - 最近のイベント（?limit=N パラメータ付き）
 
-## Health Checks
+## ヘルスチェック
 
-Health checks allow you to monitor the status of various application components:
+ヘルスチェックを使用すると、アプリケーションのさまざまなコンポーネントの状態を監視できます:
 
 ```go
 app.AddHealthCheck("database", &monitoring.HealthCheck{
@@ -69,22 +69,22 @@ app.AddHealthCheck("database", &monitoring.HealthCheck{
 })
 ```
 
-### Health Status Levels
+### ヘルスステータスのレベル
 
-- `StatusHealthy` - Component is working normally
-- `StatusDegraded` - Component has issues but is still functional
-- `StatusUnhealthy` - Component is not working
+- `StatusHealthy` - コンポーネントは正常に動作しています
+- `StatusDegraded` - コンポーネントに問題はありますが、まだ機能しています
+- `StatusUnhealthy` - コンポーネントは動作していません
 
-### Overall Health Logic
+### 全体的なヘルスの判定ロジック
 
-- If any **critical** health check is `StatusUnhealthy` → Overall status is `StatusUnhealthy`
-- If any health check is `StatusUnhealthy` (non-critical) → Overall status is `StatusDegraded`
-- If any health check is `StatusDegraded` → Overall status is `StatusDegraded`
-- Otherwise → Overall status is `StatusHealthy`
+- いずれかの**クリティカル**なヘルスチェックが `StatusUnhealthy` の場合 → 全体のステータスは `StatusUnhealthy`
+- いずれかのヘルスチェックが `StatusUnhealthy`（非クリティカル）の場合 → 全体のステータスは `StatusDegraded`
+- いずれかのヘルスチェックが `StatusDegraded` の場合 → 全体のステータスは `StatusDegraded`
+- それ以外の場合 → 全体のステータスは `StatusHealthy`
 
-## Event Monitoring
+## イベントモニタリング
 
-The system automatically tracks HTTP requests and errors. You can also emit custom events:
+システムは HTTP リクエストとエラーを自動的に追跡します。カスタムイベントを発行することもできます:
 
 ```go
 // Emit a custom event
@@ -94,19 +94,19 @@ app.EmitEvent(monitoring.EventCustom, "User registered", map[string]interface{}{
 })
 ```
 
-### Event Types
+### イベントタイプ
 
-- `EventRequest` - HTTP requests (automatic)
-- `EventError` - HTTP errors (automatic)
-- `EventHealthy` - Health check passed (automatic)
-- `EventUnhealthy` - Health check failed (automatic)
-- `EventStartup` - Application startup (automatic)
-- `EventShutdown` - Application shutdown
-- `EventCustom` - Your custom events
+- `EventRequest` - HTTP リクエスト（自動）
+- `EventError` - HTTP エラー（自動）
+- `EventHealthy` - ヘルスチェック成功（自動）
+- `EventUnhealthy` - ヘルスチェック失敗（自動）
+- `EventStartup` - アプリケーションの起動（自動）
+- `EventShutdown` - アプリケーションのシャットダウン
+- `EventCustom` - 独自のカスタムイベント
 
-## Enhanced Metrics
+## 拡張メトリクス
 
-The system automatically collects comprehensive metrics:
+システムは包括的なメトリクスを自動的に収集します:
 
 ```go
 {
@@ -149,9 +149,9 @@ The system automatically collects comprehensive metrics:
 }
 ```
 
-## Request Tracing
+## リクエストトレーシング
 
-Every request automatically gets a correlation ID for tracing:
+すべてのリクエストには、トレーシングのための相関 ID が自動的に付与されます:
 
 ```go
 app.GET("/api/data", func(c *context.Context) {
@@ -168,11 +168,11 @@ app.GET("/api/data", func(c *context.Context) {
 })
 ```
 
-All events include correlation IDs for request tracing across logs and monitoring systems.
+すべてのイベントには、ログやモニタリングシステム全体でリクエストをトレースするための相関 ID が含まれます。
 
-## Middleware Performance Tracking
+## ミドルウェアのパフォーマンス追跡
 
-Monitor individual middleware performance:
+個々のミドルウェアのパフォーマンスを監視します:
 
 ```go
 // Wrap any middleware to track its performance
@@ -182,9 +182,9 @@ app.Use(wrappedAuth)
 // Performance data will be available in middleware_metrics
 ```
 
-## Event Handlers
+## イベントハンドラー
 
-Add custom event handlers for logging, alerting, or integration with external systems:
+ロギング、アラート、外部システムとの連携のために、カスタムのイベントハンドラーを追加できます:
 
 ```go
 app.Monitor.AddEventHandler(func(event monitoring.Event) {
@@ -197,9 +197,9 @@ app.Monitor.AddEventHandler(func(event monitoring.Event) {
 })
 ```
 
-## Configuration
+## 設定
 
-Configure the monitoring system:
+モニタリングシステムを設定します:
 
 ```go
 monitor := monitoring.New(monitoring.Config{
@@ -210,9 +210,9 @@ monitor := monitoring.New(monitoring.Config{
 })
 ```
 
-## Health Check Examples
+## ヘルスチェックの例
 
-### Database Health Check
+### データベースのヘルスチェック
 
 ```go
 app.AddHealthCheck("database", &monitoring.HealthCheck{
@@ -229,7 +229,7 @@ app.AddHealthCheck("database", &monitoring.HealthCheck{
 })
 ```
 
-### External Service Health Check
+### 外部サービスのヘルスチェック
 
 ```go
 app.AddHealthCheck("payment_service", &monitoring.HealthCheck{
@@ -249,7 +249,7 @@ app.AddHealthCheck("payment_service", &monitoring.HealthCheck{
 })
 ```
 
-### Memory Usage Health Check
+### メモリ使用量のヘルスチェック
 
 ```go
 app.AddHealthCheck("memory", &monitoring.HealthCheck{
@@ -268,9 +268,9 @@ app.AddHealthCheck("memory", &monitoring.HealthCheck{
 })
 ```
 
-## Integration with External Systems
+## 外部システムとの統合
 
-### Prometheus Integration
+### Prometheus との統合
 
 ```go
 app.Monitor.AddEventHandler(func(event monitoring.Event) {
@@ -279,7 +279,7 @@ app.Monitor.AddEventHandler(func(event monitoring.Event) {
 })
 ```
 
-### Logging Integration
+### ロギングとの統合
 
 ```go
 app.Monitor.AddEventHandler(func(event monitoring.Event) {
@@ -291,25 +291,25 @@ app.Monitor.AddEventHandler(func(event monitoring.Event) {
 })
 ```
 
-## Best Practices
+## ベストプラクティス
 
-1. **Use Critical Health Checks Sparingly** - Only mark health checks as critical if their failure should make the entire service unavailable
+1. **クリティカルなヘルスチェックは控えめに使う** - その失敗によってサービス全体が利用不能になるべき場合にのみ、ヘルスチェックをクリティカルとしてマークしてください
 
-2. **Set Appropriate Timeouts** - Health checks should have reasonable timeouts to avoid blocking
+2. **適切なタイムアウトを設定する** - ブロッキングを避けるため、ヘルスチェックには妥当なタイムアウトを設定してください
 
-3. **Monitor Key Dependencies** - Add health checks for databases, external APIs, and critical services
+3. **主要な依存関係を監視する** - データベース、外部 API、重要なサービスに対してヘルスチェックを追加してください
 
-4. **Use Custom Events Meaningfully** - Emit custom events for business-critical operations
+4. **カスタムイベントを意味のある形で使う** - ビジネス上重要な操作についてカスタムイベントを発行してください
 
-5. **Set Up Alerting** - Use event handlers to integrate with alerting systems
+5. **アラートを設定する** - イベントハンドラーを使用してアラートシステムと連携してください
 
-6. **Monitor Resource Usage** - Add health checks for memory, disk space, and other resources
+6. **リソース使用量を監視する** - メモリ、ディスク容量、その他のリソースに対してヘルスチェックを追加してください
 
-7. **Test Health Checks** - Ensure your health checks actually detect problems
+7. **ヘルスチェックをテストする** - ヘルスチェックが実際に問題を検出できることを確認してください
 
-## Example Response Formats
+## レスポンス形式の例
 
-### Health Endpoint Response
+### ヘルスエンドポイントのレスポンス
 
 ```json
 {
@@ -327,7 +327,7 @@ app.Monitor.AddEventHandler(func(event monitoring.Event) {
 }
 ```
 
-### Metrics Endpoint Response
+### メトリクスエンドポイントのレスポンス
 
 ```json
 {
@@ -341,7 +341,7 @@ app.Monitor.AddEventHandler(func(event monitoring.Event) {
 }
 ```
 
-### Events Endpoint Response
+### イベントエンドポイントのレスポンス
 
 ```json
 {

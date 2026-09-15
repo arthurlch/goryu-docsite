@@ -1,44 +1,44 @@
-# WebSockets
+# WebSocket
 
-For full-duplex, bidirectional communication, Goryu ships a small WebSocket package. Upgrade an HTTP handler's connection with `websocket.Upgrade` and read/write messages over the returned `*Conn`.
+全二重・双方向の通信のために、Goryu は小さな WebSocket パッケージを同梱しています。HTTP ハンドラーの接続を `websocket.Upgrade` でアップグレードし、返される `*Conn` でメッセージを読み書きします。
 
-Unlike Server-Sent Events, a WebSocket lets the client *send* messages back to the server on the same connection — the right choice for chat, collaborative editing, live dashboards with client input, and games.
+Server-Sent Events とは異なり、WebSocket ではクライアントが同じ接続上でサーバーへメッセージを*送り返す*ことができます。チャット、共同編集、クライアント入力を伴うライブダッシュボード、ゲームなどに最適です。
 
-## Features
+## 特長
 
-- **Zero dependencies** — a minimal, self-contained implementation built on the standard library only; no third-party packages.
-- **Standard handshake** — validates the `Upgrade`/`Connection` headers and `Sec-WebSocket-Key`, then replies `101 Switching Protocols`.
-- **Client frame masking** — masks are applied and unmasked client frames are rejected as protocol errors, per RFC 6455.
-- **Automatic ping/pong** — incoming pings are answered with pongs, and close frames are echoed, inside `ReadMessage`.
-- **Fragmentation reassembly** — fragmented messages are reassembled up to a 32 MiB limit.
-- **Idle and write timeouts** — sensible defaults (60s idle, 10s write) that you can tune per connection.
+- **依存ゼロ** — 標準ライブラリのみで構築された、最小限で自己完結した実装。サードパーティパッケージは不要です。
+- **標準的なハンドシェイク** — `Upgrade` / `Connection` ヘッダーと `Sec-WebSocket-Key` を検証し、`101 Switching Protocols` を返します。
+- **クライアントフレームのマスク** — RFC 6455 に従い、マスクを適用し、マスクされていないクライアントフレームはプロトコルエラーとして拒否します。
+- **自動 ping/pong** — 受信した ping には pong で応答し、close フレームは `ReadMessage` 内でエコーバックします。
+- **フラグメントの再結合** — 分割されたメッセージを 32 MiB の上限まで再結合します。
+- **アイドル・書き込みタイムアウト** — 妥当なデフォルト（アイドル 60 秒、書き込み 10 秒）を備え、接続ごとに調整できます。
 
-::: warning Scope
-This is a deliberately minimal implementation intended for straightforward upgrade-and-message use. It is not a full-featured WebSocket library (no subprotocol negotiation, permessage-deflate, etc.).
+::: warning スコープ
+これは、素直なアップグレードとメッセージ送受信を想定した、意図的に最小限の実装です。フル機能の WebSocket ライブラリではありません（サブプロトコルのネゴシエーション、permessage-deflate などはありません）。
 :::
 
-## Upgrading a connection
+## 接続のアップグレード
 
 ```go
 func Upgrade(c *goryuctx.Context) (*Conn, error)
 ```
 
-Call `Upgrade` at the top of a handler. On success you own the underlying connection — always `defer conn.Close()`. It fails if the request isn't a WebSocket upgrade, is missing `Sec-WebSocket-Key`, or the response writer doesn't support hijacking.
+ハンドラーの先頭で `Upgrade` を呼び出します。成功すると基盤の接続は呼び出し側の所有となるため、必ず `defer conn.Close()` を書きます。リクエストが WebSocket アップグレードでない場合、`Sec-WebSocket-Key` が欠けている場合、またはレスポンスライターがハイジャックに対応していない場合は失敗します。
 
-## The Conn API
+## Conn API
 
-| Method | Description |
+| メソッド | 説明 |
 |--------|-------------|
-| `ReadMessage() (int, []byte, error)` | Reads the next message; returns the message type and payload. Handles ping/pong and close frames internally. |
-| `WriteMessage(messageType int, data []byte) error` | Writes a message of the given type. |
-| `WriteText(s string) error` | Convenience for writing a `TextMessage`. |
-| `Close() error` | Sends a close frame and closes the connection. |
-| `SetIdleTimeout(d time.Duration)` | Read deadline applied before each frame (default 60s). |
-| `SetWriteTimeout(d time.Duration)` | Write deadline applied before each write (default 10s). |
-| `SetReadDeadline(t time.Time) error` | Sets a one-shot read deadline on the underlying connection. |
-| `SetWriteDeadline(t time.Time) error` | Sets a one-shot write deadline on the underlying connection. |
+| `ReadMessage() (int, []byte, error)` | 次のメッセージを読み取り、メッセージタイプとペイロードを返します。ping/pong と close フレームは内部で処理します。 |
+| `WriteMessage(messageType int, data []byte) error` | 指定したタイプのメッセージを書き込みます。 |
+| `WriteText(s string) error` | `TextMessage` を書き込むための簡易メソッドです。 |
+| `Close() error` | close フレームを送信し、接続を閉じます。 |
+| `SetIdleTimeout(d time.Duration)` | 各フレームの前に適用される読み取りデッドライン（デフォルト 60 秒）。 |
+| `SetWriteTimeout(d time.Duration)` | 各書き込みの前に適用される書き込みデッドライン（デフォルト 10 秒）。 |
+| `SetReadDeadline(t time.Time) error` | 基盤の接続に一度限りの読み取りデッドラインを設定します。 |
+| `SetWriteDeadline(t time.Time) error` | 基盤の接続に一度限りの書き込みデッドラインを設定します。 |
 
-### Message type constants
+### メッセージタイプ定数
 
 ```go
 const (
@@ -48,9 +48,9 @@ const (
 )
 ```
 
-When a peer sends a close frame, `ReadMessage` echoes it and returns `(CloseMessage, payload, websocket.ErrClosed)` — check for `ErrClosed` (or simply break on any read error) to end your loop cleanly.
+ピアが close フレームを送ると、`ReadMessage` はそれをエコーバックし、`(CloseMessage, payload, websocket.ErrClosed)` を返します。`ErrClosed` を確認する（あるいは単に読み取りエラーで抜ける）ことで、ループをきれいに終了できます。
 
-## Example: echo server
+## 例: エコーサーバー
 
 ```go
 import (
@@ -84,7 +84,7 @@ func main() {
 }
 ```
 
-Test it from the browser console:
+ブラウザのコンソールから試せます:
 
 ```js
 const ws = new WebSocket("ws://localhost:3000/ws");
@@ -92,9 +92,9 @@ ws.onopen = () => ws.send("hello");
 ws.onmessage = (e) => console.log("echo:", e.data);
 ```
 
-## Example: broadcast / chat loop with timeouts
+## 例: タイムアウト付きのブロードキャスト / チャットループ
 
-Tune the idle timeout for a long-lived connection and use `WriteText` for text replies:
+長時間の接続に合わせてアイドルタイムアウトを調整し、テキスト応答には `WriteText` を使います:
 
 ```go
 app.GET("/chat", func(c *goryu.Ctx) {
@@ -123,10 +123,10 @@ app.GET("/chat", func(c *goryu.Ctx) {
 })
 ```
 
-::: tip Idle timeout keeps connections honest
-`SetIdleTimeout` applies a read deadline before every frame, so a client that stops sending is dropped automatically rather than leaking a goroutine. Set it to a value comfortably longer than your expected message interval. Since the server answers pings with pongs, well-behaved clients can keep the connection alive with periodic pings.
+::: tip アイドルタイムアウトで接続を健全に保つ
+`SetIdleTimeout` は各フレームの前に読み取りデッドラインを適用するため、送信を止めたクライアントは goroutine をリークさせることなく自動的に切断されます。想定するメッセージ間隔よりも十分に長い値に設定してください。サーバーは ping に pong で応答するため、行儀のよいクライアントは定期的な ping で接続を維持できます。
 :::
 
-::: warning One reader, guarded writer
-Reads are not safe to call concurrently — run a single `ReadMessage` loop per connection. Writes are internally mutex-guarded, so you may write from other goroutines (for example, a broadcaster) while that read loop runs.
+::: warning リーダーは 1 つ、ライターはガード付き
+読み取りを並行して呼び出すのは安全ではありません。接続ごとに単一の `ReadMessage` ループを実行してください。書き込みは内部でミューテックスにより保護されているため、その読み取りループの実行中に他の goroutine（例えばブロードキャスター）から書き込んでも問題ありません。
 :::

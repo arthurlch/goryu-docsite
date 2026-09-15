@@ -1,20 +1,20 @@
-# CircuitBreaker Middleware
+# CircuitBreaker ミドルウェア
 
-A middleware that implements the Circuit Breaker pattern for Goryu. It prevents cascading failures by stopping requests to a failing service and giving it time to recover.
+Goryu 向けにサーキットブレーカーパターンを実装したミドルウェアです。障害の発生しているサービスへのリクエストを停止し、回復のための時間を与えることで、連鎖的な障害を防止します。
 
-## Features
+## 機能
 
-- **State Management**: Handles `Closed`, `Open`, and `Half-Open` states.
-- **Configurable Thresholds**: Customize failure ratios, request volume, and timeouts.
-- **Custom Failure Logic**: Define exactly what constitutes a failure (e.g., specific errors or status codes).
-- **Event Hooks**: Callbacks for state changes (e.g., for logging or metrics).
-- **Monitoring**: Exposes internal state and metrics.
+- **状態管理**: `Closed`、`Open`、`Half-Open` の各状態を処理します。
+- **設定可能なしきい値**: 失敗率、リクエスト数、タイムアウトをカスタマイズできます。
+- **カスタム失敗ロジック**: 何を失敗とみなすか（例: 特定のエラーやステータスコード）を正確に定義できます。
+- **イベントフック**: 状態変化時のコールバック（例: ロギングやメトリクス用）。
+- **モニタリング**: 内部状態とメトリクスを公開します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Protect a route with default settings:
+デフォルト設定でルートを保護します。
 
 ```go
 package main
@@ -44,9 +44,9 @@ func main() {
 }
 ```
 
-### Global Middleware
+### グローバルミドルウェア
 
-Apply to the entire application (careful: this shares state across all routes):
+アプリケーション全体に適用します（注意: これはすべてのルート間で状態を共有します）。
 
 ```go
 app.Use(circuitbreaker.New(circuitbreaker.Config{
@@ -54,7 +54,7 @@ app.Use(circuitbreaker.New(circuitbreaker.Config{
 }))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(circuitbreaker.New(circuitbreaker.Config{
@@ -72,10 +72,10 @@ app.Use(circuitbreaker.New(circuitbreaker.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Closed**: Requests flow normally. Failures are counted.
-2.  **Open**: If the failure ratio exceeds the threshold, the breaker opens. All requests fail immediately with `503 Service Unavailable`.
-3.  **Half-Open**: After the `Timeout` period, the breaker allows a limited number of requests (`MaxRequests`) to test if the service has recovered.
-    - If these requests succeed, the breaker closes.
-    - If any fail, it re-opens.
+1.  **Closed**: リクエストは通常どおり流れます。失敗がカウントされます。
+2.  **Open**: 失敗率がしきい値を超えると、ブレーカーが開きます。すべてのリクエストは `503 Service Unavailable` で即座に失敗します。
+3.  **Half-Open**: `Timeout` の期間が経過すると、ブレーカーは限られた数のリクエスト（`MaxRequests`）を通過させ、サービスが回復したかどうかをテストします。
+    - これらのリクエストが成功すれば、ブレーカーは閉じます。
+    - いずれかが失敗すれば、再び開きます。

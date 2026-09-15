@@ -1,24 +1,24 @@
-# Goryu Configuration Management
+# Goryu の設定管理
 
-A comprehensive, flexible configuration management system for Goryu applications supporting multiple configuration sources with priority-based merging, validation, and advanced features.
+Goryu アプリケーション向けの、包括的で柔軟な設定管理システムです。優先順位に基づくマージ、バリデーション、高度な機能を備え、複数の設定ソースをサポートします。
 
-## Features
+## 特徴
 
-- **Multiple Sources**: Environment variables, JSON/YAML files, and defaults
-- **Priority System**: Environment variables override files, files override defaults
-- **Type Safety**: Strongly typed configuration with comprehensive validation
-- **Auto-Discovery**: Automatic config file detection in common locations
-- **Fluent Builder**: Chain configuration sources with a fluent API
-- **Framework Integration**: Direct integration with goryu.Config
-- **Database Support**: Built-in database configuration with connection pooling
-- **Security Features**: TLS, CSRF, HSTS, and security headers configuration
-- **Performance Limits**: Request body size, concurrent requests, and route limits
-- **Static File Serving**: Configurable static file serving with caching
-- **Router Options**: Advanced routing configuration options
+- **複数のソース**: 環境変数、JSON/YAML ファイル、デフォルト値
+- **優先順位システム**: 環境変数はファイルを上書きし、ファイルはデフォルト値を上書きします
+- **型安全性**: 包括的なバリデーションを備えた強い型付けの設定
+- **自動検出**: 一般的な場所にある設定ファイルを自動的に検出
+- **流暢なビルダー**: 流暢な API で設定ソースをチェーン
+- **フレームワーク統合**: goryu.Config との直接統合
+- **データベースサポート**: コネクションプーリングを備えた組み込みのデータベース設定
+- **セキュリティ機能**: TLS、CSRF、HSTS、セキュリティヘッダーの設定
+- **パフォーマンス制限**: リクエストボディサイズ、同時リクエスト数、ルート数の制限
+- **静的ファイル配信**: キャッシュを備えた設定可能な静的ファイル配信
+- **ルーターオプション**: 高度なルーティング設定オプション
 
-## Quick Start
+## クイックスタート
 
-### Basic Usage
+### 基本的な使い方
 
 ```go
 package main
@@ -39,7 +39,7 @@ func main() {
 }
 ```
 
-### Custom Configuration
+### カスタム設定
 
 ```go
 // Build configuration from specific sources
@@ -51,11 +51,11 @@ cfg, err := config.NewBuilder().
     Build()
 ```
 
-## Configuration Structure
+## 設定の構造
 
-The configuration system supports two main configuration formats:
+設定システムは 2 つの主要な設定フォーマットをサポートします。
 
-### Core Configuration (New Structure)
+### コア設定（新しい構造）
 ```json
 {
   "app": {
@@ -99,7 +99,7 @@ The configuration system supports two main configuration formats:
 }
 ```
 
-### Advanced Configuration (Builder Pattern)
+### 高度な設定（ビルダーパターン）
 ```json
 {
   "app": {
@@ -170,9 +170,9 @@ The configuration system supports two main configuration formats:
 }
 ```
 
-### Database Connection Examples
+### データベース接続の例
 
-**SQLite (Simple - Recommended)**
+**SQLite（シンプル・推奨）**
 ```json
 {
   "database": {
@@ -220,7 +220,7 @@ The configuration system supports two main configuration formats:
 }
 ```
 
-**Custom App Configuration**
+**カスタムアプリ設定**
 ```json
 {
   "app": {
@@ -241,9 +241,9 @@ The configuration system supports two main configuration formats:
 }
 ```
 
-## Environment Variables
+## 環境変数
 
-Environment variables use the pattern `PREFIX_SECTION_FIELD`:
+環境変数は `PREFIX_SECTION_FIELD` というパターンを使用します。
 
 ```bash
 # App configuration
@@ -280,26 +280,26 @@ GORYU_FRAMEWORK_CASE_SENSITIVE=false
 GORYU_APP_CUSTOM={"api_timeout":"30s","features":{"analytics":true}}
 ```
 
-## Configuration Sources Priority
+## 設定ソースの優先順位
 
-1. **Environment Variables** (Highest Priority)
-2. **Configuration Files** (Medium Priority)
-3. **Defaults** (Lowest Priority)
+1. **環境変数**（最優先）
+2. **設定ファイル**（中程度の優先度）
+3. **デフォルト値**（最も低い優先度）
 
-Later sources override earlier ones. Environment variables always win.
+後のソースが前のソースを上書きします。環境変数は常に優先されます。
 
-## File Auto-Discovery
+## ファイルの自動検出
 
-The system automatically looks for configuration files in:
+システムは以下の場所から設定ファイルを自動的に探します。
 
 - `./config.json`, `./config.yaml`, `./config.yml`
 - `./app.json`, `./app.yaml`, `./app.yml`
 - `./config/config.json`, `./config/config.yaml`
 - `/etc/goryu/config.json`, `/etc/goryu/config.yaml`
 
-## Validation
+## バリデーション
 
-Configuration is automatically validated on load:
+設定は読み込み時に自動的に検証されます。
 
 ```go
 cfg, err := config.LoadConfig()
@@ -309,15 +309,15 @@ if err != nil {
 }
 ```
 
-Common validation rules:
-- **Server**: Port must be 1-65535, timeouts cannot be negative
-- **Database**: Driver must be sqlite3/postgres/mysql, required fields vary by driver
-- **App**: Environment must be development/staging/production, log level must be debug/info/warn/error
-- **TLS**: If enabled, cert/key files required unless auto_tls is true
-- **Security**: CSRF token length must be positive, HSTS max_age must be valid duration
-- **Limits**: All limits must be positive integers, max_idle_conns cannot exceed max_open_conns
+一般的なバリデーションルール:
+- **Server**: ポートは 1〜65535 でなければならず、タイムアウトは負の値にできません
+- **Database**: ドライバーは sqlite3/postgres/mysql のいずれかで、必須フィールドはドライバーによって異なります
+- **App**: 環境は development/staging/production のいずれか、ログレベルは debug/info/warn/error のいずれかでなければなりません
+- **TLS**: 有効な場合、auto_tls が true でない限り cert/key ファイルが必須です
+- **Security**: CSRF トークンの長さは正の値、HSTS の max_age は有効な期間でなければなりません
+- **Limits**: すべての制限は正の整数でなければならず、max_idle_conns は max_open_conns を超えられません
 
-## Helper Methods
+## ヘルパーメソッド
 
 ```go
 cfg, _ := config.LoadConfig()
@@ -346,7 +346,7 @@ if err := cfg.Validate(); err != nil {
 }
 ```
 
-## Builder Pattern
+## ビルダーパターン
 
 ```go
 // Custom builder with specific sources
@@ -358,11 +358,11 @@ cfg, err := config.NewBuilder().
     Build()                               // Build final config
 ```
 
-## Advanced Usage
+## 高度な使い方
 
-### Custom Configuration Sources
+### カスタム設定ソース
 
-Implement the `Source` interface:
+`Source` インターフェースを実装します。
 
 ```go
 type Source interface {
@@ -372,35 +372,35 @@ type Source interface {
 }
 ```
 
-### Environment-Only Configuration
+### 環境変数のみの設定
 
 ```go
 cfg, err := config.LoadConfigFromEnv("MYAPP")
 ```
 
-### File-Specific Configuration
+### ファイル指定の設定
 
 ```go
 cfg, err := config.LoadConfigWithFile("production.json")
 ```
 
-## Best Practices
+## ベストプラクティス
 
-1. **Use Environment Variables for Secrets**: Never put secrets in config files
+1. **シークレットには環境変数を使う**: シークレットを設定ファイルに入れないでください
    ```bash
    GORYU_DATABASE_PASSWORD=secret
    GORYU_SERVER_TLS_CERT_FILE=/secure/cert.pem
    GORYU_APP_CUSTOM='{"api_keys":{"stripe":"sk_live_..."}}'
    ```
 
-2. **Set Appropriate Defaults**: Provide sensible defaults for development
+2. **適切なデフォルト値を設定する**: 開発向けに合理的なデフォルト値を用意しましょう
    ```go
    // Defaults are applied automatically
    cfg, _ := config.LoadConfig()
    // Development defaults: localhost, SQLite, debug logging
    ```
 
-3. **Validate Early**: Load and validate config at application startup
+3. **早期に検証する**: アプリケーション起動時に設定を読み込み検証しましょう
    ```go
    func main() {
        cfg, err := config.LoadConfig()
@@ -411,7 +411,7 @@ cfg, err := config.LoadConfigWithFile("production.json")
    }
    ```
 
-4. **Use Feature Flags**: Control features via custom configuration
+4. **フィーチャーフラグを使う**: カスタム設定を通じて機能を制御しましょう
    ```json
    {
      "app": {
@@ -426,7 +426,7 @@ cfg, err := config.LoadConfigWithFile("production.json")
    }
    ```
 
-5. **Environment-Specific Configs**: Use different config files per environment
+5. **環境ごとの設定**: 環境ごとに異なる設定ファイルを使いましょう
    ```bash
    # Development
    GORYU_CONFIG_FILE=config.dev.json
@@ -435,14 +435,14 @@ cfg, err := config.LoadConfigWithFile("production.json")
    GORYU_CONFIG_FILE=config.prod.json
    ```
 
-6. **Security Best Practices**:
-   - Enable TLS in production
-   - Configure HSTS for HTTPS sites
-   - Set appropriate CORS and security headers
-   - Use strong CSRF tokens
-   - Limit request sizes and concurrent connections
+6. **セキュリティのベストプラクティス**:
+   - 本番環境では TLS を有効にする
+   - HTTPS サイトでは HSTS を設定する
+   - 適切な CORS およびセキュリティヘッダーを設定する
+   - 強力な CSRF トークンを使用する
+   - リクエストサイズと同時接続数を制限する
 
-7. **Database Connection Pooling**: Configure based on load
+7. **データベースのコネクションプーリング**: 負荷に応じて設定しましょう
    ```json
    {
      "database": {
@@ -453,13 +453,13 @@ cfg, err := config.LoadConfigWithFile("production.json")
    }
    ```
 
-## Examples
+## 例
 
-See `examples/config_example.go` for a complete working example and `examples/config.json.example` for a sample configuration file.
+完全に動作する例は `examples/config_example.go` を、設定ファイルのサンプルは `examples/config.json.example` を参照してください。
 
-## Integration Examples
+## 統合例
 
-### Basic Application Setup
+### 基本的なアプリケーションのセットアップ
 
 ```go
 package main
@@ -508,7 +508,7 @@ func main() {
 }
 ```
 
-### Advanced Setup with Builder Pattern
+### ビルダーパターンを使った高度なセットアップ
 
 ```go
 package main

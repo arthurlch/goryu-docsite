@@ -1,20 +1,20 @@
 # Limiter Middleware
 
-A rate limiting middleware for Goryu. It protects your application from abuse by limiting the number of requests a client can make within a specified time window.
+Goryu 向けのレートリミットミドルウェアです。指定した時間枠内でクライアントが行えるリクエスト数を制限することで、アプリケーションを不正利用から保護します。
 
-## Features
+## 機能
 
-- **Fixed Window**: Limits requests per time interval (e.g., 60 requests per minute).
-- **In-Memory Storage**: Fast and efficient local storage.
-- **Client Management**: Automatically cleans up old client entries to manage memory.
-- **Custom Keys**: Rate limit by IP (default), API key, or any other identifier.
-- **Custom Responses**: Define what happens when the limit is reached.
+- **固定ウィンドウ**: 一定の時間間隔ごとにリクエストを制限します（例: 1 分あたり 60 リクエスト）。
+- **インメモリストレージ**: 高速で効率的なローカルストレージです。
+- **クライアント管理**: 古いクライアントのエントリを自動的に削除し、メモリを管理します。
+- **カスタムキー**: IP（デフォルト）、API キー、その他任意の識別子でレートリミットを行えます。
+- **カスタムレスポンス**: 制限に達したときの動作を定義できます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Limit to 60 requests per minute per IP:
+IP ごとに 1 分あたり 60 リクエストに制限します:
 
 ```go
 import (
@@ -25,9 +25,9 @@ import (
 app.Use(limiter.Default())
 ```
 
-### Custom Limit
+### カスタム制限
 
-Limit to 10 requests per second:
+1 秒あたり 10 リクエストに制限します:
 
 ```go
 app.Use(limiter.New(limiter.Config{
@@ -36,9 +36,9 @@ app.Use(limiter.New(limiter.Config{
 }))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
-Rate limit by API key with a custom error response:
+カスタムエラーレスポンスを伴って API キーでレートリミットを行います:
 
 ```go
 app.Use(limiter.New(limiter.Config{
@@ -55,26 +55,26 @@ app.Use(limiter.New(limiter.Config{
 }))
 ```
 
-## Configuration Options
+## 設定オプション
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| Max | `int` | Maximum requests allowed | `60` |
-| Expiration | `time.Duration` | Time window duration | `1 * time.Minute` |
-| KeyGenerator | `func(*goryuctx.Context) string` | Function to extract client key | IP-based |
-| LimitReached | `func(*goryuctx.Context)` | Custom response when limit is reached | JSON error response |
+| Max | `int` | 許可される最大リクエスト数 | `60` |
+| Expiration | `time.Duration` | 時間枠の長さ | `1 * time.Minute` |
+| KeyGenerator | `func(*goryuctx.Context) string` | クライアントキーを抽出する関数 | IP ベース |
+| LimitReached | `func(*goryuctx.Context)` | 制限に達したときのカスタムレスポンス | JSON エラーレスポンス |
 
-## How It Works
+## 仕組み
 
-The middleware tracks requests using an in-memory map where:
-1. **Client Identification**: Uses `KeyGenerator` function (default: client IP)
-2. **Fixed Window**: Counts requests within specified time intervals
-3. **Automatic Cleanup**: Removes expired client entries to manage memory
-4. **Thread-Safe**: Uses mutexes for concurrent request handling
+このミドルウェアは、インメモリのマップを使用してリクエストを追跡します。その仕組みは次のとおりです:
+1. **クライアントの識別**: `KeyGenerator` 関数を使用します（デフォルト: クライアント IP）
+2. **固定ウィンドウ**: 指定された時間間隔内のリクエストをカウントします
+3. **自動クリーンアップ**: 期限切れのクライアントエントリを削除してメモリを管理します
+4. **スレッドセーフ**: 並行リクエストの処理にミューテックスを使用します
 
-## Security Note
+## セキュリティに関する注意
 
-When using IP-based limiting (default), be aware of:
-- Users behind NAT may share IP addresses
-- Consider using API keys or authenticated user IDs for more accurate limiting
-- Set appropriate limits to balance security and user experience
+IP ベースの制限（デフォルト）を使用する場合、以下に注意してください:
+- NAT の背後にいるユーザーは IP アドレスを共有している可能性があります
+- より正確な制限のために、API キーや認証済みユーザー ID の使用を検討してください
+- セキュリティとユーザー体験のバランスを取るため、適切な制限値を設定してください

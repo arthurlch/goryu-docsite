@@ -1,36 +1,36 @@
-# CORS Middleware
+# CORS ミドルウェア
 
-A flexible Cross-Origin Resource Sharing (CORS) middleware for Goryu. It handles preflight requests and validates cross-origin requests according to the configured policy.
+Goryu 向けの柔軟なクロスオリジンリソース共有（CORS）ミドルウェアです。プリフライトリクエストを処理し、設定したポリシーに従ってクロスオリジンリクエストを検証します。
 
-## Features
+## 機能
 
-- **Origin Validation**: Strict allowlist checking or wildcard support (dev only).
-- **Credentials Support**: Securely handles `Access-Control-Allow-Credentials`.
-- **Preflight Handling**: Automatically handles `OPTIONS` requests with correct headers.
-- **Security Checks**: Prevents insecure configurations (e.g., wildcard origin with credentials).
-- **Caching**: Configurable `Access-Control-Max-Age`.
+- **オリジンの検証**: 厳格な許可リストによるチェック、またはワイルドカードのサポート（開発時のみ）。
+- **認証情報のサポート**: `Access-Control-Allow-Credentials` を安全に処理します。
+- **プリフライトの処理**: `OPTIONS` リクエストを正しいヘッダーとともに自動的に処理します。
+- **セキュリティチェック**: 安全でない設定（例: 認証情報を伴うワイルドカードオリジン）を防止します。
+- **キャッシュ**: 設定可能な `Access-Control-Max-Age`。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Allow all origins (useful for development):
+すべてのオリジンを許可します（開発時に便利です）。
 
 ```go
 app.Use(cors.WithAllowAll())
 ```
 
-### Production Setup
+### 本番環境向けのセットアップ
 
-Restrict access to specific domains:
+特定のドメインにアクセスを制限します。
 
 ```go
 app.Use(cors.WithOrigins("https://myapp.com", "https://api.myapp.com"))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
-Full control over headers, methods, and exposure:
+ヘッダー、メソッド、公開範囲を完全に制御します。
 
 ```go
 app.Use(cors.New(cors.Config{
@@ -43,8 +43,8 @@ app.Use(cors.New(cors.Config{
 }))
 ```
 
-## Security Best Practices
+## セキュリティのベストプラクティス
 
-1.  **Avoid Wildcards in Production**: Never use `AllowOrigins: []string{"*"}` in production environments. It allows any website to make requests to your API.
-2.  **Credentials & Wildcards**: The middleware explicitly forbids combining `AllowCredentials: true` with wildcard origins, as this is a security risk and is disallowed by the CORS spec.
-3.  **Vary Header**: The middleware automatically adds `Vary: Origin` to responses to ensure correct caching behavior by CDNs and browsers.
+1.  **本番環境でのワイルドカードの回避**: 本番環境では `AllowOrigins: []string{"*"}` を決して使用しないでください。任意の Web サイトが API にリクエストを送れるようになってしまいます。
+2.  **認証情報とワイルドカード**: このミドルウェアは、`AllowCredentials: true` とワイルドカードオリジンの組み合わせを明示的に禁止します。これはセキュリティリスクであり、CORS 仕様でも許可されていないためです。
+3.  **Vary ヘッダー**: このミドルウェアは、CDN やブラウザによるキャッシュ動作を正しく保つため、レスポンスに `Vary: Origin` を自動的に追加します。

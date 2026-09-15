@@ -1,24 +1,24 @@
-# 🧠 Goryu Context Package
+# 🧠 Goryu Context パッケージ
 
-> **The heart of the Goryu framework.**
+> **Goryu フレームワークの中核。**
 
-The `context` package provides the `Context` struct, which is the central data carrier for every request in Goryu. It is designed with **Developer Experience (DX)**, **Security**, and **Performance** in mind.
+`context` パッケージは `Context` 構造体を提供します。これは Goryu のすべてのリクエストにおける中心的なデータキャリアです。**開発者体験（DX）**、**セキュリティ**、そして**パフォーマンス**を念頭に置いて設計されています。
 
-Unlike standard `context.Context` or other framework contexts, Goryu's Context offers a **Fluent API**, **Built-in Security Checks**, and **Robust Error Handling** to make your life easier and your application safer.
-
----
-
-## ✨ Key Features
-
-- **🌊 Fluent API**: Chain methods for expressive, readable, and compact code.
-- **🛡️ Security First**: Automatic protection against Path Traversal, IP Spoofing, and malicious file uploads.
-- **⚡ Thread-Safe**: Built-in mutexes and atomic operations ensure safety even in concurrent middleware.
-- **🔧 Robust Error Handling**: Configurable error modes (Return, Log, Panic, Silent) to suit your debugging needs.
-- **📦 Smart Binding**: strict JSON binding and powerful query/form parsing.
+標準の `context.Context` や他のフレームワークのコンテキストとは異なり、Goryu の Context は**流暢な API**、**組み込みのセキュリティチェック**、そして**堅牢なエラーハンドリング**を提供し、開発をより容易に、アプリケーションをより安全にします。
 
 ---
 
-## 🚀 Quick Start
+## ✨ 主な特徴
+
+- **🌊 流暢な API**: メソッドをチェーンして、表現力豊かで読みやすく、コンパクトなコードを書けます。
+- **🛡️ セキュリティ第一**: パストラバーサル、IP スプーフィング、悪意のあるファイルアップロードに対する自動保護。
+- **⚡ スレッドセーフ**: 組み込みのミューテックスとアトミック操作により、並行ミドルウェアでも安全性を確保します。
+- **🔧 堅牢なエラーハンドリング**: 設定可能なエラーモード（Return、Log、Panic、Silent）で、デバッグのニーズに合わせられます。
+- **📦 スマートなバインディング**: 厳格な JSON バインディングと強力なクエリ／フォームのパース。
+
+---
+
+## 🚀 クイックスタート
 
 ```go
 func HandleLogin(c *goryuctx.Context) {
@@ -33,10 +33,10 @@ func HandleLogin(c *goryuctx.Context) {
 
 ---
 
-## 📥 Request Handling
+## 📥 リクエストの処理
 
-### Data Access
-Easily access query parameters, form values, and path parameters.
+### データアクセス
+クエリパラメータ、フォーム値、パスパラメータに簡単にアクセスできます。
 
 ```go
 // GET /search?q=golang&page=1
@@ -49,8 +49,8 @@ username := c.Form("username")
 userID := c.Param("id")
 ```
 
-### Data Binding
-Bind request data to structs with validation.
+### データバインディング
+リクエストデータをバリデーション付きで構造体にバインドします。
 
 ```go
 type User struct {
@@ -67,12 +67,12 @@ if err := c.BodyParser(&user); err != nil {
 }
 ```
 
-### 📂 Secure File Uploads
-The `SaveUploadedFile` method is a fortress. It performs rigorous security checks:
-- ✅ Validates filename length and characters (no null bytes, control chars).
-- ✅ Prevents Path Traversal attacks (e.g., `../../etc/passwd`).
-- ✅ Checks for dangerous extensions (`.exe`, `.sh`, etc.).
-- ✅ Prevents hidden file uploads.
+### 📂 安全なファイルアップロード
+`SaveUploadedFile` メソッドは要塞のような存在です。厳格なセキュリティチェックを実行します。
+- ✅ ファイル名の長さと文字を検証します（null バイトや制御文字は不可）。
+- ✅ パストラバーサル攻撃（例: `../../etc/passwd`）を防止します。
+- ✅ 危険な拡張子（`.exe`、`.sh` など）をチェックします。
+- ✅ 隠しファイルのアップロードを防止します。
 
 ```go
 file, header, err := c.FormFile("avatar")
@@ -88,8 +88,8 @@ if err := c.SaveUploadedFile(header, "user_avatar.png"); err != nil {
 }
 ```
 
-### 🌐 IP Resolution
-Get the real client IP, even behind proxies, with spoofing protection.
+### 🌐 IP の解決
+プロキシの背後にいる場合でも、スプーフィング対策を備えて実際のクライアント IP を取得します。
 
 ```go
 // Only trusts X-Forwarded-For if the direct IP is in the trusted_proxies list
@@ -99,10 +99,10 @@ clientIP := c.RemoteIP()
 
 ---
 
-## 📤 Response Handling
+## 📤 レスポンスの処理
 
-### Standard Methods
-Send responses in various formats.
+### 標準メソッド
+さまざまな形式でレスポンスを送信します。
 
 ```go
 // All methods return error for proper error handling
@@ -114,8 +114,8 @@ c.FluentHTML(200, "<h1>Hello</h1>")
 c.FluentXML(200, "<root>Hello</root>")
 ```
 
-### 🌊 Fluent API
-Chain response methods for cleaner handlers.
+### 🌊 流暢な API
+レスポンスメソッドをチェーンして、よりすっきりしたハンドラーを書けます。
 
 ```go
 c.WithStatus(201).
@@ -124,8 +124,8 @@ c.WithStatus(201).
   JSON(map[string]string{"status": "created"})
 ```
 
-### 📁 File Serving
-Serve files securely. `SendFile` automatically cleans paths and checks for directory traversal attempts.
+### 📁 ファイル配信
+ファイルを安全に配信します。`SendFile` はパスを自動的にクリーンアップし、ディレクトリトラバーサルの試みをチェックします。
 
 ```go
 // Safely serves files, returning 404 or 403 as appropriate
@@ -134,12 +134,12 @@ c.SendFile("public/index.html")
 
 ---
 
-## ⚠️ Error Management
+## ⚠️ エラー管理
 
-Goryu's context uses a sophisticated error handling system.
+Goryu の Context は洗練されたエラーハンドリングシステムを使用しています。
 
-### Error Handling Modes
-You can configure how the context handles errors during fluent chaining or standard operations.
+### エラーハンドリングモード
+流暢なチェーンや標準的な操作の際に、Context がエラーをどう扱うかを設定できます。
 
 ```go
 // Available Modes:
@@ -151,8 +151,8 @@ You can configure how the context handles errors during fluent chaining or stand
 c.SetErrorHandlingMode(goryuctx.ErrorModeLog)
 ```
 
-### Checking Errors
-When using the fluent API, errors are collected internally.
+### エラーの確認
+流暢な API を使用する場合、エラーは内部的に収集されます。
 
 ```go
 c.Status(200).JSON(data)
@@ -165,11 +165,11 @@ if c.HasErrors() {
 
 ---
 
-## 🔒 Thread Safety & Concurrency
+## 🔒 スレッドセーフティと並行性
 
-The `Context` struct is protected by a `sync.RWMutex`.
-- **`Set(key, value)`** and **`Get(key)`** are thread-safe.
-- Response writing uses atomic flags to prevent "multiple response" race conditions.
+`Context` 構造体は `sync.RWMutex` によって保護されています。
+- **`Set(key, value)`** と **`Get(key)`** はスレッドセーフです。
+- レスポンスの書き込みはアトミックフラグを使用して「複数レスポンス」の競合状態を防ぎます。
 
 ```go
 // Safe to use in concurrent goroutines
@@ -180,9 +180,9 @@ go func() {
 
 ---
 
-## 🧩 Advanced: Context Lifecycle
+## 🧩 応用: Context のライフサイクル
 
-The `Context` is created via `NewContext`. It is designed to be pooled (future optimization), so avoid storing references to it after the request completes.
+`Context` は `NewContext` を介して作成されます。プール化される（将来の最適化）ように設計されているため、リクエスト完了後にその参照を保持しないようにしてください。
 
 ```go
 ctx := goryuctx.NewContext(w, r)

@@ -1,19 +1,19 @@
-# Route Package
+# Route パッケージ
 
-The `route` package defines the core `Route` structure used by Goryu. It is designed to be a lightweight, dependency-free package to avoid circular imports between the `router` and `context` packages.
+`route` パッケージは、Goryu で使用される中核的な `Route` 構造体を定義します。`router` パッケージと `context` パッケージ間の循環インポートを避けるため、軽量で依存関係を持たないパッケージとして設計されています。
 
-## Purpose
+## 目的
 
-In complex frameworks, circular dependencies can occur when:
-- The `Router` needs to know about `Routes`.
-- The `Context` needs to know about the current `Route`.
-- The `Route` might need to reference the `Router`.
+複雑なフレームワークでは、次のような場合に循環依存が発生することがあります:
+- `Router` が `Routes` を認識する必要がある。
+- `Context` が現在の `Route` を認識する必要がある。
+- `Route` が `Router` を参照する必要がある場合がある。
 
-To solve this, the `Route` struct is defined in this isolated package.
+これを解決するため、`Route` 構造体はこの独立したパッケージ内で定義されています。
 
-## The Route Struct
+## Route 構造体
 
-The `Route` struct holds all the metadata for a registered route:
+`Route` 構造体は、登録されたルートに関するすべてのメタデータを保持します:
 
 ```go
 type Route struct {
@@ -26,9 +26,9 @@ type Route struct {
 }
 ```
 
-## Usage
+## 使い方
 
-While you typically interact with routes via the `goryu` or `router` packages, you might encounter the `Route` struct when inspecting the current route from the context:
+通常はルートを `goryu` パッケージや `router` パッケージ経由で操作しますが、コンテキストから現在のルートを調べる際に `Route` 構造体に触れることがあります:
 
 ```go
 import "github.com/arthurlch/goryu/goryuctx"
@@ -46,12 +46,12 @@ func MyHandler(c *goryuctx.Context) error {
 }
 ```
 
-### Naming Routes
+### ルートの命名
 
-You can name routes for easier lookup or reverse routing (if supported):
+より簡単な検索や逆ルーティング（対応している場合）のために、ルートに名前を付けることができます:
 
 ```go
 app.GET("/users/:id", GetUser).SetName("get_user")
 ```
 
-This updates the `Name` field of the underlying `Route` struct.
+これにより、基盤となる `Route` 構造体の `Name` フィールドが更新されます。

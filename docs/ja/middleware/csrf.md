@@ -1,18 +1,18 @@
-# CSRF Middleware
+# CSRF ミドルウェア
 
-A robust Cross-Site Request Forgery (CSRF) protection middleware for Goryu. It implements the Double Submit Cookie pattern to secure your application against CSRF attacks.
+Goryu 向けの堅牢なクロスサイトリクエストフォージェリ（CSRF）保護ミドルウェアです。ダブルサブミットクッキーパターンを実装し、アプリケーションを CSRF 攻撃から保護します。
 
-## Features
+## 機能
 
-- **Double Submit Cookie Pattern**: Stateless and scalable protection.
-- **Secure Defaults**: Generates cryptographically strong 32-byte tokens.
-- **Cookie Security**: Supports `HttpOnly`, `Secure`, and `SameSite` attributes.
-- **Safe Methods**: Automatically skips validation for safe HTTP methods (GET, HEAD, OPTIONS).
-- **Customizable**: Configurable header names, cookie names, and token properties.
+- **ダブルサブミットクッキーパターン**: ステートレスでスケーラブルな保護。
+- **安全なデフォルト値**: 暗号論的に強力な 32 バイトのトークンを生成します。
+- **クッキーのセキュリティ**: `HttpOnly`、`Secure`、`SameSite` の各属性をサポートします。
+- **安全なメソッド**: 安全な HTTP メソッド（GET、HEAD、OPTIONS）に対する検証を自動的にスキップします。
+- **カスタマイズ可能**: ヘッダー名、クッキー名、トークンのプロパティを設定できます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
 ```go
 package main
@@ -37,11 +37,11 @@ func main() {
 }
 ```
 
-### Client-Side Integration
+### クライアント側の統合
 
-The middleware sets a `X-CSRF-Token` header and a `csrf-token` cookie on safe requests (GET, HEAD, etc.). Your frontend client must read this token and include it in the header of subsequent unsafe requests (POST, PUT, DELETE).
+このミドルウェアは、安全なリクエスト（GET、HEAD など）に対して `X-CSRF-Token` ヘッダーと `csrf-token` クッキーを設定します。フロントエンドのクライアントはこのトークンを読み取り、以降の安全でないリクエスト（POST、PUT、DELETE）のヘッダーに含める必要があります。
 
-**Example (JavaScript):**
+**例（JavaScript）:**
 
 ```javascript
 const csrfToken = document.cookie
@@ -58,7 +58,7 @@ fetch('/submit', {
 });
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(csrf.New(csrf.Config{
@@ -71,12 +71,12 @@ app.Use(csrf.New(csrf.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Safe Requests (GET, etc.)**: The middleware generates a new random token and sets it as a cookie and a response header.
-2.  **Unsafe Requests (POST, etc.)**: The middleware checks for the presence of the token in both the request header and the cookie. It then cryptographically compares them. If they match, the request is allowed; otherwise, it is rejected with `403 Forbidden`.
+1.  **安全なリクエスト（GET など）**: このミドルウェアは新しいランダムなトークンを生成し、クッキーとレスポンスヘッダーの両方に設定します。
+2.  **安全でないリクエスト（POST など）**: このミドルウェアは、リクエストヘッダーとクッキーの両方にトークンが存在するかを確認します。その後、両者を暗号論的に比較します。一致すればリクエストは許可され、一致しなければ `403 Forbidden` で拒否されます。
 
-## Security Note
+## セキュリティに関する注意
 
-- **HTTPS Required**: For the `Secure` cookie attribute to work, your application must be served over HTTPS.
-- **Subdomains**: If your API and frontend are on different subdomains, ensure `SameSite` and `Domain` cookie attributes are configured correctly.
+- **HTTPS が必要**: `Secure` クッキー属性を機能させるには、アプリケーションが HTTPS 経由で提供されている必要があります。
+- **サブドメイン**: API とフロントエンドが異なるサブドメインにある場合は、`SameSite` および `Domain` クッキー属性が正しく設定されていることを確認してください。

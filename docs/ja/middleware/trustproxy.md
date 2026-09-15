@@ -1,19 +1,19 @@
-# TrustProxy Middleware
+# TrustProxy ミドルウェア
 
-A middleware that securely resolves the real client IP address when your application is running behind a load balancer or reverse proxy. It prevents IP spoofing by only trusting headers from configured proxy networks.
+アプリケーションがロードバランサーやリバースプロキシの背後で動作している場合に、実際のクライアント IP アドレスを安全に解決するミドルウェアです。設定されたプロキシネットワークからのヘッダーのみを信頼することで、IP のなりすましを防止します。
 
-## Features
+## 特徴
 
-- **Secure IP Resolution**: Only trusts `X-Forwarded-For` (or custom headers) from whitelisted proxies.
-- **CIDR Support**: Easily whitelist entire subnets (e.g., `10.0.0.0/8`, `127.0.0.1`).
-- **Context Integration**: Stores the resolved IP in the context for easy access.
-- **Header Customization**: Support for custom proxy headers (e.g., `CF-Connecting-IP`).
+- **安全な IP 解決**: ホワイトリストに登録されたプロキシからの `X-Forwarded-For`（またはカスタムヘッダー）のみを信頼します。
+- **CIDR 対応**: サブネット全体（例: `10.0.0.0/8`、`127.0.0.1`）を簡単にホワイトリストに登録できます。
+- **コンテキスト統合**: 解決した IP をコンテキストに保存し、簡単にアクセスできるようにします。
+- **ヘッダーのカスタマイズ**: カスタムプロキシヘッダー（例: `CF-Connecting-IP`）に対応します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Trust local proxies (common for sidecar proxies or local Nginx):
+ローカルプロキシを信頼します（サイドカープロキシやローカルの Nginx で一般的です）:
 
 ```go
 package main
@@ -39,9 +39,9 @@ func main() {
 }
 ```
 
-### Advanced Configuration
+### 詳細な設定
 
-Trust private networks and use a custom header:
+プライベートネットワークを信頼し、カスタムヘッダーを使用します:
 
 ```go
 app.Use(trustproxy.New(trustproxy.Config{
@@ -54,13 +54,13 @@ app.Use(trustproxy.New(trustproxy.Config{
 }))
 ```
 
-## Why is this important?
+## なぜこれが重要なのか？
 
-If you blindly trust the `X-Forwarded-For` header, a malicious user can spoof their IP address by sending a request with a fake header:
+`X-Forwarded-For` ヘッダーを無条件に信頼してしまうと、悪意のあるユーザーが偽のヘッダーを含むリクエストを送信することで、自分の IP アドレスをなりすますことができます:
 
 ```
 GET / HTTP/1.1
 X-Forwarded-For: 8.8.8.8
 ```
 
-If your application uses IP-based rate limiting or access control, this spoofing can bypass your security measures. `TrustProxy` solves this by verifying that the request actually came from a trusted proxy before accepting the header value.
+アプリケーションが IP ベースのレート制限やアクセス制御を使用している場合、このなりすましによってセキュリティ対策が回避される可能性があります。`TrustProxy` は、ヘッダーの値を受け入れる前に、リクエストが実際に信頼されたプロキシから送られてきたことを検証することで、この問題を解決します。

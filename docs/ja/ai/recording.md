@@ -1,34 +1,36 @@
-# Eval Recording
+# 評価用レコーディング
 
-`recorder` captures request/response pairs for building **eval datasets**. Each
-completed request is written to a `Sink` as a structured `Record`; the bundled
-`FileSink` appends newline-delimited JSON (NDJSON), the usual input format for
-offline eval pipelines. Bodies are captured (capped) and the full request body is
-restored so your handler still reads it.
+`recorder` は、**評価用データセット**を構築するためにリクエスト / レスポンスの
+ペアをキャプチャします。完了した各リクエストは、構造化された `Record` として
+`Sink` に書き込まれます。同梱の `FileSink` は改行区切り JSON（NDJSON）を追記
+します。これはオフラインの評価パイプラインで一般的な入力形式です。ボディは
+（上限付きで）キャプチャされ、リクエストボディ全体は復元されるため、ハンドラーは
+依然としてそれを読み取れます。
 
 ```go
 import "github.com/arthurlch/goryu/middleware/recorder"
 ```
 
-## Features
+## 機能
 
-- **Structured records**: time, method, path, status, latency, request/response
-  bodies, key, and metadata.
-- **Pluggable sinks**: implement the `Sink` interface (DB, queue, blob store) or
-  use the bundled `FileSink`.
-- **Bounded capture**: a per-body byte cap; request/response capture can each be
-  toggled off.
-- **Body-safe**: the request body is read and restored so handlers still see it.
-- **Enrichable**: `KeyFunc` and `MetaFunc` attach a caller key and metadata such
-  as model and token usage.
+- **構造化されたレコード**: 時刻、メソッド、パス、ステータス、レイテンシ、
+  リクエスト / レスポンスのボディ、キー、メタデータ。
+- **差し替え可能なシンク**: `Sink` インターフェースを実装する（DB、キュー、
+  ブロブストア）か、同梱の `FileSink` を使用します。
+- **上限付きキャプチャ**: ボディあたりのバイト数上限。リクエスト / レスポンスの
+  キャプチャはそれぞれ個別にオフにできます。
+- **ボディに安全**: リクエストボディは読み取られた後に復元されるため、ハンドラーは
+  依然としてそれを参照できます。
+- **エンリッチ可能**: `KeyFunc` と `MetaFunc` が、呼び出し元のキーや、モデルや
+  トークン使用量といったメタデータを付加します。
 
-## Usage
+## 使い方
 
-### FileSink to NDJSON
+### FileSink から NDJSON へ
 
-Open a `FileSink` at startup and close it on shutdown; install the recorder as
-the outermost middleware so it captures everything, including cache hits and
-error responses.
+起動時に `FileSink` を開き、シャットダウン時にクローズします。キャッシュヒットや
+エラーレスポンスも含めてすべてをキャプチャできるよう、レコーダーを最も外側の
+ミドルウェアとしてインストールしてください。
 
 ```go
 import (
@@ -48,17 +50,17 @@ app.Use(recorder.New(recorder.Config{
 }))
 ```
 
-Each line of `evals.jsonl` is one `Record`:
+`evals.jsonl` の各行が 1 つの `Record` です。
 
 ```json
 {"time":"2026-09-14T10:00:00Z","method":"POST","path":"/chat","status":200,"latency_ms":812,"key":"k-123","request_body":{"q":"life"},"response_body":{"answer":"42"},"meta":{"model":"gpt-x","tokens":1156}}
 ```
 
-### Enrich records with token usage
+### トークン使用量でレコードをエンリッチする
 
-`MetaFunc` runs after the handler, so it can read the usage the handler reported
-via `aimeter.SetUsage`. This is the canonical way to join eval records to token
-and cost data.
+`MetaFunc` はハンドラーの後に実行されるため、ハンドラーが `aimeter.SetUsage` で
+報告した使用量を読み取れます。これは評価レコードをトークンおよびコストデータと
+結び付ける標準的な方法です。
 
 ```go
 import "github.com/arthurlch/goryu/middleware/aimeter"
@@ -78,16 +80,17 @@ app.Use(recorder.New(recorder.Config{
 }))
 ```
 
-::: tip Order the recorder outermost
-Install `recorder` before `aimeter` (so it wraps it). It then records `429`
-rejections and prompt-cache hits too — and because `MetaFunc` runs after the
-handler, the usage set by the handler is available.
+::: tip レコーダーを最も外側に配置する
+`recorder` を `aimeter` より前にインストールします（そのため後者をラップします）。
+そうすると `429` の拒否やプロンプトキャッシュのヒットも記録します。また
+`MetaFunc` はハンドラーの後に実行されるため、ハンドラーが設定した使用量を
+利用できます。
 :::
 
-### Control what gets captured
+### 何をキャプチャするかを制御する
 
-`CaptureRequest` and `CaptureResponse` are `*bool` so you can distinguish "unset"
-(defaults to `true`) from an explicit `false`.
+`CaptureRequest` と `CaptureResponse` は `*bool` なので、「未設定」（デフォルトは
+`true`）と明示的な `false` を区別できます。
 
 ```go
 noBody := false
@@ -98,10 +101,10 @@ app.Use(recorder.New(recorder.Config{
 }))
 ```
 
-### A custom sink
+### カスタムシンク
 
-Any type with a `Write(Record) error` method is a sink — send records to a
-database, a queue, or an async buffer.
+`Write(Record) error` メソッドを持つ任意の型がシンクになります。レコードを
+データベース、キュー、非同期バッファへ送れます。
 
 ```go
 type QueueSink struct{ ch chan recorder.Record }
@@ -114,36 +117,37 @@ func (s QueueSink) Write(r recorder.Record) error {
 app.Use(recorder.New(recorder.Config{Sink: QueueSink{ch: buf}}))
 ```
 
-## The Record
+## Record
 
-| Field | JSON | Notes |
+| フィールド | JSON | 備考 |
 |-------|------|-------|
-| Time | `time` | when the request started |
-| Method | `method` | HTTP method |
-| Path | `path` | request path |
-| Status | `status` | response status code |
-| LatencyMS | `latency_ms` | handler duration in ms |
-| Key | `key` | from `KeyFunc` (omitted if empty) |
-| RequestBody | `request_body` | captured request body (capped) |
-| ResponseBody | `response_body` | captured response body (capped) |
-| Meta | `meta` | from `MetaFunc` |
+| Time | `time` | リクエストが開始された時刻 |
+| Method | `method` | HTTP メソッド |
+| Path | `path` | リクエストパス |
+| Status | `status` | レスポンスステータスコード |
+| LatencyMS | `latency_ms` | ハンドラーの所要時間（ミリ秒） |
+| Key | `key` | `KeyFunc` から（空の場合は省略） |
+| RequestBody | `request_body` | キャプチャされたリクエストボディ（上限付き） |
+| ResponseBody | `response_body` | キャプチャされたレスポンスボディ（上限付き） |
+| Meta | `meta` | `MetaFunc` から |
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| Sink | `Sink` | Where records go (required — no sink means pass-through) | none |
-| MaxBodyBytes | `int64` | Max bytes captured per body | `64 KiB` |
-| CaptureRequest | `*bool` | Capture request body | `true` |
-| CaptureResponse | `*bool` | Capture response body | `true` |
-| KeyFunc | `func(c) string` | Caller/session key | none |
-| MetaFunc | `func(c) map[string]any` | Extra metadata | none |
+| Sink | `Sink` | レコードの送り先（必須 — シンクがなければ素通し） | なし |
+| MaxBodyBytes | `int64` | ボディごとにキャプチャする最大バイト数 | `64 KiB` |
+| CaptureRequest | `*bool` | リクエストボディをキャプチャする | `true` |
+| CaptureResponse | `*bool` | レスポンスボディをキャプチャする | `true` |
+| KeyFunc | `func(c) string` | 呼び出し元 / セッションのキー | なし |
+| MetaFunc | `func(c) map[string]any` | 追加のメタデータ | なし |
 
-## Notes
+## 注意点
 
-- Non-JSON bodies are stored as JSON strings so every record marshals cleanly;
-  valid JSON is stored verbatim.
-- Bodies are truncated at `MaxBodyBytes` — raise it for large prompts.
-- `FileSink` flushes after each record and is safe for concurrent use. For
-  high-throughput recording, back it with a buffered or async sink.
-- With no `Sink` configured the middleware is a no-op pass-through.
+- JSON でないボディは JSON 文字列として保存されるため、すべてのレコードが
+  きれいにマーシャルされます。有効な JSON はそのまま保存されます。
+- ボディは `MaxBodyBytes` で切り詰められます。大きなプロンプトの場合は上限を
+  引き上げてください。
+- `FileSink` は各レコードの後にフラッシュし、並行使用に対して安全です。高スループット
+  なレコーディングには、バッファ付きまたは非同期のシンクで裏付けてください。
+- `Sink` が設定されていない場合、ミドルウェアは何もしない素通しになります。

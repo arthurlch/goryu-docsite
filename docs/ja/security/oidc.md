@@ -1,29 +1,29 @@
 # OAuth2 / OpenID Connect
 
-`authoidc` is an OpenID Connect relying party for Goryu. It runs the
-authorization-code flow with PKCE, verifies the ID token against the provider's
-JWKS, and hands your app the verified claims. Use it to add "Sign in with Google /
-Okta / Entra ID / Auth0" to your application.
+`authoidc` は Goryu 向けの OpenID Connect リライングパーティです。PKCE を用いた
+認可コードフローを実行し、ID トークンをプロバイダーの JWKS に対して検証し、検証済みの
+クレームをアプリに引き渡します。「Google / Okta / Entra ID / Auth0 でサインイン」を
+アプリケーションに追加するために使用します。
 
-::: tip Audited crypto, not hand-rolled
-`authoidc` is built on `github.com/coreos/go-oidc` and `golang.org/x/oauth2` — the
-same audited libraries the Go ecosystem relies on. They handle discovery, JWKS
-rotation, and ID-token signature verification. `Start` and `Callback` bind and
-verify **state** (CSRF), **nonce** (ID-token replay), and a **PKCE verifier**
-(code interception) on every flow. None of this is reimplemented here.
+::: tip 監査済みの暗号処理、独自実装ではない
+`authoidc` は `github.com/coreos/go-oidc` と `golang.org/x/oauth2` の上に構築されています。
+これらは Go エコシステムが信頼している、監査済みのライブラリと同じものです。ディスカバリ、
+JWKS のローテーション、ID トークンの署名検証を担います。`Start` と `Callback` は、すべての
+フローで **state**（CSRF）、**nonce**（ID トークンのリプレイ）、**PKCE 検証子**
+（コードの傍受）をバインドし検証します。これらはここで再実装されていません。
 :::
 
-## Features
+## 特徴
 
-- **Authorization-code + PKCE** flow via `x/oauth2`.
-- **ID-token verification** — signature, issuer, audience, and expiry checked against the provider JWKS by `go-oidc`.
-- **CSRF / replay protection** — `state` and `nonce` are bound into short-lived, HttpOnly, `SameSite=Lax` cookies and verified on callback.
-- **Verified claims** — `Subject`, `Email`, `EmailVerified`, `Name` handed to your `OnSuccess` callback.
-- **Bring-your-own session** — `OnSuccess` lets you mint a JWT, create a session, or redirect however you like.
+- **認可コード + PKCE** フローを `x/oauth2` 経由で実行。
+- **ID トークンの検証** — 署名、発行者、オーディエンス、有効期限を `go-oidc` がプロバイダーの JWKS に対して確認。
+- **CSRF / リプレイ防御** — `state` と `nonce` を短命の HttpOnly かつ `SameSite=Lax` の Cookie にバインドし、コールバック時に検証。
+- **検証済みクレーム** — `Subject`、`Email`、`EmailVerified`、`Name` を `OnSuccess` コールバックに引き渡し。
+- **独自セッションの利用** — `OnSuccess` により、JWT の発行、セッションの作成、任意のリダイレクトなどを自由に行えます。
 
-## Usage
+## 使い方
 
-### Basic setup
+### 基本的なセットアップ
 
 ```go
 import (
@@ -54,14 +54,14 @@ func main() {
 }
 ```
 
-`Start` redirects the user to the provider. `Callback` validates the response,
-verifies the ID token, and — by default — sets the `user_id` context key to the
-subject and returns the claims as JSON.
+`Start` はユーザーをプロバイダーへリダイレクトします。`Callback` はレスポンスを検証し、
+ID トークンを検証し、デフォルトでは `user_id` コンテキストキーに subject を設定して
+クレームを JSON として返します。
 
-### Handling success yourself
+### 成功時の処理を自分で行う
 
-Supply `OnSuccess` to create your own session or issue your own token. The verified
-claims and the raw OAuth2 token are passed in:
+`OnSuccess` を指定すると、独自のセッションを作成したり独自のトークンを発行したりできます。
+検証済みのクレームと生の OAuth2 トークンが渡されます。
 
 ```go
 import "golang.org/x/oauth2"
@@ -87,10 +87,10 @@ rp, err := authoidc.New(authoidc.Config{
 })
 ```
 
-### Custom scopes
+### カスタムスコープ
 
-By default the relying party requests `openid`, `email`, and `profile`. Override
-`Scopes` to request more (or fewer):
+デフォルトでは、リライングパーティは `openid`、`email`、`profile` を要求します。
+`Scopes` を上書きすることで、より多く（または少なく）要求できます。
 
 ```go
 rp, _ := authoidc.New(authoidc.Config{
@@ -102,19 +102,19 @@ rp, _ := authoidc.New(authoidc.Config{
 })
 ```
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| Issuer | `string` | OIDC issuer URL (used for discovery). Required. | — |
-| ClientID | `string` | OAuth2 client ID. Required. | — |
-| ClientSecret | `string` | OAuth2 client secret. | — |
-| RedirectURL | `string` | Your registered callback URL. Required. | — |
-| Scopes | `[]string` | Requested scopes | `["openid", "email", "profile"]` |
-| CookiePrefix | `string` | Namespaces the flow cookies | `"oidc"` |
-| Insecure | `bool` | Allow flow cookies over plain HTTP (dev only) | `false` |
-| OnSuccess | `func(c *goryu.Ctx, claims Claims, token *oauth2.Token)` | Called with verified claims | Sets `user_id`, returns claims JSON |
-| OnError | `func(c *goryu.Ctx, err error)` | Called on any failure | `401` JSON error |
+| Issuer | `string` | OIDC 発行者 URL（ディスカバリに使用）。必須。 | — |
+| ClientID | `string` | OAuth2 クライアント ID。必須。 | — |
+| ClientSecret | `string` | OAuth2 クライアントシークレット。 | — |
+| RedirectURL | `string` | 登録済みのコールバック URL。必須。 | — |
+| Scopes | `[]string` | 要求するスコープ | `["openid", "email", "profile"]` |
+| CookiePrefix | `string` | フロー用 Cookie の名前空間 | `"oidc"` |
+| Insecure | `bool` | フロー用 Cookie を平文 HTTP 上で許可（開発用のみ） | `false` |
+| OnSuccess | `func(c *goryu.Ctx, claims Claims, token *oauth2.Token)` | 検証済みクレームとともに呼び出される | `user_id` を設定し、クレームの JSON を返す |
+| OnError | `func(c *goryu.Ctx, err error)` | いずれかの失敗時に呼び出される | `401` の JSON エラー |
 
 ### Claims
 
@@ -127,25 +127,25 @@ type Claims struct {
 }
 ```
 
-## How the flow is secured
+## フローの安全性が保たれる仕組み
 
-1. **`Start`** generates a random `state`, `nonce`, and PKCE `verifier`, binds each
-   into a short-lived HttpOnly `SameSite=Lax` cookie, and redirects to the provider
-   with the `state`, `nonce`, and S256 code challenge.
-2. **`Callback`** verifies the returned `state` matches the cookie (CSRF), exchanges
-   the code using the PKCE `verifier` (code interception defense), verifies the ID
-   token's signature/issuer/audience/expiry against the provider JWKS, and checks
-   the ID token's `nonce` matches the cookie (replay defense).
-3. Only after all checks pass are the claims decoded and handed to `OnSuccess`.
+1. **`Start`** はランダムな `state`、`nonce`、PKCE `verifier` を生成し、それぞれを
+   短命の HttpOnly かつ `SameSite=Lax` の Cookie にバインドし、`state`、`nonce`、
+   S256 コードチャレンジとともにプロバイダーへリダイレクトします。
+2. **`Callback`** は返された `state` が Cookie と一致することを検証し（CSRF）、PKCE
+   `verifier` を用いてコードを交換し（コード傍受への防御）、ID トークンの署名／発行者／
+   オーディエンス／有効期限をプロバイダーの JWKS に対して検証し、ID トークンの `nonce`
+   が Cookie と一致することを確認します（リプレイへの防御）。
+3. すべてのチェックを通過した後にのみ、クレームがデコードされ `OnSuccess` に渡されます。
 
 ::: warning
-Set `Insecure: true` only in local development. It allows the flow cookies to be
-sent over plain HTTP, which exposes `state` / `nonce` / PKCE to network attackers.
-In production always serve over HTTPS and leave `Insecure` unset.
+`Insecure: true` はローカル開発でのみ設定してください。フロー用 Cookie が平文 HTTP 上で
+送信されるようになり、`state` / `nonce` / PKCE がネットワーク上の攻撃者にさらされます。
+本番環境では常に HTTPS で配信し、`Insecure` は設定しないままにしてください。
 :::
 
-## Next steps
+## 次のステップ
 
-- Turn the OIDC identity into an app session or token via [JWT Auth](/ja/middleware/auth) or [Sessions](/ja/middleware/session).
-- Guard routes by role with [RBAC](/ja/security/rbac).
-- Keep a record of logins with the [Audit Log](/ja/security/audit-log).
+- [JWT 認証](/ja/middleware/auth) または [セッション](/ja/middleware/session) を使って、OIDC のアイデンティティをアプリのセッションやトークンに変換しましょう。
+- [RBAC](/ja/security/rbac) を使って、ロールでルートを保護しましょう。
+- [監査ログ](/ja/security/audit-log) を使って、ログインの記録を残しましょう。

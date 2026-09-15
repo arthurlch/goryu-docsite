@@ -1,46 +1,47 @@
-# MCP Server
+# MCP サーバー
 
-`goryu mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io)
-server that exposes Goryu's project tooling to AI agents. It speaks JSON-RPC 2.0
-over stdio, so any MCP-capable client — Claude Code, an IDE agent, or your own
-harness — can list your routes, scaffold handlers, and start a dev server from
-inside the project directory.
+`goryu mcp` は、Goryu のプロジェクトツールを AI エージェントに公開する
+[Model Context Protocol](https://modelcontextprotocol.io) サーバーを実行します。
+stdio 上で JSON-RPC 2.0 を話すため、MCP 対応のクライアント（Claude Code、
+IDE エージェント、あるいは独自のハーネス）であれば、プロジェクトディレクトリ内から
+ルートの一覧表示、ハンドラーのスキャフォールド、開発サーバーの起動が行えます。
 
 ```bash
 goryu mcp
 ```
 
-The process reads one JSON-RPC request per line on stdin and writes one response
-per line on stdout. It runs until stdin closes (EOF).
+このプロセスは stdin から 1 行につき 1 つの JSON-RPC リクエストを読み取り、
+stdout に 1 行につき 1 つのレスポンスを書き出します。stdin が閉じる（EOF）まで
+実行され続けます。
 
-## Features
+## 機能
 
-- **Standard transport**: JSON-RPC 2.0 over stdio, protocol version
-  `2024-11-05` — works with any MCP client.
-- **Project-aware**: tools operate on the current working directory (your Goryu
-  project).
-- **Three tools**: `list_routes`, `scaffold_handler`, and `run_dev_server`.
-- **Safe scaffolding**: output paths must be relative and may not escape the
-  project (`..` and absolute paths are rejected).
+- **標準トランスポート**: stdio 上の JSON-RPC 2.0、プロトコルバージョン
+  `2024-11-05` — あらゆる MCP クライアントで動作します。
+- **プロジェクト対応**: ツールはカレントワーキングディレクトリ（あなたの Goryu
+  プロジェクト）を対象に動作します。
+- **3 つのツール**: `list_routes`、`scaffold_handler`、`run_dev_server`。
+- **安全なスキャフォールド**: 出力パスは相対パスでなければならず、プロジェクトの
+  外に出ることはできません（`..` や絶対パスは拒否されます）。
 
-## Tools
+## ツール
 
-| Tool | Arguments | Description |
+| ツール | 引数 | 説明 |
 |------|-----------|-------------|
-| `list_routes` | — | List the HTTP routes discovered in the current project. |
-| `scaffold_handler` | `name` (required), `type`, `kind`, `path` | Generate a handler. `type` ∈ `basic\|crud\|api\|ai`; for `ai`, `kind` ∈ `chat\|rag\|agent`. |
-| `run_dev_server` | `port` | Start the dev server in the background; returns its PID and log file. |
+| `list_routes` | — | 現在のプロジェクトで検出された HTTP ルートを一覧表示します。 |
+| `scaffold_handler` | `name`（必須）、`type`、`kind`、`path` | ハンドラーを生成します。`type` ∈ `basic\|crud\|api\|ai`。`ai` の場合、`kind` ∈ `chat\|rag\|agent`。 |
+| `run_dev_server` | `port` | バックグラウンドで開発サーバーを起動し、その PID とログファイルを返します。 |
 
-Defaults for `scaffold_handler`: `type=ai`, `kind=chat`, `path=internal/handlers`.
-`run_dev_server` defaults to `port=3000`, starts with hot-reload disabled, and
-writes output to `goryu-dev.log`.
+`scaffold_handler` のデフォルト: `type=ai`、`kind=chat`、`path=internal/handlers`。
+`run_dev_server` のデフォルトは `port=3000` で、ホットリロードを無効にして起動し、
+出力を `goryu-dev.log` に書き出します。
 
-## Usage
+## 使い方
 
-### Point an MCP client at it
+### MCP クライアントを向ける
 
-Configure your client to launch `goryu mcp` with the working directory set to
-your project. For **Claude Code**, add it to your MCP config:
+クライアントを設定し、ワーキングディレクトリをプロジェクトに設定した状態で
+`goryu mcp` を起動させます。**Claude Code** の場合は、MCP 設定に追加します。
 
 ```json
 {
@@ -54,25 +55,26 @@ your project. For **Claude Code**, add it to your MCP config:
 }
 ```
 
-Or register it with the Claude Code CLI:
+あるいは Claude Code CLI で登録します。
 
 ```bash
 claude mcp add goryu -- goryu mcp
 ```
 
-Most IDE agents use the same `command` / `args` / `cwd` shape. The key is that
-`goryu mcp` must run **in the project directory** — its tools discover routes and
-write handlers relative to the current working directory.
+ほとんどの IDE エージェントは同じ `command` / `args` / `cwd` の形を使います。
+重要なのは、`goryu mcp` を**プロジェクトディレクトリ内**で実行しなければならない
+という点です。ツールはカレントワーキングディレクトリを基準にルートを検出し、
+ハンドラーを書き込みます。
 
-::: tip Make `goryu` available
-Install the CLI so it's on your `PATH`: `go install github.com/arthurlch/goryu/cmd/goryu@latest`.
-If it isn't on `PATH`, use the absolute path to the binary as `command`.
+::: tip `goryu` を利用可能にする
+CLI をインストールして `PATH` に通します: `go install github.com/arthurlch/goryu/cmd/goryu@latest`。
+`PATH` に通っていない場合は、バイナリの絶対パスを `command` として使用してください。
 :::
 
-### Try it by hand
+### 手動で試す
 
-The protocol is line-oriented, so you can drive it with `echo` and a pipe. Send
-`initialize`, then call a tool:
+プロトコルは行指向なので、`echo` とパイプで操作できます。`initialize` を送信し、
+続いてツールを呼び出します。
 
 ```bash
 printf '%s\n%s\n' \
@@ -81,17 +83,17 @@ printf '%s\n%s\n' \
   | goryu mcp
 ```
 
-## JSON-RPC examples
+## JSON-RPC の例
 
 ### initialize
 
-Request:
+リクエスト:
 
 ```json
 { "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {} }
 ```
 
-Response:
+レスポンス:
 
 ```json
 {
@@ -107,13 +109,13 @@ Response:
 
 ### tools/list
 
-Request:
+リクエスト:
 
 ```json
 { "jsonrpc": "2.0", "id": 2, "method": "tools/list" }
 ```
 
-Response (abbreviated):
+レスポンス（抜粋）:
 
 ```json
 {
@@ -155,9 +157,9 @@ Response (abbreviated):
 
 ### tools/call
 
-Scaffold a streaming chat handler:
+ストリーミングチャットハンドラーをスキャフォールドします。
 
-Request:
+リクエスト:
 
 ```json
 {
@@ -171,7 +173,7 @@ Request:
 }
 ```
 
-Response:
+レスポンス:
 
 ```json
 {
@@ -186,29 +188,29 @@ Response:
 }
 ```
 
-Tool results follow the MCP shape: a `content` array of `{type, text}` blocks and
-an `isError` flag. When a tool fails (e.g. a missing `name`, or a `path`
-containing `..`), the failure is reported as a tool result with `"isError": true`
-rather than a JSON-RPC error.
+ツールの結果は MCP の形に従います。`{type, text}` ブロックの `content` 配列と
+`isError` フラグです。ツールが失敗した場合（例えば `name` の欠落や、`..` を
+含む `path`）、その失敗は JSON-RPC エラーではなく、`"isError": true` を持つ
+ツール結果として報告されます。
 
-## Notes
+## 注意点
 
-- **Notifications** (requests without an `id`, such as `notifications/initialized`)
-  are processed but produce no response, per JSON-RPC.
-- **Unknown methods** return a JSON-RPC error with code `-32601`; unknown tools
-  and bad params return `-32602`.
-- `ping` is supported and returns an empty result.
-- Human-facing generator output is captured internally so it never corrupts the
-  JSON-RPC stream on stdout.
+- **通知**（`id` を持たないリクエスト、例えば `notifications/initialized`）は
+  処理されますが、JSON-RPC の仕様どおりレスポンスは生成されません。
+- **未知のメソッド**はコード `-32601` の JSON-RPC エラーを返します。未知の
+  ツールや不正なパラメーターは `-32602` を返します。
+- `ping` はサポートされており、空の結果を返します。
+- 人間向けのジェネレーター出力は内部でキャプチャされるため、stdout 上の
+  JSON-RPC ストリームを汚すことはありません。
 
-::: warning One project per server
-The tools operate on the current working directory. Run a separate `goryu mcp`
-process per project, each launched with the right `cwd`.
+::: warning サーバー 1 つにつきプロジェクト 1 つ
+ツールはカレントワーキングディレクトリを対象に動作します。プロジェクトごとに
+別々の `goryu mcp` プロセスを、それぞれ適切な `cwd` で起動してください。
 :::
 
-## See also
+## 関連項目
 
-- [AI Scaffolds](/ja/ai/scaffolds) — what `scaffold_handler` generates for each
-  `kind`.
-- [llms.txt & API Reference](/ja/ai/llms-txt) — publish a machine-readable route
-  index the same agents can read at runtime.
+- [AI スキャフォールド](/ja/ai/scaffolds) — `scaffold_handler` が各 `kind` に対して
+  生成する内容。
+- [llms.txt & API リファレンス](/ja/ai/llms-txt) — 同じエージェントが実行時に
+  読み取れる機械可読なルートインデックスを公開します。

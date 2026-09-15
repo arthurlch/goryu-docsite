@@ -1,19 +1,19 @@
-# Timeout Middleware
+# Timeout ミドルウェア
 
-A middleware that adds a timeout to the request context. If the request processing takes longer than the specified duration, it cancels the context and returns a `503 Service Unavailable` (or `408 Request Timeout`) response.
+リクエストのコンテキストにタイムアウトを追加するミドルウェアです。リクエストの処理が指定した時間よりも長くかかった場合、コンテキストをキャンセルし、`503 Service Unavailable`（または `408 Request Timeout`）レスポンスを返します。
 
-## Features
+## 特徴
 
-- **Context Cancellation**: Automatically cancels the request context when the timeout is reached.
-- **Custom Handler**: Define a custom response when a timeout occurs.
-- **Panic Handling**: Safely handles panics within the timed-out goroutine.
-- **Race Condition Protection**: Uses atomic operations to prevent writing to the response after a timeout.
+- **コンテキストのキャンセル**: タイムアウトに達すると、リクエストのコンテキストを自動的にキャンセルします。
+- **カスタムハンドラー**: タイムアウト発生時のレスポンスを独自に定義できます。
+- **パニック処理**: タイムアウトした goroutine 内のパニックを安全に処理します。
+- **競合状態の保護**: アトミック操作を使用し、タイムアウト後にレスポンスへ書き込むことを防止します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Enforce a 30-second timeout (default):
+30 秒のタイムアウト（デフォルト）を適用します:
 
 ```go
 import (
@@ -25,9 +25,9 @@ import (
 app.Use(timeout.Default())
 ```
 
-### Custom Duration
+### タイムアウト時間のカスタマイズ
 
-Set a specific timeout duration:
+特定のタイムアウト時間を設定します:
 
 ```go
 app.Use(timeout.New(timeout.Config{
@@ -35,9 +35,9 @@ app.Use(timeout.New(timeout.Config{
 }))
 ```
 
-### Custom Error Response
+### カスタムエラーレスポンス
 
-Customize the response sent to the client upon timeout:
+タイムアウト時にクライアントへ送信するレスポンスをカスタマイズします:
 
 ```go
 app.Use(timeout.New(timeout.Config{
@@ -50,13 +50,13 @@ app.Use(timeout.New(timeout.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Goroutine**: The middleware runs the next handler in a separate goroutine.
-2.  **Select**: It waits for either the handler to finish or the context to time out.
-3.  **Cancellation**: If the timeout is reached first, it writes the timeout response and cancels the context.
-4.  **Safety**: It wraps the `ResponseWriter` to ensure that the handler cannot write to the response after the timeout has occurred.
+1.  **Goroutine**: ミドルウェアは次のハンドラーを別の goroutine で実行します。
+2.  **Select**: ハンドラーの完了、またはコンテキストのタイムアウトのいずれかを待機します。
+3.  **キャンセル**: タイムアウトが先に発生した場合、タイムアウトレスポンスを書き込み、コンテキストをキャンセルします。
+4.  **安全性**: `ResponseWriter` をラップし、タイムアウト発生後にハンドラーがレスポンスへ書き込めないようにします。
 
-## Important Note
+## 重要な注意点
 
-Because the handler runs in a separate goroutine, you must ensure that any data accessed from the `Context` is thread-safe or not modified concurrently. Standard `goryuctx.Context` usage is generally safe, but be careful with shared mutable state.
+ハンドラーは別の goroutine で実行されるため、`Context` からアクセスするデータはスレッドセーフであるか、同時に変更されないようにする必要があります。標準的な `goryuctx.Context` の使い方は一般的に安全ですが、共有される可変状態には注意してください。

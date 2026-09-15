@@ -1,27 +1,27 @@
 # Recovery Middleware
 
-A critical middleware that recovers from panics anywhere in the middleware chain or handler. It prevents the server from crashing and returns a `500 Internal Server Error` response to the client.
+ミドルウェアチェーンやハンドラーのどこで発生した panic からでも回復する、重要なミドルウェアです。サーバーのクラッシュを防ぎ、クライアントに `500 Internal Server Error` レスポンスを返します。
 
-## Features
+## 機能
 
-- **Crash Prevention**: Catches panics and keeps the server running.
-- **Stack Traces**: Logs detailed stack traces for debugging (configurable).
-- **Custom Handling**: Define custom logic for handling panics (e.g., sending alerts).
-- **Safe Response**: Ensures a valid HTTP response is sent even after a panic.
+- **クラッシュ防止**: panic をキャッチし、サーバーを稼働し続けます。
+- **スタックトレース**: デバッグのために詳細なスタックトレースをログに記録します（設定可能）。
+- **カスタムハンドリング**: panic を処理するためのカスタムロジックを定義できます（例: アラートの送信）。
+- **安全なレスポンス**: panic の発生後でも、有効な HTTP レスポンスが送信されることを保証します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Recover from panics and log stack traces (default behavior):
+panic から回復し、スタックトレースをログに記録します（デフォルトの動作）:
 
 ```go
 app.Use(recovery.Default())
 ```
 
-### Custom Recovery Handler
+### カスタムリカバリハンドラー
 
-Customize the response or perform side effects (like reporting to Sentry):
+レスポンスをカスタマイズしたり、副作用を実行したりします（Sentry への報告など）:
 
 ```go
 app.Use(recovery.New(recovery.Config{
@@ -38,14 +38,14 @@ app.Use(recovery.New(recovery.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Defer**: The middleware uses a `defer` statement to catch any panic that occurs during the execution of the `next` handler.
-2.  **Recover**: If a panic occurs, `recover()` captures the error value.
-3.  **Log**: It logs the error and the stack trace (if enabled).
-4.  **Respond**: It sends a `500` response to the client if headers haven't already been written.
+1.  **Defer**: このミドルウェアは `defer` 文を使用して、`next` ハンドラーの実行中に発生したあらゆる panic をキャッチします。
+2.  **Recover**: panic が発生した場合、`recover()` がエラー値をキャプチャします。
+3.  **Log**: エラーとスタックトレース（有効な場合）をログに記録します。
+4.  **Respond**: ヘッダーがまだ書き込まれていない場合、クライアントに `500` レスポンスを送信します。
 
-## Best Practices
+## ベストプラクティス
 
-- **Always Use It**: This middleware should be one of the first in your chain (after `Logger` and `RequestID`) to ensure it catches panics from all other middleware and handlers.
-- **Production**: Keep stack traces enabled in logs but **never** expose them to the client in the HTTP response.
+- **常に使用する**: このミドルウェアは、他のすべてのミドルウェアやハンドラーからの panic を確実にキャッチするために、チェーンの最初の方（`Logger` と `RequestID` の後）に配置すべきです。
+- **本番環境**: スタックトレースはログでは有効にしておきますが、HTTP レスポンスでクライアントに公開することは**絶対に**避けてください。

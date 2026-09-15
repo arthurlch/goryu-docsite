@@ -1,25 +1,25 @@
-# Goryu HTTP Client
+# Goryu HTTP クライアント
 
-A fluent and chainable HTTP client for Go with a clean API design, built into the Goryu framework.
+Goryu フレームワークに組み込まれた、クリーンな API 設計を持つ流暢（fluent）でチェーン可能な Go 用 HTTP クライアントです。
 
-## Overview
+## 概要
 
-The Goryu client provides an intuitive way to make HTTP requests with method chaining, automatic error handling, and built-in support for common patterns like JSON payloads, form data, authentication, and more.
+Goryu クライアントは、メソッドチェーン、自動エラーハンドリング、そして JSON ペイロード、フォームデータ、認証などの一般的なパターンへの組み込みサポートによって、HTTP リクエストを直感的に行う方法を提供します。
 
-## Features
+## 特徴
 
-- **Fluent API**: Chain methods for clean and readable code
-- **All HTTP Methods**: Support for GET, POST, PUT, DELETE, PATCH, HEAD
-- **JSON Support**: Easy JSON request/response handling
-- **Form Data**: Built-in form encoding support
-- **Authentication**: Basic auth and custom headers
-- **Cookie Management**: Simple cookie handling
-- **Query Parameters**: Chainable query parameter building
-- **Timeouts**: Configurable request timeouts
-- **TLS Options**: Support for custom TLS configurations
-- **Error Aggregation**: Collect errors throughout the request chain
+- **流暢な API**: メソッドをチェーンすることで、クリーンで読みやすいコードが書けます
+- **すべての HTTP メソッド**: GET、POST、PUT、DELETE、PATCH、HEAD をサポート
+- **JSON サポート**: JSON リクエスト／レスポンスを簡単に扱えます
+- **フォームデータ**: フォームエンコーディングを組み込みでサポート
+- **認証**: Basic 認証とカスタムヘッダー
+- **Cookie 管理**: シンプルな Cookie 処理
+- **クエリパラメータ**: チェーン可能なクエリパラメータの構築
+- **タイムアウト**: 設定可能なリクエストタイムアウト
+- **TLS オプション**: カスタム TLS 設定のサポート
+- **エラーの集約**: リクエストチェーン全体を通じてエラーを収集
 
-## Quick Start
+## クイックスタート
 
 ```go
 import "github.com/arthurlch/goryu/client"
@@ -49,9 +49,9 @@ code, body, errs := client.Get("https://api.example.com/data").
     Struct(&result)
 ```
 
-## API Reference
+## API リファレンス
 
-### Creating Requests
+### リクエストの作成
 
 ```go
 // Using package-level functions
@@ -67,9 +67,9 @@ agent := client.New()
 agent.Get(url)
 ```
 
-### Request Configuration
+### リクエストの設定
 
-#### Headers
+#### ヘッダー
 ```go
 // Set a header (replaces existing)
 agent.Set("Authorization", "Bearer token")
@@ -82,7 +82,7 @@ agent.UserAgent("MyApp/1.0")
 agent.ContentType("application/json")
 ```
 
-#### Request Body
+#### リクエストボディ
 ```go
 // Raw bytes
 agent.Body([]byte("raw data"))
@@ -96,7 +96,7 @@ formData.Add("key", "value")
 agent.Form(formData)
 ```
 
-#### Authentication
+#### 認証
 ```go
 // Basic authentication
 agent.BasicAuth("username", "password")
@@ -105,7 +105,7 @@ agent.BasicAuth("username", "password")
 agent.Set("Authorization", "Bearer your-token")
 ```
 
-#### Other Options
+#### その他のオプション
 ```go
 // Query parameters
 agent.Query("search", "goryu")
@@ -120,7 +120,7 @@ agent.Timeout(10 * time.Second)
 agent.InsecureSkipVerify()
 ```
 
-### Getting Responses
+### レスポンスの取得
 
 ```go
 // Get response as string
@@ -134,9 +134,9 @@ var data MyStruct
 statusCode, body, errors := agent.Struct(&data)
 ```
 
-## Error Handling
+## エラーハンドリング
 
-The client aggregates errors throughout the request chain. Always check the errors slice:
+クライアントはリクエストチェーン全体を通じてエラーを集約します。常にエラーのスライスを確認してください。
 
 ```go
 code, body, errs := client.Get("https://api.example.com").String()
@@ -148,9 +148,9 @@ if len(errs) > 0 {
 }
 ```
 
-## Examples
+## 例
 
-### JSON API Request
+### JSON API リクエスト
 ```go
 type CreateUserRequest struct {
     Name  string `json:"name"`
@@ -182,7 +182,7 @@ if code == 201 {
 }
 ```
 
-### Form Submission
+### フォーム送信
 ```go
 formData := url.Values{}
 formData.Add("username", "johndoe")
@@ -194,7 +194,7 @@ code, body, errs := client.Post("https://example.com/login").
     String()
 ```
 
-### Downloading with Progress
+### 進捗付きダウンロード
 ```go
 code, data, errs := client.Get("https://example.com/large-file.zip").
     UserAgent("Goryu-Downloader/1.0").
@@ -207,9 +207,9 @@ if len(errs) == 0 && code == 200 {
 }
 ```
 
-## Testing
+## テスト
 
-The client is designed to work well with Go's `httptest` package:
+このクライアントは Go の `httptest` パッケージとうまく連携するように設計されています。
 
 ```go
 func TestMyHandler(t *testing.T) {
@@ -221,10 +221,10 @@ func TestMyHandler(t *testing.T) {
 }
 ```
 
-## Performance Considerations
+## パフォーマンスに関する考慮事項
 
-- The client creates a new `http.Client` for each request chain by default
-- For multiple requests to the same host, consider reusing an agent:
+- クライアントはデフォルトで、リクエストチェーンごとに新しい `http.Client` を作成します
+- 同じホストへ複数回リクエストする場合は、エージェントの再利用を検討してください。
   ```go
   agent := client.New()
   agent.Timeout(30 * time.Second)
@@ -233,10 +233,10 @@ func TestMyHandler(t *testing.T) {
   agent.Get(url1).String()
   agent.Get(url2).String()
   ```
-- Response bodies are fully read into memory; for large responses, consider using the standard `net/http` package directly
+- レスポンスボディは完全にメモリに読み込まれます。大きなレスポンスの場合は、標準の `net/http` パッケージを直接使用することを検討してください
 
-## Notes
+## 注意事項
 
-- All errors are collected and returned together for better debugging
-- The client is not goroutine-safe; create separate agents for concurrent requests
-- TLS verification should only be disabled in development/testing environments
+- すべてのエラーはデバッグしやすいようにまとめて収集され、返されます
+- クライアントは goroutine セーフではありません。並行リクエストには別々のエージェントを作成してください
+- TLS 検証を無効にするのは、開発／テスト環境に限るべきです

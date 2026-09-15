@@ -1,26 +1,26 @@
-# Passkeys / WebAuthn
+# パスキー / WebAuthn
 
-`passkey` adds passwordless, phishing-resistant authentication to Goryu using
-WebAuthn / passkeys. It exposes four begin/finish endpoints and leaves user lookup
-and credential storage to your application through a `UserStore`.
+`passkey` は、WebAuthn / パスキーを用いて、パスワードレスかつフィッシング耐性のある
+認証を Goryu に追加します。4 つの begin/finish エンドポイントを公開し、ユーザーの
+検索と認証情報の保存は `UserStore` を通じてアプリケーションに委ねます。
 
-::: tip Audited crypto, not hand-rolled
-`passkey` is built on `github.com/go-webauthn/webauthn`. The library handles
-CBOR/COSE decoding, attestation, assertion verification, and the sign counter —
-Goryu does not reimplement any of it.
+::: tip 監査済みの暗号処理、独自実装ではない
+`passkey` は `github.com/go-webauthn/webauthn` の上に構築されています。このライブラリが
+CBOR/COSE のデコード、アテステーション、アサーションの検証、署名カウンターを処理します。
+Goryu はこれらを一切再実装していません。
 :::
 
-## Features
+## 特徴
 
-- **Registration and login ceremonies** — `BeginRegistration` / `FinishRegistration` and `BeginLogin` / `FinishLogin`.
-- **Pluggable storage** — implement `UserStore` to resolve the current user and persist credentials.
-- **Clone detection** — the sign counter is verified on every login; `UpdateCredential` persists it.
-- **Server-side ceremony state** — the per-ceremony challenge is stored server-side and referenced by a short-lived HttpOnly cookie.
-- **Bring-your-own session** — `OnLogin` runs after a successful login so you can start a session or mint a token.
+- **登録およびログインのセレモニー** — `BeginRegistration` / `FinishRegistration` と `BeginLogin` / `FinishLogin`。
+- **差し替え可能なストレージ** — `UserStore` を実装して、現在のユーザーの解決と認証情報の永続化を行います。
+- **クローン検出** — 署名カウンターは毎回のログインで検証され、`UpdateCredential` がそれを永続化します。
+- **サーバーサイドのセレモニー状態** — セレモニーごとのチャレンジはサーバーサイドに保存され、短命の HttpOnly Cookie によって参照されます。
+- **独自セッションの利用** — `OnLogin` はログイン成功後に実行されるため、セッションの開始やトークンの発行を行えます。
 
-## Usage
+## 使い方
 
-### Wiring the endpoints
+### エンドポイントの配線
 
 ```go
 import (
@@ -56,14 +56,14 @@ func main() {
 }
 ```
 
-`BeginRegistration` / `BeginLogin` return the WebAuthn options as JSON for the
-browser's `navigator.credentials` call. The finish endpoints read the browser's
-response from the request body.
+`BeginRegistration` / `BeginLogin` は、ブラウザの `navigator.credentials` 呼び出し用に
+WebAuthn のオプションを JSON として返します。finish エンドポイントは、リクエストボディから
+ブラウザのレスポンスを読み取ります。
 
-### Implementing a UserStore
+### UserStore の実装
 
-`passkey.User` is `webauthn.User` and `passkey.Credential` is `webauthn.Credential`.
-Your store resolves the ceremony's user and persists credentials:
+`passkey.User` は `webauthn.User` であり、`passkey.Credential` は `webauthn.Credential` です。
+ストアは、セレモニーの対象ユーザーを解決し、認証情報を永続化します。
 
 ```go
 type UserStore interface {
@@ -73,7 +73,7 @@ type UserStore interface {
 }
 ```
 
-A sketch backed by your database:
+データベースを裏付けとした実装の概略は次のとおりです。
 
 ```go
 type myUserStore struct {
@@ -103,43 +103,43 @@ func (s *myUserStore) UpdateCredential(user passkey.User, cred *passkey.Credenti
 }
 ```
 
-Your user type must implement the `webauthn.User` interface (`WebAuthnID`,
-`WebAuthnName`, `WebAuthnDisplayName`, `WebAuthnCredentials`, ...).
+ユーザー型は `webauthn.User` インターフェース（`WebAuthnID`、`WebAuthnName`、
+`WebAuthnDisplayName`、`WebAuthnCredentials` など）を実装する必要があります。
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| RPID | `string` | Relying Party ID (your domain, e.g. `example.com`) | — |
-| RPDisplayName | `string` | Human-readable RP name shown by the authenticator | — |
-| RPOrigins | `[]string` | Allowed origins (e.g. `https://example.com`) | — |
-| Users | `UserStore` | Resolves users and persists credentials. Required. | — |
-| Sessions | `SessionStore` | Per-ceremony challenge store | In-memory (process-local) |
-| Insecure | `bool` | Allow the ceremony cookie over plain HTTP (dev only) | `false` |
-| OnLogin | `func(c *goryu.Ctx, user User)` | Called after a successful login | `200` JSON `{"status":"ok"}` |
+| RPID | `string` | リライングパーティ ID（あなたのドメイン、例: `example.com`） | — |
+| RPDisplayName | `string` | オーセンティケーターに表示される人間可読な RP 名 | — |
+| RPOrigins | `[]string` | 許可するオリジン（例: `https://example.com`） | — |
+| Users | `UserStore` | ユーザーを解決し、認証情報を永続化する。必須。 | — |
+| Sessions | `SessionStore` | セレモニーごとのチャレンジストア | インメモリ（プロセスローカル） |
+| Insecure | `bool` | セレモニー Cookie を平文 HTTP 上で許可（開発用のみ） | `false` |
+| OnLogin | `func(c *goryu.Ctx, user User)` | ログイン成功後に呼び出される | `200` の JSON `{"status":"ok"}` |
 
-## Clone detection: persist the sign counter
+## クローン検出: 署名カウンターを永続化する
 
-WebAuthn authenticators maintain a monotonically increasing **sign counter**. On
-each login the library compares the presented counter against the stored one — a
-non-increasing counter signals a cloned authenticator.
+WebAuthn のオーセンティケーターは単調増加する **署名カウンター** を保持します。
+ログインのたびに、ライブラリは提示されたカウンターを保存済みのものと比較します。
+カウンターが増加していない場合は、クローンされたオーセンティケーターであることを示します。
 
-::: warning UpdateCredential must persist the counter
-`FinishLogin` calls `UpdateCredential` with the updated credential. If your
-`UpdateCredential` does not persist the credential (specifically its sign counter),
-clone detection is silently defeated. Always write it back to durable storage.
+::: warning UpdateCredential はカウンターを永続化しなければならない
+`FinishLogin` は更新された認証情報とともに `UpdateCredential` を呼び出します。あなたの
+`UpdateCredential` が認証情報（特にその署名カウンター）を永続化しない場合、クローン検出は
+静かに無効化されます。必ず永続ストレージに書き戻してください。
 :::
 
-## Multi-instance deployments
+## マルチインスタンス構成
 
-::: warning Default SessionStore is process-local
-The per-ceremony challenge lives between the begin and finish steps. The default
-`SessionStore` is an **in-memory, process-local** store keyed by a short-lived
-cookie. If you run more than one instance (and requests aren't sticky), a login
-begun on one instance can't be finished on another.
+::: warning デフォルトの SessionStore はプロセスローカル
+セレモニーごとのチャレンジは begin ステップと finish ステップの間に存在します。デフォルトの
+`SessionStore` は、短命の Cookie をキーとした **インメモリのプロセスローカル** ストアです。
+複数のインスタンスを実行していて（かつリクエストがスティッキーでない）場合、あるインスタンスで
+開始されたログインを別のインスタンスで完了することはできません。
 
-Provide your own `SessionStore` backed by Redis, a database, or another shared
-store for multi-instance deployments:
+マルチインスタンス構成では、Redis、データベース、その他の共有ストアを裏付けとした独自の
+`SessionStore` を用意してください。
 
 ```go
 type SessionStore interface {
@@ -149,16 +149,16 @@ type SessionStore interface {
 }
 ```
 
-Implementations must be safe for concurrent use.
+実装は並行利用に対して安全でなければなりません。
 :::
 
 ::: warning
-Set `Insecure: true` only in local development — it allows the ceremony cookie over
-plain HTTP. WebAuthn itself requires a secure context (HTTPS or `localhost`) in the
-browser regardless.
+`Insecure: true` はローカル開発でのみ設定してください。セレモニー Cookie が平文 HTTP 上で
+許可されます。なお、WebAuthn 自体は、いずれにせよブラウザ上でセキュアなコンテキスト
+（HTTPS または `localhost`）を必要とします。
 :::
 
-## Next steps
+## 次のステップ
 
-- Turn a successful passkey login into an app session or token via [Sessions](/ja/middleware/session) or [JWT Auth](/ja/middleware/auth).
-- Guard routes by role with [RBAC](/ja/security/rbac).
+- [セッション](/ja/middleware/session) または [JWT 認証](/ja/middleware/auth) を使って、パスキーによるログイン成功をアプリのセッションやトークンに変換しましょう。
+- [RBAC](/ja/security/rbac) を使って、ロールでルートを保護しましょう。

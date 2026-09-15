@@ -1,20 +1,20 @@
-# Cache Middleware
+# Cache ミドルウェア
 
-A high-performance, in-memory caching middleware for Goryu. It caches HTTP responses to reduce server load and improve response times for frequently accessed resources.
+Goryu 向けの高性能なインメモリキャッシュミドルウェアです。HTTP レスポンスをキャッシュすることでサーバー負荷を軽減し、頻繁にアクセスされるリソースのレスポンス時間を改善します。
 
-## Features
+## 機能
 
-- **In-Memory Storage**: Fast access using local memory.
-- **LRU Eviction**: Automatically removes least recently used items when limits are reached.
-- **Configurable Limits**: Set maximum number of entries and maximum memory usage.
-- **TTL Expiration**: Automatically expires entries after a specified duration.
-- **Concurrency Safe**: Thread-safe implementation using `sync.RWMutex`.
+- **インメモリストレージ**: ローカルメモリを使用した高速アクセス。
+- **LRU による退避**: 上限に達すると、最も長く使用されていない項目を自動的に削除します。
+- **設定可能な上限**: 最大エントリ数と最大メモリ使用量を設定できます。
+- **TTL による有効期限**: 指定した期間の経過後にエントリを自動的に失効させます。
+- **並行処理に安全**: `sync.RWMutex` を用いたスレッドセーフな実装。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Cache GET requests for 5 minutes:
+GET リクエストを 5 分間キャッシュします。
 
 ```go
 package main
@@ -41,9 +41,9 @@ func main() {
 }
 ```
 
-### Advanced Configuration
+### 高度な設定
 
-Customize expiration, memory limits, and cache keys:
+有効期限、メモリ上限、キャッシュキーをカスタマイズします。
 
 ```go
 app.Use(cache.New(cache.Config{
@@ -58,15 +58,15 @@ app.Use(cache.New(cache.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **GET Requests Only**: By default, only `GET` requests are cached.
-2.  **Key Generation**: Generates a cache key (default: `Method + Path`).
-3.  **Cache Lookup**: Checks if a valid entry exists. If found, serves the cached response immediately.
-4.  **Response Capture**: If not found, wraps the `ResponseWriter` to capture the status code, headers, and body.
-5.  **Storage**: Stores the captured response in the LRU cache if it fits within the memory limits.
+1.  **GET リクエストのみ**: デフォルトでは、`GET` リクエストのみがキャッシュされます。
+2.  **キーの生成**: キャッシュキーを生成します（デフォルト: `Method + Path`）。
+3.  **キャッシュの検索**: 有効なエントリが存在するかを確認します。見つかった場合は、キャッシュされたレスポンスを即座に返します。
+4.  **レスポンスのキャプチャ**: 見つからない場合は、`ResponseWriter` をラップしてステータスコード、ヘッダー、ボディをキャプチャします。
+5.  **保存**: キャプチャしたレスポンスがメモリ上限に収まる場合、LRU キャッシュに保存します。
 
-## Limitations
+## 制限事項
 
-- **Single Node**: This is a local, in-memory cache. It is not shared across multiple instances of your application. For distributed caching, consider using Redis.
-- **Memory Usage**: Be mindful of the `MaxMemory` setting to prevent your application from consuming too much RAM.
+- **単一ノード**: これはローカルのインメモリキャッシュです。アプリケーションの複数インスタンス間で共有されることはありません。分散キャッシュが必要な場合は、Redis の利用を検討してください。
+- **メモリ使用量**: アプリケーションが過剰に RAM を消費しないよう、`MaxMemory` の設定に注意してください。

@@ -1,16 +1,16 @@
-# Middleware Builder
+# ミドルウェアビルダー
 
-The middleware builder package provides a fluent, intuitive way to create middleware for the Goryu framework.
+ミドルウェアビルダーパッケージは、Goryu フレームワーク向けのミドルウェアを流れるように直感的に作成する方法を提供します。
 
-## Features
+## 機能
 
-- **Fluent API**: Chain methods together for clean, readable middleware definitions
-- **Error Handling**: Built-in error handling with customizable error handlers
-- **Skip Logic**: Conditionally skip middleware execution
-- **Before/After Hooks**: Execute code before and after the main handler
-- **Type-Safe**: Full Go type safety with proper error propagation
+- **流れるような API**: メソッドをチェーンして、簡潔で読みやすいミドルウェア定義を記述できます
+- **エラー処理**: カスタマイズ可能なエラーハンドラーを備えた組み込みのエラー処理
+- **スキップロジック**: 条件に応じてミドルウェアの実行をスキップできます
+- **Before/After フック**: メインハンドラーの前後にコードを実行できます
+- **型安全**: 適切なエラー伝播を伴う完全な Go の型安全性
 
-## Quick Start
+## クイックスタート
 
 ```go
 import (
@@ -29,9 +29,9 @@ middleware := goryu.NewMiddleware("MyMiddleware").
 app.Use(middleware)
 ```
 
-## Examples
+## 例
 
-### Authentication Middleware
+### 認証ミドルウェア
 
 ```go
 authMiddleware := goryu.NewMiddleware("Auth").
@@ -51,7 +51,7 @@ authMiddleware := goryu.NewMiddleware("Auth").
     Build()
 ```
 
-### Logging Middleware with Timing
+### タイミング計測付きロギングミドルウェア
 
 ```go
 loggingMiddleware := goryu.NewMiddleware("Logger").
@@ -67,7 +67,7 @@ loggingMiddleware := goryu.NewMiddleware("Logger").
     Build()
 ```
 
-### Conditional Middleware
+### 条件付きミドルウェア
 
 ```go
 maintenanceMiddleware := goryu.NewMiddleware("Maintenance").
@@ -84,18 +84,18 @@ maintenanceMiddleware := goryu.NewMiddleware("Maintenance").
     Build()
 ```
 
-## Additional Features
+## その他の機能
 
-The builder pattern allows for complex middleware composition and provides a clean, readable way to define middleware behavior.
+ビルダーパターンにより、複雑なミドルウェアの合成が可能となり、ミドルウェアの動作を簡潔で読みやすい形で定義できます。
 
-## API Reference
+## API リファレンス
 
-### MiddlewareBuilder Methods
+### MiddlewareBuilder のメソッド
 
-- `Before(func(c *goryuctx.Context) error)`: Set pre-processing function
-- `After(func(c *goryuctx.Context) error)`: Set post-processing function
-- `Skip(func(c *goryuctx.Context) bool)`: Set skip condition
-- `OnError(func(c *goryuctx.Context, err error))`: Set error handler
-- `Logger(logger)`: Set custom logger
-- `Build()`: Build the middleware
-- `BuildSimple(func(c *goryuctx.Context))`: Build simple middleware without error handling
+- `Before(func(c *goryuctx.Context) error)`: 前処理関数を設定します
+- `After(func(c *goryuctx.Context) error)`: 後処理関数を設定します
+- `Skip(func(c *goryuctx.Context) bool)`: スキップ条件を設定します
+- `OnError(func(c *goryuctx.Context, err error))`: エラーハンドラーを設定します
+- `Logger(logger)`: カスタムロガーを設定します
+- `Build()`: ミドルウェアをビルドします
+- `BuildSimple(func(c *goryuctx.Context))`: エラー処理を伴わないシンプルなミドルウェアをビルドします

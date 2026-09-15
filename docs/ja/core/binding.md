@@ -1,20 +1,20 @@
-# Binding & Validation
+# バインディングとバリデーション
 
-Goryu turns an incoming request into a typed Go value with a single call. `goryu.Bind[T]` reads the request body (or query string), decodes it into your struct based on the `Content-Type`, and then runs your validation logic if the struct implements the `Validator` interface.
+Goryu は、単一の呼び出しで受信リクエストを型付きの Go の値に変換します。`goryu.Bind[T]` はリクエストボディ（またはクエリ文字列）を読み取り、`Content-Type` に基づいて構造体へデコードし、構造体が `Validator` インターフェースを実装している場合はバリデーションロジックを実行します。
 
-## Features
+## 特徴
 
-- **Generic binding**: `goryu.Bind[T]` returns a fully typed `T`, no manual allocation.
-- **Content-Type aware**: automatically picks a JSON parser or a form/query parser.
-- **Self-validating structs**: implement `Validate() error` and it runs after every successful parse.
-- **Safe by default**: JSON bodies are capped at 1MB and unknown fields are rejected.
-- **Query & form support**: `GET`/`DELETE` requests and form submissions bind from the query string using `query` tags.
+- **ジェネリックバインディング**: `goryu.Bind[T]` は完全に型付けされた `T` を返し、手動での確保は不要です。
+- **Content-Type を認識**: JSON パーサーまたはフォーム／クエリパーサーを自動的に選択します。
+- **自己検証する構造体**: `Validate() error` を実装すると、パースが成功するたびに実行されます。
+- **デフォルトで安全**: JSON ボディは 1MB に制限され、未知のフィールドは拒否されます。
+- **クエリとフォームのサポート**: `GET`／`DELETE` リクエストやフォーム送信は、`query` タグを使ってクエリ文字列からバインドされます。
 
-## Usage
+## 使い方
 
-### Basic Binding
+### 基本的なバインディング
 
-Use `goryu.Bind[T]` to decode the request into a struct:
+`goryu.Bind[T]` を使ってリクエストを構造体へデコードします。
 
 ```go
 import "github.com/arthurlch/goryu"
@@ -36,7 +36,7 @@ app.Post("/users", func(c *goryu.Ctx) {
 })
 ```
 
-`Bind[T]` is a thin wrapper around `c.BodyParser`:
+`Bind[T]` は `c.BodyParser` の薄いラッパーです。
 
 ```go
 func Bind[T any](c *goryu.Ctx) (T, error) {
@@ -46,21 +46,21 @@ func Bind[T any](c *goryu.Ctx) (T, error) {
 }
 ```
 
-If you already have a value to fill, you can call `c.BodyParser(&v)` directly instead.
+既に値を用意している場合は、代わりに `c.BodyParser(&v)` を直接呼び出すこともできます。
 
-### How BodyParser Picks a Parser
+### BodyParser がパーサーを選択する仕組み
 
-`BodyParser` chooses the decoding strategy from the request's `Content-Type` header (and, as a fallback, the HTTP method):
+`BodyParser` は、リクエストの `Content-Type` ヘッダー（およびフォールバックとして HTTP メソッド）からデコード戦略を選択します。
 
-| Content-Type / Method | Parser used | Reads from |
+| Content-Type / メソッド | 使用するパーサー | 読み取り元 |
 |-----------------------|-------------|------------|
-| `application/json` | `BindJSON` | request body (JSON) |
-| `application/x-www-form-urlencoded` | `QueryParser` | form values |
-| `multipart/form-data` | `QueryParser` | form values |
-| `GET` or `DELETE` (any/no Content-Type) | `QueryParser` | query string |
-| anything else | — | returns `unsupported content-type` error |
+| `application/json` | `BindJSON` | リクエストボディ（JSON） |
+| `application/x-www-form-urlencoded` | `QueryParser` | フォーム値 |
+| `multipart/form-data` | `QueryParser` | フォーム値 |
+| `GET` または `DELETE`（Content-Type の有無を問わない） | `QueryParser` | クエリ文字列 |
+| それ以外 | — | `unsupported content-type` エラーを返す |
 
-The JSON path (`BindJSON`) decodes using struct `json` tags. The form and query paths (`QueryParser`) decode using struct `query` tags:
+JSON パス（`BindJSON`）は構造体の `json` タグを使ってデコードします。フォームおよびクエリパス（`QueryParser`）は構造体の `query` タグを使ってデコードします。
 
 ```go
 type ListParams struct {
@@ -82,12 +82,12 @@ app.Get("/users", func(c *goryu.Ctx) {
 ```
 
 ::: tip
-`QueryParser` supports `string`, integer types, and `bool` fields. Integers are parsed at the field's real width, so an out-of-range value is rejected rather than silently wrapping. Empty query values are skipped, leaving the field at its zero value.
+`QueryParser` は `string`、整数型、および `bool` のフィールドをサポートします。整数はフィールドの実際のビット幅でパースされるため、範囲外の値は暗黙的にラップされることなく拒否されます。空のクエリ値はスキップされ、フィールドはゼロ値のまま残ります。
 :::
 
-### The Validator Interface
+### Validator インターフェース
 
-Any struct that implements the `Validator` interface has its `Validate()` method called automatically after a successful parse — for **every** content type, not just JSON:
+`Validator` インターフェースを実装した構造体は、パースが成功した後に `Validate()` メソッドが自動的に呼び出されます。これは JSON だけでなく、**すべての** コンテンツタイプに対して行われます。
 
 ```go
 type Validator interface {
@@ -95,7 +95,7 @@ type Validator interface {
 }
 ```
 
-Implement it on your struct to enforce business rules:
+構造体に実装してビジネスルールを強制します。
 
 ```go
 import (
@@ -123,11 +123,11 @@ func (u CreateUser) Validate() error {
 }
 ```
 
-If `Validate()` returns an error, that error is returned from `Bind` / `BodyParser`, and no further processing happens.
+`Validate()` がエラーを返した場合、そのエラーは `Bind` / `BodyParser` から返され、以降の処理は行われません。
 
-### Full Request Handler
+### 完全なリクエストハンドラー
 
-Putting it together — bind, validate, and respond:
+まとめると、バインド、バリデーション、レスポンスの一連の流れは次のようになります。
 
 ```go
 import (
@@ -178,22 +178,22 @@ func main() {
 }
 ```
 
-## JSON Safety Limits
+## JSON の安全性に関する制限
 
-The JSON parser applies two protections automatically:
+JSON パーサーは 2 つの保護を自動的に適用します。
 
-- **1MB body limit** — JSON payloads larger than 1MB are rejected. This guards against memory-exhaustion (DoS) attacks. Larger, non-JSON bodies use the framework's separate 10MB reader.
-- **`DisallowUnknownFields`** — any field in the JSON body that does not map to a struct field causes a decode error. This catches typos and prevents clients from smuggling unexpected data.
+- **1MB のボディ制限** — 1MB を超える JSON ペイロードは拒否されます。これはメモリ枯渇（DoS）攻撃を防ぐためのものです。より大きな非 JSON ボディは、フレームワークが別途持つ 10MB のリーダーを使用します。
+- **`DisallowUnknownFields`** — JSON ボディ内で構造体のフィールドに対応しないフィールドがあると、デコードエラーになります。これによりタイプミスを検出し、クライアントが予期しないデータを紛れ込ませるのを防ぎます。
 
 ::: warning
-Because unknown fields are rejected, a request will fail if it contains keys your struct does not declare. Make sure every field a client may send has a matching `json`-tagged field on your struct (or the client omits it).
+未知のフィールドが拒否されるため、構造体で宣言していないキーを含むリクエストは失敗します。クライアントが送信する可能性のあるすべてのフィールドに対応する `json` タグ付きフィールドを構造体に用意する（あるいはクライアントがそれを省略する）ようにしてください。
 :::
 
 ::: tip
-`BindJSON` requires the `Content-Type` to start with `application/json`. A JSON body sent without that header will not be parsed as JSON — it falls through to the form/query path or returns an unsupported-content-type error.
+`BindJSON` は `Content-Type` が `application/json` で始まることを要求します。そのヘッダーなしで送信された JSON ボディは JSON としてパースされず、フォーム／クエリパスに流れるか、unsupported-content-type エラーを返します。
 :::
 
-## See Also
+## 関連項目
 
-- [JSON Schema](/ja/core/schema) — generate a JSON Schema from the same structs for validation docs, `/schema` endpoints, and LLM structured output.
-- [Context](/ja/core/context) — the request/response object powering `BodyParser`, `QueryParser`, and `BindJSON`.
+- [JSON Schema](/ja/core/schema) — 同じ構造体から JSON Schema を生成し、バリデーションのドキュメント、`/schema` エンドポイント、LLM の構造化出力に利用できます。
+- [Context](/ja/core/context) — `BodyParser`、`QueryParser`、`BindJSON` を支えるリクエスト／レスポンスオブジェクトです。

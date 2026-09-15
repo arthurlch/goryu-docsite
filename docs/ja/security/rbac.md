@@ -1,22 +1,22 @@
 # RBAC
 
-The `rbac` middleware provides per-route role-based access control. Populate the
-caller's roles once after authentication, then guard routes with `Require` or
-`RequireAll`.
+`rbac` ミドルウェアは、ルートごとのロールベースアクセス制御を提供します。認証後に
+呼び出し元のロールを一度セットし、その後 `Require` または `RequireAll` でルートを
+保護します。
 
-## Features
+## 特徴
 
-- **Per-route guards** — attach role checks to individual routes or groups.
-- **Any-of and all-of** — `Require` allows any listed role; `RequireAll` demands every one.
-- **Pluggable role source** — read roles from the context (default), a JWT, or anywhere via `RolesFunc`.
-- **Custom denial** — override the `403` response with `Forbidden`.
-- **Deny by default** — a caller with no roles is always denied.
+- **ルートごとのガード** — 個々のルートやグループにロールチェックを付与します。
+- **any-of と all-of** — `Require` は列挙したロールのいずれかを許可し、`RequireAll` はそのすべてを要求します。
+- **差し替え可能なロールソース** — ロールをコンテキスト（デフォルト）、JWT、または `RolesFunc` を介して任意の場所から読み取れます。
+- **カスタム拒否** — `Forbidden` を使って `403` レスポンスを上書きできます。
+- **デフォルトで拒否** — ロールを持たない呼び出し元は常に拒否されます。
 
-## Usage
+## 使い方
 
-### Load roles, then guard routes
+### ロールを読み込み、ルートを保護する
 
-Set the caller's roles once after authentication, then guard route groups:
+認証後に呼び出し元のロールを一度セットし、その後ルートグループを保護します。
 
 ```go
 import (
@@ -45,9 +45,9 @@ func main() {
 }
 ```
 
-### Reading roles downstream
+### 後続でロールを読み取る
 
-Handlers can read the stored roles with `GetRoles`:
+ハンドラーは `GetRoles` で保存済みのロールを読み取れます。
 
 ```go
 app.GET("/me", func(c *goryu.Ctx) {
@@ -56,11 +56,11 @@ app.GET("/me", func(c *goryu.Ctx) {
 })
 ```
 
-### Custom role source and denial response
+### カスタムのロールソースと拒否レスポンス
 
-For finer control, build an `Enforcer` with `New`. This lets you source roles from
-somewhere other than the context (for example, decode them from a JWT) and
-customize the denial response:
+より細かく制御したい場合は、`New` で `Enforcer` を構築します。これにより、コンテキスト
+以外の場所からロールを取得したり（例: JWT からデコードする）、拒否レスポンスを
+カスタマイズしたりできます。
 
 ```go
 guard := rbac.New(rbac.Config{
@@ -76,34 +76,34 @@ app.Group("/reports", guard.RequireAll("admin", "auditor"))
 
 ## API
 
-| Function | Description |
+| 関数 | 説明 |
 |----------|-------------|
-| `SetRoles(c, roles...)` | Store the caller's roles for downstream checks |
-| `GetRoles(c) []string` | Read the stored roles |
-| `Require(roles...)` | Allow if the caller has **any** of the roles |
-| `RequireAll(roles...)` | Allow only if the caller has **every** role |
-| `New(Config) *Enforcer` | Build an enforcer with a custom `RolesFunc` / `Forbidden` |
+| `SetRoles(c, roles...)` | 後続のチェック用に呼び出し元のロールを保存 |
+| `GetRoles(c) []string` | 保存済みのロールを読み取る |
+| `Require(roles...)` | 呼び出し元がロールの **いずれか** を持つ場合に許可 |
+| `RequireAll(roles...)` | 呼び出し元が **すべての** ロールを持つ場合にのみ許可 |
+| `New(Config) *Enforcer` | カスタムの `RolesFunc` / `Forbidden` を持つエンフォーサーを構築 |
 
-### Configuration
+### 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| RolesFunc | `func(c *goryu.Ctx) []string` | Where roles come from | `GetRoles` (context key) |
-| Forbidden | `func(c *goryu.Ctx)` | Response when the check fails | `403` JSON `{"error":"forbidden"}` |
+| RolesFunc | `func(c *goryu.Ctx) []string` | ロールの取得元 | `GetRoles`（コンテキストキー） |
+| Forbidden | `func(c *goryu.Ctx)` | チェック失敗時のレスポンス | `403` の JSON `{"error":"forbidden"}` |
 
 ::: tip
-`Require` and `RequireAll` at package level use a default enforcer that reads roles
-from the context via `SetRoles`. Reach for `rbac.New` only when you need a custom
-role source or denial response.
+パッケージレベルの `Require` と `RequireAll` は、`SetRoles` を介してコンテキストから
+ロールを読み取るデフォルトのエンフォーサーを使用します。カスタムのロールソースや拒否
+レスポンスが必要な場合にのみ `rbac.New` を利用してください。
 :::
 
-::: warning Deny by default
-A caller with no roles is always denied. Make sure your authentication middleware
-runs `SetRoles` (or that your `RolesFunc` returns the roles) **before** the guard,
-or every request will be rejected with `403`.
+::: warning デフォルトで拒否
+ロールを持たない呼び出し元は常に拒否されます。認証ミドルウェアがガードの **前** に
+`SetRoles` を実行する（または `RolesFunc` がロールを返す）ことを必ず確認してください。
+そうでなければ、すべてのリクエストが `403` で拒否されます。
 :::
 
-## Next steps
+## 次のステップ
 
-- Establish identity first with [JWT Auth](/ja/middleware/auth), [Sessions](/ja/middleware/session), or [OAuth2 / OIDC](/ja/security/oidc).
-- Record authorization outcomes with the [Audit Log](/ja/security/audit-log).
+- まず [JWT 認証](/ja/middleware/auth)、[セッション](/ja/middleware/session)、または [OAuth2 / OIDC](/ja/security/oidc) でアイデンティティを確立しましょう。
+- [監査ログ](/ja/security/audit-log) を使って、認可の結果を記録しましょう。

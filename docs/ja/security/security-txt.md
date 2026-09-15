@@ -1,20 +1,20 @@
 # security.txt
 
-Goryu can serve a machine- and human-readable security disclosure policy per
-[RFC 9116](https://www.rfc-editor.org/rfc/rfc9116). `App.MountSecurityTxt` renders
-a `SecurityTxt` and serves it at both `/.well-known/security.txt` and
-`/security.txt`, telling researchers how to report vulnerabilities.
+Goryu は、[RFC 9116](https://www.rfc-editor.org/rfc/rfc9116) に準拠した、機械可読かつ
+人間可読なセキュリティ開示ポリシーを配信できます。`App.MountSecurityTxt` は `SecurityTxt`
+をレンダリングし、それを `/.well-known/security.txt` と `/security.txt` の両方で配信して、
+脆弱性の報告方法を研究者に伝えます。
 
-## Features
+## 特徴
 
-- **RFC 9116 compliant** — standard fields and formatting.
-- **Two canonical paths** — served at `/.well-known/security.txt` and `/security.txt`.
-- **Typed configuration** — build the policy from a `SecurityTxt` struct; empty fields are omitted.
-- **Multiple contacts and encryption keys** — `Contact` and `Encryption` accept lists.
+- **RFC 9116 準拠** — 標準的なフィールドと書式。
+- **2 つの正規パス** — `/.well-known/security.txt` と `/security.txt` で配信。
+- **型付きの設定** — `SecurityTxt` 構造体からポリシーを構築します。空のフィールドは省略されます。
+- **複数の連絡先と暗号鍵** — `Contact` と `Encryption` はリストを受け付けます。
 
-## Usage
+## 使い方
 
-Mount the policy once on your app:
+ポリシーをアプリに一度マウントします。
 
 ```go
 import (
@@ -44,7 +44,7 @@ func main() {
 }
 ```
 
-This serves the following at `/.well-known/security.txt` and `/security.txt`:
+これにより、`/.well-known/security.txt` と `/security.txt` で次の内容が配信されます。
 
 ```
 Contact: mailto:security@example.com
@@ -58,7 +58,7 @@ Preferred-Languages: en, fr
 Canonical: https://example.com/.well-known/security.txt
 ```
 
-A minimal policy only needs a contact:
+最小限のポリシーに必要なのは連絡先だけです。
 
 ```go
 app.MountSecurityTxt(goryu.SecurityTxt{
@@ -67,34 +67,33 @@ app.MountSecurityTxt(goryu.SecurityTxt{
 })
 ```
 
-## Fields
+## フィールド
 
-| Field | Type | RFC 9116 field | Notes |
+| フィールド | 型 | RFC 9116 フィールド | 備考 |
 |-------|------|----------------|-------|
-| Contact | `[]string` | `Contact` | How to report issues (email or URL). Rendered once per entry. |
-| Expires | `time.Time` | `Expires` | When this policy should be considered stale. Rendered as RFC 3339 UTC. Omitted if zero. |
-| Encryption | `[]string` | `Encryption` | URL(s) of encryption keys for secure reports. |
-| Acknowledgments | `string` | `Acknowledgments` | Page recognizing reporters. |
-| Policy | `string` | `Policy` | Link to your disclosure / bug-bounty policy. |
-| Hiring | `string` | `Hiring` | Security-related job openings. |
-| PreferredLanguages | `string` | `Preferred-Languages` | Comma-separated language tags (e.g. `en, fr`). |
-| CanonicalURL | `string` | `Canonical` | The canonical URI where this file lives. |
+| Contact | `[]string` | `Contact` | 問題の報告方法（メールまたは URL）。エントリごとに 1 行ずつレンダリングされます。 |
+| Expires | `time.Time` | `Expires` | このポリシーが古いとみなされるべき時点。RFC 3339 の UTC としてレンダリングされます。ゼロ値の場合は省略されます。 |
+| Encryption | `[]string` | `Encryption` | 安全な報告用の暗号鍵の URL。 |
+| Acknowledgments | `string` | `Acknowledgments` | 報告者を称えるページ。 |
+| Policy | `string` | `Policy` | 開示 / バグバウンティポリシーへのリンク。 |
+| Hiring | `string` | `Hiring` | セキュリティ関連の求人。 |
+| PreferredLanguages | `string` | `Preferred-Languages` | カンマ区切りの言語タグ（例: `en, fr`）。 |
+| CanonicalURL | `string` | `Canonical` | このファイルが置かれている正規 URI。 |
 
-Empty fields are omitted from the output.
+空のフィールドは出力から省略されます。
 
-::: tip Keep Expires current
-RFC 9116 requires the `Expires` field and recommends a value less than a year out.
-Set it and refresh it as part of your release process so the policy never appears
-stale.
+::: tip Expires を最新に保つ
+RFC 9116 は `Expires` フィールドを必須とし、1 年未満の値を推奨しています。これを設定し、
+リリースプロセスの一環として更新することで、ポリシーが古く見えることを防ぎましょう。
 :::
 
-::: warning Sign it for production
-For a production deployment, RFC 9116 recommends serving a PGP-signed
-`security.txt` and pointing `Canonical` / `Encryption` at real URLs. Provide an
-`Encryption` key so researchers can send you sensitive details securely.
+::: warning 本番環境では署名する
+本番環境へのデプロイでは、RFC 9116 は PGP 署名された `security.txt` を配信し、`Canonical` /
+`Encryption` を実際の URL に向けることを推奨しています。研究者が機微な詳細を安全に送れるよう、
+`Encryption` の鍵を提供してください。
 :::
 
-## Next steps
+## 次のステップ
 
-- Round out your security posture with [Secure Headers](/ja/middleware/secure) and [TLS Redirect](/ja/middleware/tls_redirect).
-- See the full [Security overview](/ja/security/) for the rest of the stack.
+- [セキュアヘッダー](/ja/middleware/secure) と [TLS リダイレクト](/ja/middleware/tls_redirect) でセキュリティ体制を整えましょう。
+- スタックの残りについては、[セキュリティ概要](/ja/security/) をご覧ください。

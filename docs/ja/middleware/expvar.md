@@ -1,18 +1,18 @@
-# Expvar Middleware
+# Expvar ミドルウェア
 
-A middleware that exposes Go's public variables (via the `expvar` package) over HTTP. This is useful for monitoring internal application state, memory statistics, and custom metrics.
+Go の公開変数（`expvar` パッケージ経由）を HTTP 上で公開するミドルウェアです。アプリケーションの内部状態、メモリ統計、カスタムメトリクスを監視する際に役立ちます。
 
-## Features
+## 機能
 
-- **Standard Endpoint**: Exposes metrics at `/debug/vars` by default.
-- **Custom Path**: Configurable endpoint path.
-- **JSON Output**: Returns metrics in JSON format, compatible with many monitoring tools.
+- **標準エンドポイント**: デフォルトで `/debug/vars` にメトリクスを公開します。
+- **カスタムパス**: エンドポイントのパスを設定できます。
+- **JSON 出力**: 多くの監視ツールと互換性のある JSON 形式でメトリクスを返します。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Expose metrics at `/debug/vars`:
+`/debug/vars` にメトリクスを公開します。
 
 ```go
 package main
@@ -41,15 +41,15 @@ func main() {
 }
 ```
 
-### Custom Path
+### カスタムパス
 
-Expose metrics at a different path:
+異なるパスにメトリクスを公開します。
 
 ```go
 app.Use(expvar.WithPath("/metrics/vars"))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(expvar.New(expvar.Config{
@@ -57,9 +57,9 @@ app.Use(expvar.New(expvar.Config{
 }))
 ```
 
-## Security Note
+## セキュリティに関する注意
 
-The `expvar` endpoint exposes internal application details. In a production environment, you should protect this endpoint using authentication middleware or restrict access to internal networks only.
+`expvar` エンドポイントはアプリケーションの内部詳細を公開します。本番環境では、認証ミドルウェアを用いてこのエンドポイントを保護するか、アクセスを内部ネットワークのみに制限する必要があります。
 
 ```go
 // Example: Protect expvar with Basic Auth

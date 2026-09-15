@@ -1,29 +1,30 @@
-# Token & Cost Metering
+# トークン・コスト計測
 
-`aimeter` accounts token usage and USD cost per request and enforces per-key
-request and token budgets within a fixed window. Your handler reports the
-provider's token usage; the middleware computes cost, checks budgets, and
-surfaces the result through response headers and an `OnResult` callback.
+`aimeter` はリクエストごとにトークン使用量と USD コストを計上し、固定ウィンドウ内で
+キーごとのリクエスト予算とトークン予算を強制します。ハンドラーがプロバイダーの
+トークン使用量を報告すると、ミドルウェアがコストを計算し、予算をチェックし、
+その結果をレスポンスヘッダーと `OnResult` コールバックを通じて公開します。
 
 ```go
 import "github.com/arthurlch/goryu/middleware/aimeter"
 ```
 
-## Features
+## 機能
 
-- **Token accounting**: prompt, completion, and total tokens per request.
-- **Cost metering**: USD cost derived from per-1K-token pricing.
-- **Per-key limits**: a request count *and* a token budget within a fixed window.
-- **Per-key isolation**: each API key (or IP) gets its own window and counters.
-- **Reliable hook**: `OnResult` for logging, metrics, or billing — fires even on
-  streamed responses where headers cannot be set.
+- **トークン計上**: リクエストごとのプロンプト、コンプリーション、合計トークン。
+- **コスト計測**: 1K トークンあたりの価格から導出される USD コスト。
+- **キーごとの上限**: 固定ウィンドウ内でのリクエスト回数*と*トークン予算。
+- **キーごとの分離**: 各 API キー（または IP）が独自のウィンドウとカウンターを
+  持ちます。
+- **信頼できるフック**: ロギング、メトリクス、課金のための `OnResult` — ヘッダーを
+  設定できないストリーミングレスポンスでも発火します。
 
-## Usage
+## 使い方
 
-### Basic setup
+### 基本的なセットアップ
 
-The default `KeyGenerator` identifies callers by `X-API-Key`, falling back to the
-remote IP. Set pricing and budgets in the config.
+デフォルトの `KeyGenerator` は `X-API-Key` で呼び出し元を識別し、なければ
+リモート IP にフォールバックします。価格と予算は設定で指定します。
 
 ```go
 import (
@@ -45,13 +46,13 @@ app.Use(aimeter.New(aimeter.Config{
 }))
 ```
 
-`aimeter.Default()` installs the middleware with default settings (no pricing, no
-budgets) — useful when you only want the `X-Tokens-*` headers.
+`aimeter.Default()` はデフォルト設定（価格なし、予算なし）でミドルウェアを
+インストールします。`X-Tokens-*` ヘッダーだけが欲しい場合に便利です。
 
-### Report usage from the handler
+### ハンドラーから使用量を報告する
 
-Token counts are only known after the model responds, so the handler reports them
-with `SetUsage`. The middleware reads that value after the handler returns.
+トークン数はモデルが応答した後にしか分からないため、ハンドラーが `SetUsage` で
+報告します。ミドルウェアはハンドラーが return した後にその値を読み取ります。
 
 ```go
 func chat(c *goryu.Ctx) {
@@ -66,17 +67,17 @@ func chat(c *goryu.Ctx) {
 }
 ```
 
-`Usage.Total()` returns `PromptTokens + CompletionTokens`. Other middleware (the
-recorder, for example) can read it back with `GetUsage`:
+`Usage.Total()` は `PromptTokens + CompletionTokens` を返します。他のミドルウェア
+（例えばレコーダー）は `GetUsage` でそれを読み戻せます。
 
 ```go
 u, ok := aimeter.GetUsage(c) // ok is false if the handler didn't set usage
 ```
 
-### Metering by API key
+### API キー単位での計測
 
-Provide a `KeyGenerator` to control how callers are identified — each distinct
-key gets its own window, budget, and cost accounting.
+`KeyGenerator` を指定すると、呼び出し元の識別方法を制御できます。個別のキーごとに
+独自のウィンドウ、予算、コスト計上が与えられます。
 
 ```go
 app.Use(aimeter.New(aimeter.Config{
@@ -88,11 +89,12 @@ app.Use(aimeter.New(aimeter.Config{
 }))
 ```
 
-### Custom rejection response
+### カスタム拒否レスポンス
 
-By default a blocked request gets a `429` with an `X-RateLimit-Reason` header.
-Override `LimitReached` to shape your own response. The `reason` is either
-`"request limit exceeded"` or `"token budget exceeded"`.
+デフォルトでは、ブロックされたリクエストは `X-RateLimit-Reason` ヘッダー付きの
+`429` を受け取ります。`LimitReached` をオーバーライドすると独自のレスポンスを
+組み立てられます。`reason` は `"request limit exceeded"` または
+`"token budget exceeded"` のいずれかです。
 
 ```go
 app.Use(aimeter.New(aimeter.Config{
@@ -105,11 +107,11 @@ app.Use(aimeter.New(aimeter.Config{
 }))
 ```
 
-### Billing hook
+### 課金フック
 
-`OnResult` is the reliable accounting path. It fires once per metered request
-with the key, usage, and computed cost — even for streamed responses where the
-`X-*` headers cannot be written.
+`OnResult` は信頼できる計上パスです。計測対象のリクエストごとに一度だけ、キー、
+使用量、算出されたコストとともに発火します。`X-*` ヘッダーを書き込めない
+ストリーミングレスポンスでも発火します。
 
 ```go
 app.Use(aimeter.New(aimeter.Config{
@@ -122,52 +124,53 @@ app.Use(aimeter.New(aimeter.Config{
 }))
 ```
 
-## Response headers
+## レスポンスヘッダー
 
-On non-streaming responses (when the handler has not already flushed), the
-middleware sets:
+非ストリーミングレスポンス（ハンドラーがまだフラッシュしていない場合）では、
+ミドルウェアは次を設定します。
 
-| Header | Value |
+| ヘッダー | 値 |
 |--------|-------|
-| `X-Tokens-Prompt` | prompt tokens |
-| `X-Tokens-Completion` | completion tokens |
-| `X-Tokens-Total` | total tokens |
-| `X-Cost-USD` | cost formatted to 6 decimals |
+| `X-Tokens-Prompt` | プロンプトトークン数 |
+| `X-Tokens-Completion` | コンプリーショントークン数 |
+| `X-Tokens-Total` | 合計トークン数 |
+| `X-Cost-USD` | 小数第 6 位までフォーマットされたコスト |
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| KeyGenerator | `func(*goryu.Ctx) string` | Caller identity | `X-API-Key` → remote IP |
-| PromptCostPer1K | `float64` | USD per 1K prompt tokens | `0` |
-| CompletionCostPer1K | `float64` | USD per 1K completion tokens | `0` |
-| MaxRequests | `int` | Max requests per window (0 = off) | `0` |
-| MaxTokens | `int` | Max tokens per window (0 = off) | `0` |
-| Window | `time.Duration` | Fixed window length | `1m` |
-| MaxClients | `int` | Max tracked keys (cannot exceed 100,000) | `10000` |
-| OnResult | `func(c, Result)` | Post-request accounting hook | none |
-| LimitReached | `func(c, reason)` | Custom rejection response | `429` |
+| KeyGenerator | `func(*goryu.Ctx) string` | 呼び出し元の識別 | `X-API-Key` → リモート IP |
+| PromptCostPer1K | `float64` | プロンプト 1K トークンあたりの USD | `0` |
+| CompletionCostPer1K | `float64` | コンプリーション 1K トークンあたりの USD | `0` |
+| MaxRequests | `int` | ウィンドウあたりの最大リクエスト数（0 = 無効） | `0` |
+| MaxTokens | `int` | ウィンドウあたりの最大トークン数（0 = 無効） | `0` |
+| Window | `time.Duration` | 固定ウィンドウの長さ | `1m` |
+| MaxClients | `int` | 追跡する最大キー数（100,000 を超えられない） | `10000` |
+| OnResult | `func(c, Result)` | リクエスト後の計上フック | なし |
+| LimitReached | `func(c, reason)` | カスタム拒否レスポンス | `429` |
 
-The `Result` passed to `OnResult` is `{Key string, Usage Usage, CostUSD float64}`.
+`OnResult` に渡される `Result` は `{Key string, Usage Usage, CostUSD float64}` です。
 
-## Notes
+## 注意点
 
-::: warning Token budgets are enforced from prior consumption
-Because token counts are only known *after* the provider responds, the token
-budget is checked against the key's already-accumulated tokens for the window. A
-request is rejected when the key has already exceeded `MaxTokens`; the request
-that crosses the line is still served, and its tokens push the counter over so
-the *next* request is blocked. Request-count limits, by contrast, are enforced
-before the handler runs.
+::: warning トークン予算は過去の消費量に基づいて強制される
+トークン数はプロバイダーが応答した*後*にしか分からないため、トークン予算は
+そのウィンドウでキーがすでに累積したトークン数に対してチェックされます。キーが
+すでに `MaxTokens` を超えている場合にリクエストが拒否されます。境界を越える
+リクエスト自体は処理され、そのトークンがカウンターを超過させるため、*次の*
+リクエストがブロックされます。一方、リクエスト回数の上限はハンドラーの実行前に
+強制されます。
 :::
 
-::: tip Headers are best-effort; OnResult is reliable
-`X-Tokens-*` / `X-Cost-USD` are only set when the response has not been flushed
-yet — so they appear on JSON routes but not on SSE/streaming routes. For
-streaming endpoints, account tokens and cost in `OnResult`.
+::: tip ヘッダーはベストエフォート、OnResult は信頼できる
+`X-Tokens-*` / `X-Cost-USD` はレスポンスがまだフラッシュされていない場合にのみ
+設定されます。そのため JSON ルートには現れますが、SSE / ストリーミングルートには
+現れません。ストリーミングエンドポイントでは `OnResult` でトークンとコストを
+計上してください。
 :::
 
-- The window is fixed: counters reset when the window elapses, not on a sliding
-  basis.
-- If `SetUsage` is never called, the request is not token-accounted (only its
-  request count is counted against `MaxRequests`).
+- ウィンドウは固定です。カウンターはウィンドウが経過するとリセットされ、スライド
+  方式ではありません。
+- `SetUsage` が一度も呼ばれない場合、そのリクエストはトークン計上されません
+  （リクエスト回数のみが `MaxRequests` に対してカウントされます）。

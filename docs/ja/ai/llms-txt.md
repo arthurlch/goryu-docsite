@@ -1,30 +1,32 @@
-# llms.txt & API Reference
+# llms.txt & API リファレンス
 
-Goryu can publish a machine-readable index of your HTTP API so that coding
-agents, LLM clients, and other tools can discover your endpoints without you
-writing docs by hand. One call — `app.MountLLMs()` — serves two documents built
-from your live router:
+Goryu は HTTP API の機械可読なインデックスを公開できるため、コーディング
+エージェントや LLM クライアント、その他のツールが、手作業でドキュメントを
+書かなくてもエンドポイントを発見できます。たった 1 回の呼び出し
+（`app.MountLLMs()`）で、稼働中のルーターから構築された 2 つのドキュメントを
+配信します。
 
-- `GET /llms.txt` — an [llms.txt](https://llmstxt.org) Markdown document.
-- `GET /llms.json` — the same information as structured JSON.
+- `GET /llms.txt` — [llms.txt](https://llmstxt.org) 形式の Markdown ドキュメント。
+- `GET /llms.json` — 同じ情報を構造化された JSON として提供。
 
-Both are generated from the routes you actually registered, so they never drift
-from your code.
+どちらも実際に登録したルートから生成されるため、コードとずれることはありません。
 
-## Features
+## 機能
 
-- **Zero maintenance**: the reference is derived from the router at request time.
-- **Two formats**: human/LLM-friendly Markdown (`llms.txt`) and machine-readable
-  JSON (`llms.json`).
-- **Named routes**: route names, when set, appear as endpoint descriptions.
-- **Programmatic access**: build the same data in Go with `app.APIReference()`
-  or render the Markdown with `app.LLMsText()`.
+- **メンテナンス不要**: リファレンスはリクエスト時にルーターから導出されます。
+- **2 つの形式**: 人間や LLM にやさしい Markdown（`llms.txt`）と機械可読な
+  JSON（`llms.json`）。
+- **名前付きルート**: ルート名が設定されている場合、エンドポイントの説明として
+  表示されます。
+- **プログラムからのアクセス**: `app.APIReference()` で同じデータを Go で構築でき、
+  `app.LLMsText()` で Markdown をレンダリングできます。
 
-## Usage
+## 使い方
 
-### Mount the endpoints
+### エンドポイントをマウントする
 
-Call `MountLLMs()` **after** your routes are defined, so it captures the full set.
+ルートをすべて定義した**後**に `MountLLMs()` を呼び出すことで、全体を確実に
+取り込めます。
 
 ```go
 package main
@@ -44,13 +46,13 @@ func main() {
 }
 ```
 
-`AppName` from your `goryu.Config` becomes the document title; if unset it
-defaults to `API`.
+`goryu.Config` の `AppName` がドキュメントのタイトルになります。設定されていない
+場合は `API` がデフォルトになります。
 
 ### `GET /llms.txt`
 
-Served as `text/plain`, following the [llms.txt](https://llmstxt.org)
-convention — a title, a `>` summary, and a list of endpoints:
+[llms.txt](https://llmstxt.org) の慣例に従い、`text/plain` として配信されます。
+タイトル、`>` によるサマリー、エンドポイントの一覧で構成されます。
 
 ```bash
 curl http://localhost:3000/llms.txt
@@ -70,12 +72,12 @@ curl http://localhost:3000/llms.txt
 - `GET /llms.json`
 ```
 
-The trailing `— Name` on each line is the route's name (from your route
-registration), used as a short description when present.
+各行末尾の `— Name` は（ルート登録時に付与した）ルート名であり、存在する場合は
+短い説明として使われます。
 
 ### `GET /llms.json`
 
-The same reference as JSON, matching the `APIReference` type:
+同じリファレンスを JSON として提供します。`APIReference` 型に対応しています。
 
 ```bash
 curl http://localhost:3000/llms.json
@@ -95,10 +97,11 @@ curl http://localhost:3000/llms.json
 }
 ```
 
-### Build the reference in Go
+### Go でリファレンスを構築する
 
-You don't have to serve the endpoints to use the data. `APIReference()` returns
-the structured reference, and `LLMsText()` returns the rendered Markdown.
+このデータを使うためにエンドポイントを配信する必要はありません。
+`APIReference()` は構造化されたリファレンスを返し、`LLMsText()` は
+レンダリング済みの Markdown を返します。
 
 ```go
 ref := app.APIReference()
@@ -111,12 +114,12 @@ for _, r := range ref.Routes {
 markdown := app.LLMsText() // the exact body served at /llms.txt
 ```
 
-This is useful for writing the reference to a file at build time, embedding it in
-a status page, or feeding it to another tool.
+これは、ビルド時にリファレンスをファイルへ書き出したり、ステータスページに
+埋め込んだり、別のツールに渡したりする場合に便利です。
 
-## Types
+## 型
 
-`APIReference` and `APIRoute` are exported from the `goryu` package.
+`APIReference` と `APIRoute` は `goryu` パッケージからエクスポートされています。
 
 ```go
 type APIRoute struct {
@@ -132,37 +135,39 @@ type APIReference struct {
 }
 ```
 
-## Methods
+## メソッド
 
-| Method | Returns | Description |
+| メソッド | 戻り値 | 説明 |
 |--------|---------|-------------|
-| `app.APIReference()` | `APIReference` | Structured reference built from the router |
-| `app.LLMsText()` | `string` | The `llms.txt` Markdown body |
-| `app.MountLLMs()` | — | Serves `GET /llms.txt` and `GET /llms.json` |
+| `app.APIReference()` | `APIReference` | ルーターから構築された構造化リファレンス |
+| `app.LLMsText()` | `string` | `llms.txt` の Markdown 本文 |
+| `app.MountLLMs()` | — | `GET /llms.txt` と `GET /llms.json` を配信する |
 
-## Why it helps agents and clients
+## エージェントやクライアントに役立つ理由
 
-`llms.txt` is a proposed convention (see [llmstxt.org](https://llmstxt.org)) for
-giving LLMs a concise, curated entry point to a site or service. For a Goryu API
-it turns your service into something an agent can reason about:
+`llms.txt` は、サイトやサービスへの簡潔で厳選された入口を LLM に与えるために
+提案された慣例です（[llmstxt.org](https://llmstxt.org) を参照）。Goryu API に
+とっては、サービスをエージェントが推論できる対象に変えてくれます。
 
-- **Discovery**: a coding agent can `GET /llms.txt` to learn every route, method,
-  and name — no OpenAPI file or scraping required.
-- **Grounding**: point an assistant at `/llms.txt` before it writes a client, and
-  it will call the endpoints that actually exist rather than hallucinating them.
-- **Tooling**: `/llms.json` is trivial to parse, so IDEs, dashboards, or client
-  generators can consume it directly.
+- **発見**: コーディングエージェントは `GET /llms.txt` によって、あらゆるルート、
+  メソッド、名前を把握できます。OpenAPI ファイルもスクレイピングも不要です。
+- **グラウンディング**: クライアントを書かせる前にアシスタントを `/llms.txt` に
+  向けておけば、存在しないエンドポイントを幻覚するのではなく、実際に存在する
+  エンドポイントを呼び出すようになります。
+- **ツール連携**: `/llms.json` はパースが非常に簡単なので、IDE、ダッシュボード、
+  クライアントジェネレーターが直接消費できます。
 
-::: tip Pair with request schemas and MCP
-Serve a `/schema` route (via `goryu.Schema[T]`, as the [AI
-scaffolds](/ja/ai/scaffolds) do) alongside `MountLLMs()` so agents can discover both
-the endpoints *and* their request shapes. For an interactive workflow, run the
-[`goryu mcp`](/ja/ai/mcp) server so agents can list routes and scaffold handlers
-directly.
+::: tip リクエストスキーマや MCP と組み合わせる
+（[AI スキャフォールド](/ja/ai/scaffolds)が行うように）`goryu.Schema[T]` 経由で
+`/schema` ルートを `MountLLMs()` と併せて配信すると、エージェントは
+エンドポイントとそのリクエスト形状の*両方*を発見できます。インタラクティブな
+ワークフローには、[`goryu mcp`](/ja/ai/mcp) サーバーを実行することで、
+エージェントがルートを一覧表示したりハンドラーを直接スキャフォールドしたり
+できます。
 :::
 
-::: warning Mount after routes, and mind exposure
-`MountLLMs()` only reflects routes registered before it runs — call it last.
-Since it publishes your route map, gate it behind auth or restrict it to internal
-networks if your API surface is sensitive.
+::: warning ルートの後にマウントし、公開範囲に注意する
+`MountLLMs()` は実行前に登録されたルートのみを反映するため、最後に呼び出して
+ください。ルートマップを公開する性質上、API のサーフェスが機密性を含む場合は、
+認証の背後に置くか内部ネットワークに限定してください。
 :::

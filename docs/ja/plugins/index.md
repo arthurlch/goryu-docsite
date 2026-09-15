@@ -1,20 +1,20 @@
-# Plugins Package
+# Plugins パッケージ
 
-The `plugins` package provides a fluent, type-safe builder API for configuring Goryu middlewares. It simplifies complex configurations and provides sensible defaults for different environments (Development vs. Production).
+`plugins` パッケージは、Goryu のミドルウェアを設定するための、流暢で型安全なビルダー API を提供します。複雑な設定を簡素化し、環境ごと（開発環境と本番環境）に妥当なデフォルト値を提供します。
 
-## Features
+## 特徴
 
-- **Fluent API**: Chainable methods for easy configuration.
-- **Type Safety**: Compile-time checks for configuration options.
-- **Presets**: Built-in configurations for `Development`, `Production`, and more.
-- **Validation**: Automatic validation of configuration values before building.
-- **Registry**: A system to register and discover plugins.
+- **流暢な API**: 簡単に設定できるチェーン可能なメソッド。
+- **型安全性**: 設定オプションに対するコンパイル時のチェック。
+- **プリセット**: `Development`、`Production` など向けの組み込み設定。
+- **バリデーション**: ビルド前に設定値を自動的に検証します。
+- **レジストリ**: プラグインを登録・検出するためのシステム。
 
-## Available Plugins
+## 利用可能なプラグイン
 
-### Logger Plugin
+### Logger プラグイン
 
-Configure the request logger with ease.
+リクエストロガーを簡単に設定できます。
 
 ```go
 // Development Logger (Colors, Human-readable time)
@@ -34,9 +34,9 @@ app.Use(plugins.NewLoggerBuilder().
     Build())
 ```
 
-### Recovery Plugin
+### Recovery プラグイン
 
-Manage panic recovery and stack traces.
+パニックリカバリーとスタックトレースを管理します。
 
 ```go
 // Development (Show stack traces)
@@ -51,9 +51,9 @@ app.Use(plugins.NewRecoveryBuilder().
     Build())
 ```
 
-### CORS Plugin
+### CORS プラグイン
 
-Configure Cross-Origin Resource Sharing policies.
+クロスオリジンリソース共有（CORS）のポリシーを設定します。
 
 ```go
 // Development (Permissive)
@@ -78,9 +78,9 @@ app.Use(plugins.NewCORSBuilder().
     Build())
 ```
 
-### Rate Limit Plugin
+### Rate Limit プラグイン
 
-Protect your application from abuse.
+アプリケーションを不正利用から保護します。
 
 ```go
 // Simple IP-based limit (100 req/min)
@@ -101,9 +101,9 @@ app.Use(plugins.NewRateLimitBuilder().Conservative().Build()) // 60/min
 app.Use(plugins.NewRateLimitBuilder().Generous().Build())     // 1000/min
 ```
 
-## Plugin Registry
+## プラグインレジストリ
 
-The package includes a registry system for discovering and creating plugins dynamically.
+このパッケージには、プラグインを動的に検出・生成するためのレジストリシステムが含まれています。
 
 ```go
 // List available plugins
@@ -117,9 +117,9 @@ if builder, ok := plugins.Get("cors"); ok {
 }
 ```
 
-## Creating Custom Plugins
+## カスタムプラグインの作成
 
-You can create your own plugins by implementing the `Builder` interface and registering them:
+`Builder` インターフェースを実装して登録することで、独自のプラグインを作成できます:
 
 ```go
 func init() {

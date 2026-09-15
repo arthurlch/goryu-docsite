@@ -1,16 +1,16 @@
-# Router Builder - Fluent Route Registration
+# Router Builder - 流暢なルート登録
 
-This package provides an expressive, fluent API for route registration in the Goryu framework, making route definition more readable and maintainable.
+このパッケージは、Goryu フレームワークにおけるルート登録のための表現力豊かで流暢な API を提供し、ルート定義をより読みやすく保守しやすいものにします。
 
-## Features
+## 特徴
 
-- **Fluent API**: Chain methods for clean route definitions
-- **Resource Routes**: Automatic RESTful route generation
-- **Nested Groups**: Organize routes with prefixes and middleware
-- **Method Chaining**: Configure routes with names, descriptions, and caching
-- **Controller Integration**: Automatic method mapping with reflection
+- **流暢な API**: メソッドをチェーンして、すっきりとしたルート定義を実現します
+- **リソースルート**: RESTful なルートを自動生成します
+- **ネストされたグループ**: プレフィックスとミドルウェアでルートを整理します
+- **メソッドチェーン**: 名前、説明、キャッシュを指定してルートを設定します
+- **コントローラー統合**: リフレクションによる自動的なメソッドマッピング
 
-## Quick Start
+## クイックスタート
 
 ```go
 package main
@@ -42,9 +42,9 @@ func main() {
 }
 ```
 
-## Examples
+## 例
 
-### Basic Route Registration
+### 基本的なルート登録
 
 ```go
 // BEFORE - Traditional approach:
@@ -61,7 +61,7 @@ app.Route().
     })
 ```
 
-### Resource Routes
+### リソースルート
 
 ```go
 type UserController struct{}
@@ -81,7 +81,7 @@ app.Route().
     })
 ```
 
-### Advanced Configuration
+### 詳細な設定
 
 ```go
 app.Route().
@@ -120,7 +120,7 @@ app.Route().
     })
 ```
 
-### Middleware Integration
+### ミドルウェアの統合
 
 ```go
 app.Route().
@@ -142,19 +142,19 @@ app.Route().
     })
 ```
 
-## Benefits Over Traditional Registration
+## 従来の登録方法に対する利点
 
-1. **Readability**: Clear hierarchical structure
-2. **Organization**: Group related routes together
-3. **Consistency**: Uniform pattern for all route types
-4. **Maintainability**: Easy to modify and extend
-5. **Documentation**: Built-in route descriptions
-6. **Type Safety**: Full Go type checking
-7. **Middleware Scoping**: Granular middleware application
+1. **可読性**: 明確な階層構造
+2. **整理**: 関連するルートをまとめて管理
+3. **一貫性**: すべてのルートタイプで統一されたパターン
+4. **保守性**: 変更や拡張が容易
+5. **ドキュメント**: 組み込みのルート説明
+6. **型安全性**: Go の型チェックを完全に活用
+7. **ミドルウェアのスコープ管理**: きめ細かいミドルウェアの適用
 
-## Resource Controller Patterns
+## リソースコントローラーのパターン
 
-### Full Controller Implementation
+### 完全なコントローラーの実装
 
 ```go
 type ArticleController struct {
@@ -209,7 +209,7 @@ func (ac *ArticleController) Destroy(c *goryuctx.Context) {
 }
 ```
 
-### Partial Controller (Only Some Actions)
+### 部分的なコントローラー（一部のアクションのみ）
 
 ```go
 type ReadOnlyController struct{}
@@ -227,31 +227,31 @@ app.Route().
     })
 ```
 
-## API Reference
+## API リファレンス
 
-### SimpleGroupBuilder Methods
+### SimpleGroupBuilder のメソッド
 
-- `GET(path, handler)` - Register GET route
-- `POST(path, handler)` - Register POST route  
-- `PUT(path, handler)` - Register PUT route
-- `DELETE(path, handler)` - Register DELETE route
-- `PATCH(path, handler)` - Register PATCH route
-- `Group(prefix, callback)` - Create nested group
-- `Resource(path, controller)` - Create RESTful resource
-- `Middleware(middlewares...)` - Add group middleware
+- `GET(path, handler)` - GET ルートを登録します
+- `POST(path, handler)` - POST ルートを登録します
+- `PUT(path, handler)` - PUT ルートを登録します
+- `DELETE(path, handler)` - DELETE ルートを登録します
+- `PATCH(path, handler)` - PATCH ルートを登録します
+- `Group(prefix, callback)` - ネストされたグループを作成します
+- `Resource(path, controller)` - RESTful なリソースを作成します
+- `Middleware(middlewares...)` - グループにミドルウェアを追加します
 
-### SimpleRouteConfig Methods
+### SimpleRouteConfig のメソッド
 
-- `Name(name)` - Set route name for URL generation
-- `Description(desc)` - Add route description
-- `Cache(ttl)` - Set caching duration
+- `Name(name)` - URL 生成用のルート名を設定します
+- `Description(desc)` - ルートの説明を追加します
+- `Cache(ttl)` - キャッシュ期間を設定します
 
-### SimpleResourceBuilder Methods
+### SimpleResourceBuilder のメソッド
 
-- `Name(name)` - Set resource name prefix
-- `Only(actions...)` - Include only specified actions
-- `Except(actions...)` - Exclude specified actions  
-- `Middleware(middlewares...)` - Add resource middleware
-- `Build()` - Create the routes
+- `Name(name)` - リソース名のプレフィックスを設定します
+- `Only(actions...)` - 指定したアクションのみを含めます
+- `Except(actions...)` - 指定したアクションを除外します
+- `Middleware(middlewares...)` - リソースにミドルウェアを追加します
+- `Build()` - ルートを作成します
 
-This fluent API makes route registration more expressive and maintainable while preserving all the power of the underlying router system.
+この流暢な API により、基盤となるルーターシステムのすべての機能を維持しつつ、ルート登録をより表現力豊かで保守しやすいものにできます。

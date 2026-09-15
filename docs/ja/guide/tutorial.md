@@ -1,24 +1,24 @@
-# 🎓 Goryu: Building a Modern E-Commerce API
+# 🎓 Goryu: モダンな EC API の構築
 
-Welcome to the **Goryu Masterclass**. In this guide, we will build a complete, production-ready E-Commerce Backend (`shop-api`) featuring:
+**Goryu マスタークラス**へようこそ。このガイドでは、以下の機能を備えた本番運用可能な EC バックエンド（`shop-api`）を完成させます。
 
-*   **Configuration** via the Builder pattern.
-*   **Authentication** (JWT, Password Hashing) using Goryu's Auth Middleware.
-*   **Public & Protected APIs** for Products and Orders.
-*   **Observability** with the built-in Dashboard.
+*   ビルダーパターンによる**設定**。
+*   Goryu の認証ミドルウェアを使った**認証**（JWT、パスワードハッシュ化）。
+*   商品と注文のための**公開 API と保護された API**。
+*   組み込みのダッシュボードによる**可観測性**。
 
 ---
 
-## Prerequisites
+## 前提条件
 
 *   **Go 1.24+**
 *   **Goryu CLI**: `go install github.com/arthurlch/goryu/cmd/goryu@latest`
 
 ---
 
-## Part 1: The Foundation 🏗️
+## Part 1: 基盤づくり 🏗️
 
-Let's start by initializing a clean project structure.
+まずはクリーンなプロジェクト構造を初期化するところから始めましょう。
 
 ```bash
 goryu init shop-api
@@ -26,9 +26,9 @@ cd shop-api
 go mod tidy
 ```
 
-### 1.1 Configuration Strategy
+### 1.1 設定戦略
 
-Create a `config.json` in the root directory. We'll use this to manage our environment settings.
+ルートディレクトリに `config.json` を作成します。これを使って環境設定を管理します。
 
 ```json
 {
@@ -45,9 +45,9 @@ Create a `config.json` in the root directory. We'll use this to manage our envir
 }
 ```
 
-### 1.2 Main Entrypoint
+### 1.2 メインのエントリポイント
 
-Open `cmd/server/main.go` and set up the Config Builder.
+`cmd/server/main.go` を開いて、Config Builder をセットアップします。
 
 ```go
 package main
@@ -83,13 +83,13 @@ func main() {
 
 ---
 
-## Part 2: Authentication & Users 🔐
+## Part 2: 認証とユーザー 🔐
 
-We will use Goryu's powerful `middleware/auth` package. For this tutorial, we'll use the built-in **In-Memory Stores**, but in production, you would wrap your database (Postgres, Mongo, etc.).
+Goryu の強力な `middleware/auth` パッケージを使用します。このチュートリアルでは組み込みの**インメモリストア**を使いますが、本番環境では自分のデータベース（Postgres、Mongo など）をラップすることになります。
 
-### 2.1 Setup Auth Service
+### 2.1 認証サービスのセットアップ
 
-Update `main.go` to initialize the Auth Service.
+`main.go` を更新して認証サービスを初期化します。
 
 ```go
     // ... imports
@@ -122,7 +122,7 @@ Update `main.go` to initialize the Auth Service.
     authHandlers.RegisterRoutes(app)
 ```
 
-Add the Mock Email Sender at the bottom of the file:
+ファイルの末尾にモックのメール送信者を追加します。
 
 ```go
 type MockEmailSender struct{}
@@ -142,13 +142,13 @@ func (m *MockEmailSender) SendSecurityAlert(email, msg string) error {
 
 ---
 
-## Part 3: The Product Catalog 📦
+## Part 3: 商品カタログ 📦
 
-Let's build the public API for browsing products.
+商品を閲覧するための公開 API を構築しましょう。
 
-### 3.1 The Product Model
+### 3.1 商品モデル
 
-Create `internal/models/product.go`:
+`internal/models/product.go` を作成します。
 
 ```go
 package models
@@ -173,9 +173,9 @@ func (p *Product) Validate() error {
 }
 ```
 
-## 3.2 Product Handlers
+## 3.2 商品ハンドラー
 
-Add a simple in-memory product handler in `main.go`:
+`main.go` にシンプルなインメモリの商品ハンドラーを追加します。
 
 ```go
     // ... imports
@@ -203,13 +203,13 @@ Add a simple in-memory product handler in `main.go`:
 
 ---
 
-## Part 4: Orders & Protection 🛡️
+## Part 4: 注文と保護 🛡️
 
-Now for the critical part: **Protected Routes**. Users must be logged in to place orders.
+いよいよ重要な部分、**保護されたルート**です。注文するにはユーザーがログインしている必要があります。
 
-### 4.1 Protected Group
+### 4.1 保護されたグループ
 
-Use the `authService.Middleware()` to protect routes.
+`authService.Middleware()` を使ってルートを保護します。
 
 ```go
     // Protected API Group
@@ -244,39 +244,39 @@ Use the `authService.Middleware()` to protect routes.
 
 ---
 
-## Part 5: Run & Verify 🚀
+## Part 5: 実行と検証 🚀
 
-Your E-Commerce API is ready!
+あなたの EC API の準備が整いました！
 
-### 5.1 Start the Server
+### 5.1 サーバーの起動
 
 ```bash
 goryu dev
 ```
 
-### 5.2 Test the Flow
+### 5.2 一連の流れをテストする
 
-1.  **Register a User**:
+1.  **ユーザーの登録**:
     ```bash
     curl -X POST http://localhost:3000/auth/register \
       -H "Content-Type: application/json" \
       -d '{"email": "jane@example.com", "password": "securePassword123!"}'
     ```
 
-2.  **Login**:
+2.  **ログイン**:
     ```bash
     curl -X POST http://localhost:3000/auth/login \
       -H "Content-Type: application/json" \
       -d '{"email": "jane@example.com", "password": "securePassword123!"}'
     ```
-    *Copy the `access_token` from the response.*
+    *レスポンスから `access_token` をコピーします。*
 
-3.  **Browse Products** (Public):
+3.  **商品の閲覧**（公開）:
     ```bash
     curl http://localhost:3000/api/v1/products
     ```
 
-4.  **Place Order** (Protected):
+4.  **注文する**（保護）:
     ```bash
     curl -X POST http://localhost:3000/api/v1/user/orders \
       -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" \
@@ -284,21 +284,21 @@ goryu dev
       -d '{"product_id": "1", "quantity": 2}'
     ```
 
-If you try step 4 without the token, you'll get a `401 Unauthorized`.
+トークンなしで手順 4 を試すと、`401 Unauthorized` が返されます。
 
 ---
 
-## Part 5: Deep Dive: Security & Sessions 🛒
+## Part 5: 深掘り: セキュリティとセッション 🛒
 
-The user requested we focus on **Sessions** and **Security**. Let's add a Shopping Cart feature to demonstrate stateful sessions alongside our stateless JWT auth.
+ここでは**セッション**と**セキュリティ**に焦点を当てます。ステートレスな JWT 認証と並行してステートフルなセッションを実演するために、ショッピングカート機能を追加しましょう。
 
-### 5.1 Why Sessions?
-While JWTs are great for **Authentication** (stateless identity), Sessions are often better for **Temporary State** (like a shopping cart) that you don't want to store in a database permanently until an order is placed.
+### 5.1 なぜセッションなのか？
+JWT は**認証**（ステートレスな本人確認）に最適ですが、セッションは（ショッピングカートのような）**一時的な状態**の管理に向いていることがよくあります。こうした状態は、注文が確定するまでデータベースに永続的に保存したくないものです。
 
-### 5.2 Setup Session Middleware
-We'll use Goryu's `SecureStore` which keeps session data in memory but **encrypted** — a best practice to prevent leaking user data even if memory is dumped.
+### 5.2 セッションミドルウェアのセットアップ
+Goryu の `SecureStore` を使用します。これはセッションデータをメモリに保持しますが、**暗号化**します。メモリがダンプされた場合でもユーザーデータの漏洩を防ぐためのベストプラクティスです。
 
-Update `main.go`:
+`main.go` を更新します。
 
 ```go
     // ... imports
@@ -323,8 +323,8 @@ Update `main.go`:
     }))
 ```
 
-### 5.3 Shopping Cart Implementation
-Now let's add routes to manage a cart. This interaction happens *without* login!
+### 5.3 ショッピングカートの実装
+それではカートを管理するルートを追加しましょう。このやり取りはログイン*なし*で行われます！
 
 ```go
     // Public Cart Routes
@@ -363,20 +363,20 @@ Now let's add routes to manage a cart. This interaction happens *without* login!
     })
 ```
 
-### 5.4 Security Concepts Explained 🛡️
+### 5.4 セキュリティ概念の解説 🛡️
 
-1.  **HttpOnly Cookies**: We set `HttpOnly: true`. This means your frontend JavaScript code (e.g., React/Vue) **cannot** read the session cookie. If an attacker injects malicious JS (XSS), they cannot steal the session ID.
-2.  **Secure Cookies**: In production (`Secure: true`), cookies are only sent over HTTPS, preventing "Man-in-the-Middle" attacks.
-3.  **Encrypted Store**: Goryu's `SecureStore` uses AES-GCM encryption. Even if an attacker gains access to your server's RAM, they cannot read user session data.
+1.  **HttpOnly Cookie**: `HttpOnly: true` を設定しています。これは、フロントエンドの JavaScript コード（React/Vue など）がセッション Cookie を**読み取れない**ことを意味します。攻撃者が悪意のある JS を注入（XSS）しても、セッション ID を盗むことはできません。
+2.  **Secure Cookie**: 本番環境（`Secure: true`）では、Cookie は HTTPS 経由でのみ送信され、「中間者（Man-in-the-Middle）」攻撃を防ぎます。
+3.  **暗号化されたストア**: Goryu の `SecureStore` は AES-GCM 暗号化を使用します。攻撃者がサーバーの RAM にアクセスできたとしても、ユーザーのセッションデータを読み取ることはできません。
 
 ---
 
-## Part 6: Advanced Features 🚀
+## Part 6: 高度な機能 🚀
 
-Goryu isn't just for JSON APIs. Let's look at some advanced capabilities.
+Goryu は JSON API のためだけのものではありません。いくつかの高度な機能を見てみましょう。
 
-### 6.1 Route Naming & Reversal
-In large apps, hardcoding URLs like `/api/v1/user/orders` is brittle. Use **Named Routes** instead.
+### 6.1 ルートの命名と逆引き
+大規模なアプリでは、`/api/v1/user/orders` のような URL をハードコードするのは壊れやすいものです。代わりに**名前付きルート**を使いましょう。
 
 ```go
     // Name the route
@@ -387,8 +387,8 @@ In large apps, hardcoding URLs like `/api/v1/user/orders` is brittle. Use **Name
     // url == "/api/v1/products/123"
 ```
 
-### 6.2 File Uploads
-Let's allow admins to upload product images. Goryu's `SaveUploadedFile` includes built-in security checks against path traversal and malicious filenames.
+### 6.2 ファイルアップロード
+管理者が商品画像をアップロードできるようにしましょう。Goryu の `SaveUploadedFile` には、パストラバーサルや悪意のあるファイル名に対する組み込みのセキュリティチェックが含まれています。
 
 ```go
     admin := api.Group("/admin")
@@ -420,8 +420,8 @@ Let's allow admins to upload product images. Goryu's `SaveUploadedFile` includes
     })
 ```
 
-### 6.3 Fluent XML/HTML
-Sometimes you need to support old systems (XML) or return rendered fragments (HTML). Goryu's Context has a **Fluent API** for this.
+### 6.3 流暢な XML/HTML
+古いシステム（XML）をサポートしたり、レンダリングされたフラグメント（HTML）を返したりする必要がある場合もあります。Goryu の Context にはこのための**流暢な API**があります。
 
 ```go
     api.GET("/legacy/products", func(c *goryuctx.Context) {
@@ -431,14 +431,14 @@ Sometimes you need to support old systems (XML) or return rendered fragments (HT
 
 ---
 
-## Part 7: The Plugin System 🧩
+## Part 7: プラグインシステム 🧩
 
-Goryu comes with a powerful **Plugin System** to standardize middleware configuration across teams.
+Goryu には、チーム全体でミドルウェアの設定を標準化するための強力な**プラグインシステム**が付属しています。
 
-Instead of manually configuring every middleware, use Builders.
+すべてのミドルウェアを手動で設定する代わりに、Builder を使いましょう。
 
-### 7.1 Production Logger
-The Plugin Builder ensures you don't forget critical production settings (like disabling colors or using JSON format).
+### 7.1 本番向けロガー
+Plugin Builder は、（色の無効化や JSON フォーマットの使用といった）本番環境で重要な設定を忘れないようにしてくれます。
 
 ```go
     // Replace app.Use(goryu.Logger()) with:
@@ -451,8 +451,8 @@ The Plugin Builder ensures you don't forget critical production settings (like d
         Build())
 ```
 
-### 7.2 Rate Limiting
-Protect your API with the Rate Limit plugin.
+### 7.2 レート制限
+Rate Limit プラグインで API を保護します。
 
 ```go
     // 100 requests per minute per IP
@@ -464,18 +464,18 @@ Protect your API with the Rate Limit plugin.
 
 ---
 
-## Conclusion 🎓
+## まとめ 🎓
 
-You have toured the entire Goryu ecosystem!
+Goryu エコシステム全体を一通り巡りました！
 
-**What you have built:**
-1.  **Shop API**: A structured, configured backend.
-2.  **Auth System**: Secure JWT + In-Memory Store.
-3.  **Shopping Cart**: Stateful Session management.
-4.  **Advanced Features**: File Uploads, Reverse Routing.
-5.  **Production Ready**: Using Plugins for standard logging and rate limiting.
+**構築したもの:**
+1.  **Shop API**: 構造化され、設定されたバックエンド。
+2.  **認証システム**: 安全な JWT + インメモリストア。
+3.  **ショッピングカート**: ステートフルなセッション管理。
+4.  **高度な機能**: ファイルアップロード、リバースルーティング。
+5.  **本番運用対応**: 標準的なロギングとレート制限のためのプラグインの活用。
 
-**Next Steps:**
-*   Explore `middleware/` for more tools (CORS, CSRF, Cache).
-*   Check `examples/` for more code patterns.
-*   Join the community and build something amazing!
+**次のステップ:**
+*   さらなるツール（CORS、CSRF、Cache）については `middleware/` を探索してください。
+*   より多くのコードパターンは `examples/` を確認してください。
+*   コミュニティに参加して、素晴らしいものを作りましょう！

@@ -1,28 +1,28 @@
-# Errors Middleware
+# Errors ミドルウェア
 
-A comprehensive error handling middleware for Goryu. It centralizes error management, provides consistent response formatting, and handles panics gracefully.
+Goryu 向けの包括的なエラー処理ミドルウェアです。エラー管理を一元化し、一貫したレスポンス形式を提供し、パニックを適切に処理します。
 
-## Features
+## 機能
 
-- **Centralized Handling**: Catches errors returned by handlers or stored in the context.
-- **Panic Recovery**: Automatically recovers from panics and converts them into internal server errors.
-- **Consistent Formatting**: Returns errors in a standardized JSON format.
-- **Dev Mode**: Optionally exposes stack traces and internal error details for debugging.
-- **Customization**: Supports custom error transformers and response formatters.
+- **一元化された処理**: ハンドラーが返すエラーや、コンテキストに格納されたエラーを捕捉します。
+- **パニックからの復帰**: パニックから自動的に復帰し、内部サーバーエラーに変換します。
+- **一貫した形式**: 標準化された JSON 形式でエラーを返します。
+- **開発モード**: デバッグ用に、スタックトレースや内部エラーの詳細をオプションで公開します。
+- **カスタマイズ**: カスタムのエラートランスフォーマーやレスポンスフォーマッターをサポートします。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Enable default error handling:
+デフォルトのエラー処理を有効にします。
 
 ```go
 app.Use(errors.New())
 ```
 
-### Custom Configuration
+### カスタム設定
 
-Enable development mode to see stack traces:
+スタックトレースを表示するために開発モードを有効にします。
 
 ```go
 app.Use(errors.NewWithConfig(errors.Config{
@@ -33,9 +33,9 @@ app.Use(errors.NewWithConfig(errors.Config{
 }))
 ```
 
-### Returning Errors
+### エラーを返す
 
-In your handlers, simply return an error:
+ハンドラー内では、単純にエラーを返します。
 
 ```go
 app.GET("/users/:id", func(c *goryuctx.Context) {
@@ -50,9 +50,9 @@ app.GET("/users/:id", func(c *goryuctx.Context) {
 })
 ```
 
-### Standard Error Format
+### 標準エラー形式
 
-The middleware returns errors in the following JSON structure:
+このミドルウェアは、以下の JSON 構造でエラーを返します。
 
 ```json
 {
@@ -66,8 +66,8 @@ The middleware returns errors in the following JSON structure:
 }
 ```
 
-## Advanced Features
+## 高度な機能
 
-- **Error Transformer**: Modify errors before they are processed (e.g., map database errors to application errors).
-- **Custom Handler**: Execute custom logic when an error occurs (e.g., logging to an external service).
-- **Response Formatter**: Completely change the JSON structure of the error response.
+- **エラートランスフォーマー**: エラーが処理される前に変更します（例: データベースエラーをアプリケーションエラーにマッピングする）。
+- **カスタムハンドラー**: エラー発生時にカスタムロジックを実行します（例: 外部サービスへのロギング）。
+- **レスポンスフォーマッター**: エラーレスポンスの JSON 構造を完全に変更します。

@@ -1,32 +1,33 @@
-# Provider Proxy
+# プロバイダープロキシ
 
-`aiproxy` is a small streaming reverse-proxy helper for LLM/AI providers. It
-forwards the current request to an upstream provider and streams the response
-back to the client, flushing as data arrives — so SSE and chunked token streams
-pass straight through. It injects your provider credential and strips the
-caller's own secrets on the way out.
+`aiproxy` は、LLM / AI プロバイダー向けの小さなストリーミングリバースプロキシ
+ヘルパーです。現在のリクエストを上流のプロバイダーへ転送し、データが到着するたびに
+フラッシュしながらレスポンスをクライアントへストリーミングで返します。そのため
+SSE やチャンク化されたトークンストリームがそのまま素通しされます。あなたの
+プロバイダー資格情報を注入し、送出時に呼び出し元自身のシークレットを取り除きます。
 
 ```go
 import "github.com/arthurlch/goryu/aiproxy"
 ```
 
-## Features
+## 機能
 
-- **Streaming passthrough**: `Stream` flushes upstream bytes as they arrive
-  (SSE / chunked token streams), with no client timeout.
-- **Buffered forward**: `Forward` for ordinary non-streaming provider calls.
-- **Auth injection**: attaches `Authorization: Bearer <key>` (configurable
-  header and scheme).
-- **Secret stripping**: removes the caller's `Authorization`, `Cookie`, and
-  `X-Api-Key` before forwarding.
-- **Header hygiene**: drops hop-by-hop headers in both directions.
-- **Context-aware**: honors the request context for cancellation.
+- **ストリーミングの素通し**: `Stream` は上流のバイトを到着したそばから
+  フラッシュします（SSE / チャンク化されたトークンストリーム）。クライアント
+  タイムアウトはありません。
+- **バッファ転送**: 通常の非ストリーミングなプロバイダー呼び出し向けの `Forward`。
+- **認証の注入**: `Authorization: Bearer <key>` を付与します（ヘッダーとスキームは
+  設定可能）。
+- **シークレットの除去**: 転送前に呼び出し元の `Authorization`、`Cookie`、
+  `X-Api-Key` を取り除きます。
+- **ヘッダーの衛生管理**: 両方向で hop-by-hop ヘッダーを破棄します。
+- **コンテキスト対応**: キャンセルのためにリクエストコンテキストを尊重します。
 
-## Usage
+## 使い方
 
-### Streaming passthrough
+### ストリーミングの素通し
 
-Create one `*Proxy` at startup and call `Stream` from a handler.
+起動時に `*Proxy` を 1 つ作成し、ハンドラーから `Stream` を呼び出します。
 
 ```go
 import (
@@ -49,13 +50,14 @@ app.POST("/v1/chat/completions", func(c *goryu.Ctx) {
 })
 ```
 
-`Stream` copies the upstream status and headers, then relays the body chunk by
-chunk, flushing after each write so tokens reach the client immediately.
+`Stream` は上流のステータスとヘッダーをコピーし、その後ボディをチャンクごとに
+中継し、各書き込みの後にフラッシュするため、トークンがただちにクライアントへ
+届きます。
 
-### Non-streaming forward
+### 非ストリーミングの転送
 
-Use `Forward` when you want the whole response buffered (it uses the configured
-`Timeout`).
+レスポンス全体をバッファリングしたい場合は `Forward` を使います（設定した
+`Timeout` を使用します）。
 
 ```go
 app.POST("/v1/embeddings", func(c *goryu.Ctx) {
@@ -65,7 +67,7 @@ app.POST("/v1/embeddings", func(c *goryu.Ctx) {
 })
 ```
 
-### A different provider or custom auth header
+### 別のプロバイダーやカスタム認証ヘッダー
 
 ```go
 px := aiproxy.New(aiproxy.Config{
@@ -79,40 +81,43 @@ px := aiproxy.New(aiproxy.Config{
 })
 ```
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| BaseURL | `string` | Upstream origin (required), e.g. `https://api.openai.com` | none |
-| APIKey | `string` | Credential injected on `AuthHeader` | none |
-| AuthHeader | `string` | Header carrying the credential | `Authorization` |
-| AuthScheme | `string` | Scheme prefix before the key | `Bearer` |
-| Header | `http.Header` | Extra headers added to every upstream request | none |
-| Client | `*http.Client` | Custom HTTP client (overrides both stream & forward) | see below |
-| Timeout | `time.Duration` | Timeout for `Forward` only | `60s` |
+| BaseURL | `string` | 上流のオリジン（必須）、例: `https://api.openai.com` | なし |
+| APIKey | `string` | `AuthHeader` に注入される資格情報 | なし |
+| AuthHeader | `string` | 資格情報を運ぶヘッダー | `Authorization` |
+| AuthScheme | `string` | キーの前に付けるスキームのプレフィックス | `Bearer` |
+| Header | `http.Header` | すべての上流リクエストに追加するヘッダー | なし |
+| Client | `*http.Client` | カスタム HTTP クライアント（stream と forward の両方を上書き） | 下記参照 |
+| Timeout | `time.Duration` | `Forward` のみのタイムアウト | `60s` |
 
-## Security
+## セキュリティ
 
-::: tip The caller's secrets never reach the provider
-Before forwarding, `aiproxy` strips the caller's own `Authorization`, `Cookie`,
-and `X-Api-Key` headers, then attaches *your* provider credential via
-`AuthHeader`. A client's session cookie or personal API key can never leak to the
-third-party provider. All other client headers (minus hop-by-hop headers) are
-passed through.
+::: tip 呼び出し元のシークレットはプロバイダーに届かない
+転送前に、`aiproxy` は呼び出し元自身の `Authorization`、`Cookie`、`X-Api-Key`
+ヘッダーを取り除き、その後 `AuthHeader` を介して*あなたの*プロバイダー資格情報を
+付与します。クライアントのセッション Cookie や個人の API キーが、サードパーティの
+プロバイダーへ漏れることは決してありません。それ以外のクライアントヘッダーは
+（hop-by-hop ヘッダーを除いて）素通しされます。
 :::
 
-::: warning Do not pass a user-controlled path
-The `path` argument is joined onto `BaseURL` to form the upstream URL. If you
-build it from user input, a caller could reach unintended upstream endpoints
-(SSRF-style path traversal against the provider). Always pass a fixed,
-server-chosen path such as `"/v1/chat/completions"`.
+::: warning ユーザー制御のパスを渡さないこと
+`path` 引数は `BaseURL` に結合されて上流 URL を形成します。ユーザー入力から
+それを組み立てると、呼び出し元が意図しない上流エンドポイントに到達できる恐れが
+あります（プロバイダーに対する SSRF 的なパストラバーサル）。常に
+`"/v1/chat/completions"` のような固定でサーバー側が選んだパスを渡してください。
 :::
 
-## Notes
+## 注意点
 
-- `Stream` uses an HTTP client with **no timeout** — streams can be long-lived —
-  and relies on the request context for cancellation. `Forward` uses `Timeout`.
-- Supplying your own `Client` overrides both the stream and forward clients. If
-  you reuse it for streaming, set its `Timeout` to `0`.
-- On a streaming error the response may already be partially written; you cannot
-  change the status code after the first byte, so log and move on.
+- `Stream` は**タイムアウトのない** HTTP クライアントを使用し（ストリームは
+  長時間に及ぶ可能性があるため）、キャンセルはリクエストコンテキストに依存します。
+  `Forward` は `Timeout` を使用します。
+- 独自の `Client` を指定すると、stream と forward の両方のクライアントを上書き
+  します。ストリーミングにも再利用する場合は、その `Timeout` を `0` に設定して
+  ください。
+- ストリーミングエラー時にはレスポンスがすでに部分的に書き込まれている場合が
+  あります。最初のバイトの後はステータスコードを変更できないため、ログを取って
+  次へ進んでください。

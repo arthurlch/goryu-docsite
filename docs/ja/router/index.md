@@ -1,20 +1,20 @@
-# Router Package
+# Router パッケージ
 
-The `router` package implements a high-performance, radix tree-based HTTP router for Goryu. It supports named parameters, wildcards, route grouping, and middleware.
+`router` パッケージは、Goryu 向けの高性能な radix ツリーベースの HTTP ルーターを実装します。名前付きパラメータ、ワイルドカード、ルートのグループ化、ミドルウェアに対応しています。
 
-## Features
+## 特徴
 
-- **Fast**: Efficient routing algorithm for fast path matching (Radix tree).
-- **Parameters**: Named parameters like `/users/:id`.
-- **Wildcards**: Catch-all routes like `/files/*path`.
-- **Groups**: Organize routes with common prefixes and middlewares.
-- **Middleware**: Chainable middleware support at global, group, and route levels.
-- **Named Routes**: Reverse URL generation.
-- **Customizable**: Configurable behavior for trailing slashes, method not allowed, and more.
+- **高速**: 効率的なルーティングアルゴリズムによる高速なパスマッチング（Radix ツリー）。
+- **パラメータ**: `/users/:id` のような名前付きパラメータ。
+- **ワイルドカード**: `/files/*path` のようなキャッチオールルート。
+- **グループ**: 共通のプレフィックスとミドルウェアでルートを整理します。
+- **ミドルウェア**: グローバル、グループ、ルートの各レベルでチェーン可能なミドルウェアに対応。
+- **名前付きルート**: URL の逆生成に対応。
+- **カスタマイズ可能**: 末尾スラッシュの扱いや、許可されていないメソッドの処理などの動作を設定できます。
 
-## Usage
+## 使い方
 
-### Basic Routing
+### 基本的なルーティング
 
 ```go
 import (
@@ -33,7 +33,7 @@ r.POST("/users", func(c *goryuctx.Context) error {
 })
 ```
 
-### Parameters and Wildcards
+### パラメータとワイルドカード
 
 ```go
 // Named parameter
@@ -49,9 +49,9 @@ r.GET("/files/*path", func(c *goryuctx.Context) error {
 })
 ```
 
-### Route Groups
+### ルートグループ
 
-Group routes to share a common prefix and middlewares:
+共通のプレフィックスとミドルウェアを共有するために、ルートをグループ化します:
 
 ```go
 api := r.Group("/api")
@@ -62,9 +62,9 @@ v1.GET("/users", listUsers)
 v1.GET("/users/:id", getUser)
 ```
 
-### Configuration
+### 設定
 
-You can customize the router's behavior:
+ルーターの動作をカスタマイズできます:
 
 ```go
 r := router.New(router.RouterConfig{
@@ -75,9 +75,9 @@ r := router.New(router.RouterConfig{
 })
 ```
 
-## Security
+## セキュリティ
 
-The router includes built-in security limits to prevent resource exhaustion attacks:
-- `MaxRouteDepth`: Limits the depth of the routing tree.
-- `MaxTotalRoutes`: Limits the total number of registered routes.
-- `MaxParametersPerRoute`: Limits the complexity of individual routes.
+このルーターには、リソース枯渇攻撃を防ぐための組み込みのセキュリティ制限が含まれています:
+- `MaxRouteDepth`: ルーティングツリーの深さを制限します。
+- `MaxTotalRoutes`: 登録可能なルートの総数を制限します。
+- `MaxParametersPerRoute`: 個々のルートの複雑さを制限します。

@@ -1,29 +1,30 @@
-# Prompt Cache
+# プロンプトキャッシュ
 
-`promptcache` is a response cache keyed on the **request body** (the "prompt")
-rather than the URL, so it can cache `POST` responses — the common shape for LLM
-endpoints where the same prompt should return the same answer. It adds an
-`X-Cache: HIT|MISS` header and is safe around streaming.
+`promptcache` は、URL ではなく**リクエストボディ**（「プロンプト」）をキーとする
+レスポンスキャッシュです。そのため `POST` レスポンスもキャッシュできます。これは
+同じプロンプトが同じ回答を返すべき LLM エンドポイントでよく見られる形です。
+`X-Cache: HIT|MISS` ヘッダーを付与し、ストリーミング周りでも安全に動作します。
 
 ```go
 import "github.com/arthurlch/goryu/middleware/promptcache"
 ```
 
-## Features
+## 機能
 
-- **Body-keyed**: SHA-256 of method + path + optional vary headers + body.
-- **POST-friendly**: caches the methods you choose (default `POST`).
-- **Streaming-safe**: `text/event-stream` and `application/x-ndjson` responses
-  are passed straight through and never cached.
-- **Bounded**: entry-count cap with expiry-based eviction; a per-body size limit.
-- **Correct by default**: never caches non-2xx, `Set-Cookie`, or responses
-  marked `no-store` / `no-cache` / `private`.
-- **Privacy guard**: with the default key, requests carrying `Authorization` or
-  `Cookie` are not cached.
+- **ボディをキーにする**: メソッド + パス + 任意の vary ヘッダー + ボディの SHA-256。
+- **POST に対応**: 選択したメソッドをキャッシュします（デフォルトは `POST`）。
+- **ストリーミング安全**: `text/event-stream` と `application/x-ndjson` の
+  レスポンスはそのまま素通しされ、決してキャッシュされません。
+- **上限あり**: 有効期限に基づくエビクションを伴うエントリ数の上限と、ボディ
+  あたりのサイズ上限。
+- **デフォルトで正しい**: 非 2xx、`Set-Cookie`、あるいは `no-store` / `no-cache`
+  / `private` とマークされたレスポンスは決してキャッシュしません。
+- **プライバシー保護**: デフォルトのキーでは、`Authorization` や `Cookie` を
+  伴うリクエストはキャッシュされません。
 
-## Usage
+## 使い方
 
-### Basic setup
+### 基本的なセットアップ
 
 ```go
 import (
@@ -38,12 +39,12 @@ app.Use(promptcache.New(promptcache.Config{
 }))
 ```
 
-`promptcache.Default()` uses a 5-minute expiration and caches `POST`.
+`promptcache.Default()` は 5 分の有効期限を使用し、`POST` をキャッシュします。
 
-### Cache only specific routes
+### 特定のルートだけをキャッシュする
 
-Streaming routes must not be cached, so a common pattern is to wrap just the
-non-streaming endpoints in a group.
+ストリーミングルートはキャッシュしてはならないため、非ストリーミングの
+エンドポイントだけをグループでラップするのが一般的なパターンです。
 
 ```go
 cached := app.Group("", promptcache.New(promptcache.Config{
@@ -53,12 +54,12 @@ cached.POST("/chat", chat)          // cached
 app.POST("/chat/stream", chatStream) // not cached
 ```
 
-Send the same body twice and watch the response header go `X-Cache: MISS` →
-`X-Cache: HIT`.
+同じボディを 2 回送信し、レスポンスヘッダーが `X-Cache: MISS` から
+`X-Cache: HIT` へ変わる様子を確認してください。
 
-### Vary on a model selector
+### モデルセレクターで vary する
 
-Fold request headers into the key so `fast` and `smart` don't collide.
+リクエストヘッダーをキーに折り込み、`fast` と `smart` が衝突しないようにします。
 
 ```go
 app.Use(promptcache.New(promptcache.Config{
@@ -66,16 +67,17 @@ app.Use(promptcache.New(promptcache.Config{
 }))
 ```
 
-::: warning Never put auth headers in VaryHeaders
-`VaryHeaders` values become part of a shared cache key. Only use non-secret
-selectors (model, locale, feature flags). To key on identity, use a
-`KeyGenerator` instead — see the privacy section below.
+::: warning 認証ヘッダーを VaryHeaders に入れないこと
+`VaryHeaders` の値は共有キャッシュキーの一部になります。秘密情報でない
+セレクター（モデル、ロケール、フィーチャーフラグ）のみを使用してください。
+アイデンティティをキーにするには、代わりに `KeyGenerator` を使ってください。
+下記のプライバシーの節を参照してください。
 :::
 
-### Custom key derivation
+### カスタムキーの導出
 
-A `KeyGenerator` lets you normalize the prompt before hashing, or fold in a
-user/tenant id for per-user caching.
+`KeyGenerator` を使うと、ハッシュ化の前にプロンプトを正規化したり、ユーザー単位の
+キャッシュのためにユーザー / テナント ID を折り込んだりできます。
 
 ```go
 app.Use(promptcache.New(promptcache.Config{
@@ -85,38 +87,40 @@ app.Use(promptcache.New(promptcache.Config{
 }))
 ```
 
-## Configuration
+## 設定
 
-| Option | Type | Description | Default |
+| オプション | 型 | 説明 | デフォルト |
 |--------|------|-------------|---------|
-| Expiration | `time.Duration` | Freshness window | `5m` |
-| MaxSize | `int` | Max cached entries (cannot exceed 100,000) | `1000` |
-| MaxBodyBytes | `int64` | Max request/response bytes cached | `1 MiB` |
-| Methods | `[]string` | Cacheable methods | `["POST"]` |
-| VaryHeaders | `[]string` | Request headers folded into the key | none |
-| KeyGenerator | `func(c, body) string` | Custom key derivation | body hash |
+| Expiration | `time.Duration` | 鮮度ウィンドウ | `5m` |
+| MaxSize | `int` | 最大キャッシュエントリ数（100,000 を超えられない） | `1000` |
+| MaxBodyBytes | `int64` | キャッシュするリクエスト / レスポンスの最大バイト数 | `1 MiB` |
+| Methods | `[]string` | キャッシュ可能なメソッド | `["POST"]` |
+| VaryHeaders | `[]string` | キーに折り込むリクエストヘッダー | なし |
+| KeyGenerator | `func(c, body) string` | カスタムキーの導出 | ボディのハッシュ |
 
-## Privacy
+## プライバシー
 
-::: warning The default key does not know who the caller is
-With the **default key** (method + path + vary headers + body), the same prompt
-from any caller produces the same key. To prevent one authenticated user from
-being served another user's cached response, requests carrying an
-`Authorization` or `Cookie` header are **not cached at all** — they pass straight
-through to the handler.
+::: warning デフォルトのキーは呼び出し元が誰かを知らない
+**デフォルトのキー**（メソッド + パス + vary ヘッダー + ボディ）では、どの呼び出し
+元から来た同じプロンプトも同じキーを生成します。認証済みのあるユーザーが別の
+ユーザーのキャッシュされたレスポンスを受け取ることを防ぐため、`Authorization`
+または `Cookie` ヘッダーを伴うリクエストは**まったくキャッシュされず**、
+ハンドラーへそのまま素通しされます。
 
-The moment you supply a `KeyGenerator`, this guard steps aside: you have taken
-responsibility for the key, so you **must** fold the user/tenant identity into it
-if the responses are user-specific. A `KeyGenerator` that ignores identity while
-callers send `Authorization` will happily serve one user's answer to another.
+`KeyGenerator` を指定した瞬間に、このガードは退きます。キーの責任はあなたが
+引き受けたことになるため、レスポンスがユーザー固有であれば、ユーザー / テナントの
+アイデンティティをキーに折り込む**必要があります**。呼び出し元が `Authorization`
+を送っているのにアイデンティティを無視する `KeyGenerator` は、あるユーザーの
+回答を平然と別のユーザーへ提供してしまいます。
 :::
 
-## Notes
+## 注意点
 
-- Responses larger than `MaxBodyBytes` are streamed to the client but not cached
-  (they cannot be stored truncated). Likewise, request bodies larger than
-  `MaxBodyBytes` are served in full to the handler but left un-keyed.
-- The request body is read for keying and then restored, so the handler still
-  reads it in full.
-- Eviction is expiry-first: when full, expired entries are dropped before an
-  arbitrary entry is evicted. It is not an LRU.
+- `MaxBodyBytes` より大きいレスポンスはクライアントへストリーミングされますが、
+  キャッシュはされません（切り詰めた状態では保存できないためです）。同様に、
+  `MaxBodyBytes` より大きいリクエストボディはハンドラーへ完全な形で提供されますが、
+  キーには使われません。
+- リクエストボディはキー生成のために読み取られた後に復元されるため、ハンドラーは
+  依然として完全に読み取れます。
+- エビクションは有効期限優先です。満杯になると、任意のエントリがエビクトされる前に
+  期限切れのエントリが破棄されます。LRU ではありません。

@@ -1,33 +1,33 @@
-# Compress Middleware
+# Compress ミドルウェア
 
-A middleware that compresses HTTP responses using Gzip or Deflate. It automatically negotiates the best encoding based on the client's `Accept-Encoding` header.
+Gzip または Deflate を使用して HTTP レスポンスを圧縮するミドルウェアです。クライアントの `Accept-Encoding` ヘッダーに基づいて、最適なエンコーディングを自動的にネゴシエートします。
 
-## Features
+## 機能
 
-- **Multiple Algorithms**: Supports `gzip` and `deflate`.
-- **Content Filtering**: Only compresses specific content types (e.g., HTML, JSON, XML).
-- **Size Threshold**: Skips compression for small responses (configurable `MinLength`) to avoid overhead.
-- **Configurable Levels**: Adjust compression level (BestSpeed vs BestCompression).
+- **複数のアルゴリズム**: `gzip` と `deflate` をサポートします。
+- **コンテンツフィルタリング**: 特定のコンテンツタイプ（例: HTML、JSON、XML）のみを圧縮します。
+- **サイズしきい値**: オーバーヘッドを避けるため、小さなレスポンス（設定可能な `MinLength`）の圧縮をスキップします。
+- **設定可能なレベル**: 圧縮レベル（BestSpeed か BestCompression か）を調整できます。
 
-## Usage
+## 使い方
 
-### Basic Setup
+### 基本的なセットアップ
 
-Enable compression with default settings (Gzip/Deflate, default level):
+デフォルト設定（Gzip/Deflate、デフォルトレベル）で圧縮を有効にします。
 
 ```go
 app.Use(compress.Default())
 ```
 
-### Gzip Only
+### Gzip のみ
 
-Force Gzip compression:
+Gzip 圧縮を強制します。
 
 ```go
 app.Use(compress.WithGzip(compress.LevelBestCompression))
 ```
 
-### Advanced Configuration
+### 高度な設定
 
 ```go
 app.Use(compress.New(compress.Config{
@@ -41,13 +41,13 @@ app.Use(compress.New(compress.Config{
 }))
 ```
 
-## How It Works
+## 仕組み
 
-1.  **Negotiation**: Checks the `Accept-Encoding` header.
-2.  **Buffering**: Buffers the response to determine its size.
-3.  **Filtering**: Checks if the `Content-Type` is in the allowed list and if the size exceeds `MinLength`.
-4.  **Compression**: If criteria are met, compresses the body and sets `Content-Encoding`. Otherwise, sends the original response.
+1.  **ネゴシエーション**: `Accept-Encoding` ヘッダーを確認します。
+2.  **バッファリング**: サイズを判定するためにレスポンスをバッファリングします。
+3.  **フィルタリング**: `Content-Type` が許可リストに含まれているか、およびサイズが `MinLength` を超えているかを確認します。
+4.  **圧縮**: 条件を満たす場合はボディを圧縮し、`Content-Encoding` を設定します。それ以外の場合は、元のレスポンスを送信します。
 
-## Performance Note
+## パフォーマンスに関する注意
 
-Compression consumes CPU. While it reduces bandwidth usage and improves client load times, be mindful of the CPU overhead on high-traffic servers. `LevelBestSpeed` is often a good trade-off.
+圧縮は CPU を消費します。帯域幅の使用量を削減しクライアントの読み込み時間を改善する一方で、トラフィックの多いサーバーでは CPU オーバーヘッドに注意してください。`LevelBestSpeed` はしばしば良好なトレードオフとなります。

@@ -1,19 +1,19 @@
-# Base Middleware Package
+# Base ミドルウェアパッケージ
 
-The `base` package provides the foundational building blocks for creating consistent and robust middlewares in Goryu. It handles common concerns like configuration, logging, and error handling, allowing you to focus on the specific logic of your middleware.
+`base` パッケージは、Goryu で一貫性と堅牢性を備えたミドルウェアを作成するための基礎的な構成要素を提供します。設定、ロギング、エラー処理といった共通の関心事を処理するため、開発者はミドルウェア固有のロジックに集中できます。
 
-## Features
+## 機能
 
-- **Standard Configuration**: A `BaseConfig` struct that all middlewares can embed.
-- **Unified Logging**: Consistent logging interface via `DefaultLogger`.
-- **Error Handling**: Centralized error handling with `DefaultErrorHandler`.
-- **Middleware Helpers**: Helper functions like `StandardMiddleware` and `PostProcessMiddleware` to reduce boilerplate.
+- **標準設定**: すべてのミドルウェアが埋め込める `BaseConfig` 構造体。
+- **統一されたロギング**: `DefaultLogger` を通じた一貫したロギングインターフェース。
+- **エラー処理**: `DefaultErrorHandler` による一元化されたエラー処理。
+- **ミドルウェアヘルパー**: `StandardMiddleware` や `PostProcessMiddleware` といったヘルパー関数により定型コードを削減。
 
-## Usage
+## 使い方
 
-### Creating a Custom Middleware
+### カスタムミドルウェアの作成
 
-Here is how you can use the `base` package to create a custom middleware:
+以下は `base` パッケージを使ってカスタムミドルウェアを作成する方法です。
 
 ```go
 package mymiddleware
@@ -65,9 +65,9 @@ func New(config Config) func(next goryuctx.HandlerFunc) goryuctx.HandlerFunc {
 }
 ```
 
-### Post-Processing Middleware
+### 後処理ミドルウェア
 
-If your middleware needs to run logic *after* the next handler returns (e.g., logging response time), use `PostProcessMiddleware`:
+ミドルウェアが次のハンドラーの実行*後*にロジックを実行する必要がある場合（例: レスポンス時間のロギング）は、`PostProcessMiddleware` を使用します。
 
 ```go
 func NewTimer(config Config) func(next goryuctx.HandlerFunc) goryuctx.HandlerFunc {

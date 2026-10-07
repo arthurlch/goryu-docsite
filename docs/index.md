@@ -3,11 +3,14 @@ layout: home
 
 hero:
   name: "Goryu"
-  text: "Go backends, batteries included."
-  tagline: "From a plain REST API to a full AI/LLM service — streaming-first, observable, and secure by default. Productive for humans, easy for LLMs to generate."
+  text: "The Go backend your AI gets right the first time."
+  tagline: "Describe the API — your agent builds it on Goryu, it compiles, and it's production-safe. Batteries-included, secure by default, and no-magic readable, so you can trust what your agent ships, not just run it."
+  image:
+    src: /logo.webp
+    alt: Goryu logo
   actions:
     - theme: brand
-      text: Get Started
+      text: Build one with an agent
       link: /guide/getting-started
     - theme: alt
       text: Why Goryu?
@@ -17,33 +20,38 @@ hero:
       link: https://github.com/arthurlch/goryu
 
 features:
+  - icon: 🎯
+    title: Agents get it right the first time
+    details: A small, regular API constrains codegen — fewer ways to call it means fewer ways to get it wrong. Go's compiler rejects the rest on the spot. If an LLM can't reliably write correct Goryu, the API is too clever — so it isn't.
+  - icon: 🔒
+    title: Secure by default
+    details: Security headers, CSRF, JWT & sessions with unified invalidation, OAuth2/OIDC, passkeys, RBAC, and an audit log — on every response path. The agent physically can't skip the security basics.
   - icon: 🔋
-    title: Batteries included
-    details: 29+ middleware, DB, CLI, monitoring, health checks, graceful shutdown — wired together from day one. No assembly required.
+    title: Batteries included, few dependencies
+    details: Router, DB, validation, monitoring, health checks, graceful shutdown — wired from day one. Fewer libraries means fewer versions and APIs for an agent to hallucinate. One binary, zero assembly.
+  - icon: 🔍
+    title: No magic — readable enough to trust
+    details: Explicit, readable Go. No reflection soup, no hidden control flow. You — or a non-technical reviewer — can read what the agent shipped and believe it's safe to deploy.
   - icon: 🤖
     title: AI-native
     details: SSE & typed streaming, Bind[T] + JSON Schema, token/cost metering, prompt caching, provider proxying, and eval recording. Build LLM backends without hand-rolling the plumbing.
-  - icon: 🔒
-    title: Secure by default
-    details: Security headers, CSRF, JWT & sessions with a unified invalidation seam, OAuth2/OIDC, passkeys, RBAC, and an audit log. On every response path.
   - icon: ⚡
-    title: Blazing fast
-    details: Radix-tree router and optimized middleware chains. As fast as Gin — with 10× more built in.
-  - icon: 🧩
-    title: LLM-friendly DX
-    details: llms.txt + machine-readable API reference, an MCP server, and scaffolds for streaming chat, RAG, and agent tools. Great for coding agents and humans alike.
-  - icon: 🎯
-    title: No magic
-    details: Explicit, readable Go. Read the source and understand it — no reflection soup, no hidden control flow.
+    title: As fast as Gin
+    details: Radix-tree router and optimized middleware chains — Gin-class throughput with 10× more built in. The simple REST case never pays for features it doesn't use.
 ---
 
 <div class="home-section">
 
-## One framework, two jobs — done well {#two-jobs}
+## Describe it. Your agent builds it. It compiles — and it's safe to ship. {#agentic}
 
-A plain REST API must stay **dead simple** to write by hand. An AI backend needs
-streaming, metering, and provider proxying as **first-class batteries**. Goryu
-serves both, and never makes the simple case pay for the advanced one.
+You don't hand-write boilerplate anymore — you direct an agent. So the framework's
+job changed: it's no longer just pleasant to *type*, it has to be the thing your
+agent **generates correctly** and that you can **read well enough to trust**.
+
+Goryu is built for exactly that. The API is small and regular, so a coding agent
+has few wrong turns to take. It's Go, so the compiler catches the rest before you
+ever run it. And it's secure by default, so the one thing agents reliably get
+wrong — the security basics — is handled whether the agent thinks about it or not.
 
 ::: code-group
 
@@ -154,6 +162,61 @@ func main() {
 
 <div class="home-section">
 
+## Why this matters now {#why-now}
+
+Agents freeballing raw `net/http` produce a different shape every time, with
+different security gaps, and nobody can review fifty bespoke services by hand.
+Goryu makes agent output **uniform, safe, and auditable** — so the person
+directing the agent can actually ship it.
+
+<div class="battery-grid">
+
+<div class="battery-card">
+
+### 🎯 Right the first time
+
+A regular, predictable API constrains what an agent can generate, so it generates correct Goryu. The compiler catches the rest before you run it.
+
+[Why Goryu →](/guide/why-goryu)
+
+</div>
+
+<div class="battery-card">
+
+### 🔍 Trust what it ships
+
+No magic, no reflection, no hidden control flow. Read the agent's output end to end and understand every line — even if you're not the one who wrote it.
+
+[See the core →](/core/context)
+
+</div>
+
+<div class="battery-card">
+
+### 🔐 Safe without thinking about it
+
+JWT + sessions (unified invalidation) · OAuth2/OIDC · passkeys/WebAuthn · RBAC · audit log · security headers · CSRF. On every response path.
+
+[Secure your app →](/security/)
+
+</div>
+
+<div class="battery-card">
+
+### 🤖 Self-describing to the next agent
+
+`llms.txt` + machine-readable API reference (`App.MountLLMs`) · an MCP server (`goryu mcp`) · AI scaffolds. The next agent that touches your app already knows its shape.
+
+[See the tooling →](/ai/llms-txt)
+
+</div>
+
+</div>
+
+</div>
+
+<div class="home-section">
+
 ## Everything you'd otherwise wire by hand {#batteries}
 
 <div class="battery-grid">
@@ -175,26 +238,6 @@ func main() {
 `aimeter` (token/cost + limits) · `promptcache` · `aiproxy` · `recorder` (evals) · `Bind[T]` + `Schema[T]`.
 
 [Build AI backends →](/ai/)
-
-</div>
-
-<div class="battery-card">
-
-### 🔐 Auth & security
-
-JWT + sessions (unified invalidation) · OAuth2/OIDC · passkeys/WebAuthn · RBAC · audit log · `security.txt`.
-
-[Secure your app →](/security/)
-
-</div>
-
-<div class="battery-card">
-
-### 🤝 LLM-friendly DX
-
-`llms.txt` + machine-readable API reference · MCP server · `scaffold ai` (chat / RAG / agent tool).
-
-[See the tooling →](/ai/llms-txt)
 
 </div>
 
@@ -224,12 +267,12 @@ Radix router · route builder · config system · DB helpers · a real CLI with 
 
 <div class="home-section">
 
-## A CLI that does the boring parts {#cli}
+## A CLI that does the boring parts — and feeds your agent {#cli}
 
 Goryu ships a real CLI — scaffold a project, generate handlers/models/middleware,
-run a hot-reloading dev server, inspect your routes, and even expose your project
-to AI agents over **MCP**. It generates idiomatic Goryu code, so humans and coding
-agents produce the same clean output.
+run a hot-reloading dev server, inspect your routes, and expose your project to
+AI agents over **MCP**. It generates idiomatic Goryu code, so a human and a coding
+agent produce the same clean, reviewable output.
 
 ```bash
 # Scaffold a project and start building
@@ -265,9 +308,9 @@ BenchmarkGoryu_Param-8        2,036,600 ops/sec    593.3 ns/op
 BenchmarkGin_Param-8          2,015,674 ops/sec    590.9 ns/op
 ```
 
-The Go ecosystem was missing a framework with Rails/Phoenix ergonomics and Go's
-raw speed. Goryu is built on a high-performance Radix-tree router and optimized
-middleware chains, so you never trade productivity for performance.
+Built on a high-performance Radix-tree router and optimized middleware chains, so
+you never trade productivity — or the readability your agent depends on — for
+performance.
 
 </div>
 
@@ -293,11 +336,11 @@ goryu scaffold ai chat --kind=chat   # streaming chat endpoint, wired up
 
 ## Principles {#philosophy}
 
-1. **The simple case stays simple.** A hand-written REST API never pays for AI features it doesn't use.
-2. **Built for humans first; friendly to LLMs second.** The same clean API serves both.
-3. **Secure by default, on every response path.** Not an afterthought, not opt-in.
-4. **Streaming is a first-class citizen.**
-5. **The core stays small and stable; breadth lives in contrib.**
-6. **If an LLM can't reliably generate correct Goryu code, the API is too clever.**
+1. **If an LLM can't reliably generate correct Goryu code, the API is too clever.** The regular, predictable API is a feature for people and agents alike.
+2. **Built to be directed, not just typed.** The same clean API serves the human reviewing and the agent writing.
+3. **No magic.** Read the source and understand it — because trusting what ships now matters more than typing it.
+4. **Secure by default, on every response path.** Not an afterthought, not opt-in.
+5. **The simple case stays simple.** A hand-written REST API never pays for AI features it doesn't use.
+6. **The core stays small and stable; breadth lives in contrib.**
 
 </div>
